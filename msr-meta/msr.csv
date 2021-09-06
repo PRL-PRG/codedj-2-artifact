@@ -1,0 +1,221 @@
+class, subclass, source, intuition, cite, title, authors, venue, year, doi, selected projects, notes
+"CURATED", "", "Bugzbook", "POPULAR PROJECTS|ANOTHER PAPER", "Akbar:2020:MSR", "A Large-Scale Comparative Evaluation of IR-Based Tools for Bug Localization", "Shayan A. Akbar and Avinash C. Kak", "MSR", "2020", "10.1145/3379597.3387474", 29, "29 Projects (Bugzbook). They construct Bugzbook.
+Arbitrary Java projects from Apache, arbitrary C/C++ and Python large-scale projects.
+@ Apache projects because its software developer community is believed to be the largest in the open-source software world with regards to Java programming language. 
+@ Also, other large-scale open-source projects."
+"UNKNOWN", "", "GitHub", "FAMILIARITY", "Yang:2020:MSR", "A Machine Learning Approach for Vulnerability Curation", "Chen Yang and Andrew Santosa and Ang Ming Yi and Abhishek Sharma and Asankhaya Sharma and David Lo", "MSR", "2020", "10.1145/3379597.3387461", 20447, "Seleted 20,447 repositories of libraries from GH. 
+@ We build our list of servers and repositories based on the open-source libraries that we frequently encounter in customer scans."
+"CURATED", "", "Bugzbook", "ANOTHER PAPER", "Rodrigues:2020:MSR", "A Soft Alignment Model for Bug Deduplication", "Irving Muller Rodrigues and Daniel Aloise and Eraldo Rezende Fernandes and Michel Dagenais", "MSR", "2020", "10.1145/3379597.3387470", 3, "3 projects
+OpenOffice, Eclipse, NetBeans and Mozilla.
+Criteria not specified.
+No justification for criteria.
+Bugzbook: Apache projects because its software developer community is believed to be the largest in the open-source software world with regards to Java programming language. we only selected those projects for which we could find the bug reports online in the well managed Jira. Bugzbook also contains bug reports from other large-scale open-source Projects, such as Tensorflow, OpenCV, Chrome, and Pandas."
+"STARS", "THRESHOLD", "Public Git Archive", "??", "Golubev:2020:MSR", "A Study of Potential Code Borrowing and License Violations in Java Projects on GitHub", "Yaroslav Golubev and Maria Eliseeva and Nikita Povarov and Timofey Bryksin", "MSR", "2020", "10.1145/3379597.3387455", 23378, "23,378 Projects from Public Git Archive (PGA). 
+50+ stars and 1+ lines of Java.
+Collected early 2018
+Java: popularity in the industry, where legal concerns have particular weight. 
+Repositories containing any code at all."
+"INCOMPATIBLE", "", "", "??", "Malkadi:2020:MSR", "A Study on the Accuracy of OCR Engines for Source Code Transcription from Programming Screencasts", "Abdulkarim Malkadi and Mohammad Alahmadi and Sonia Haiduc", "MSR", "2020", "10.1145/3379597.3387468", , "Source screenshots from videos and documents."
+"FILTER ", "10+ docker builds", "Google BigQuery", "??", "Wu:2020:MSR", "A Tale of Docker Build Failures: A Preliminary Study", "Yiwen Wu and Yang Zhang and Tao Wang and Huaimin Wang", "MSR", "2020", "10.1145/3379597.3387483", 3828, "3,828 projects from Google BigQuery GH data 
+Has dockerfile, is listed on Docker Hub, is a public project, has 10+ docker builds
+Collected July 2019.
+10+ build: serious docker projects rather than small experiments"
+"EVERYTHING", "", "collection of websites", "??", "Tsay:2020:MSR", "AIMMX: Artificial Intelligence Model Metadata Extractor", "Jason Tsay and Alan Braz and Martin Hirzel and Avraham Shinnar and Todd Mummert", "MSR", "2020", "10.1145/3379597.3387448", 8017, "284 project from model zoos of popular frameworks, (well-documented and maintained)
+3,409 projects selected form papers and Kaggle, 
+4,324 projects from Paper With Code website.
+No specific date."
+"STARS", "TOP", "GitHub", "??", "Nakamaru:2020:MSR", "An Empirical Study of Method Chaining in Java", "Tomoki Nakamaru and Tomomasa Matsunaga and Tetsuro Yamazaki and Soramichi Akiyama and Shigeru Chiba", "MSR", "2020", "10.1145/3379597.3387441", 2814, "2,814 Java repositories from GitHub.
+Within 1000 most starred Java projects during collection period.
+Nov--Dec 2019.
+No justification for criteria."
+"DOMAIN", "", "collection of organizations", "??", "Wang:2020:MSR", "An Empirical Study on Regular Expression Bugs", "Peipei Wang and Chris Brown and Jamie Jennings and Kathryn Stolee", "MSR", "2020", "10.1145/3379597.3387464", 195, "195 projects from GH GraphQL API.
+Organizations: Apache, Mozilla, Google, and Facebook. 
+Containing merged pull requests with ""regular expression"" or “regex"" 
+in the title or description with the last update time before February 1st, 2019.
+Java, JavaScript, or Python as the primary language.
+Focus on real resolutions to real bugs. Established organizations with mature
+development processes and active projects. Intuition to get many commits,
+contributors, and culture of pull request use.
+Languages: most popular programming languages used on GitHub "
+"INCOMPATIBLE", "", "", "??", "Calciati:2020:MSR", "Automatically Granted Permissions in Android apps", "Paolo Calciati and Konstantin Kuznetsov and Alessandra Gorla and Andreas Zeller", "MSR", "2020", "10.1145/3379597.3387469", , "Android apps from Android app stores."
+"CURATED", "", "collection of organizations", "??", "Paixao:2020:MSR", "Behind the Intents: An In-depth Empirical Study on Software Refactoring in Modern Code Review", "Matheus Paixao and Anderson Uchôa and Ana Carla Bibiano and Daniel Oliveira and Alessandro Garcia and Jens Krinke and Emilio Arvonio", "MSR", "2020", "10.1145/3379597.3387475", 6, "6 projects from Code Review Open Platform (CROP).
+Java projects from Eclipse and Couchbase, employing Gerrit for code review.
+Access to a rich dataset of source code changes."
+"CURATED", "", "familiar systems", "??", "Xavier:2020:MSR", "Beyond the Code: Mining Self-Admitted Technical Debt in Issue Tracker Systems", "Laerte Xavier and Fabio da Silva Ferreira and Rodrigo Brito and Marco Tulio Valente", "MSR", "2020", "10.1145/3379597.3387459", 5, "5 projects. 
+GitLab (due to familiarity and 4 systems using similar methods of tagging technical debt as GL."
+"TOOL", "", "", "??", "Hung:2020:MSR", "Boa Views: Easy Modularization and Sharing of MSR Analyses", "Che Shian Hung and Robert Dyer", "MSR", "2020", "10.1145/3379597.3387480", , "Introduces a tool and re-creates past MSR papers for evaluation."
+"INCOMPATIBLE", "", "", "??", "Novielli:2020:MSR", "Can We Use SE-specific Sentiment Analysis Tools in a Cross-Platform Setting?", "Nicole Novielli and Fabio Calefato and Davide Dongiovanni and Daniela Girardi and Filippo Lanubile", "MSR", "2020", "10.1145/3379597.3387446", , "Analyzes 7,000 pull requests and commits. Project/commit/pr selection not described."
+"DOMAIN", "", "GitHub API", "??", "Meinicke:2020:MSR", "Capture the Feature Flag: Detecting Feature Flags in Open-Source", "Jens Meinicke and Juan Hoyos and Bogdan Vasilescu and Christian Kaestner", "MSR", "2020", "10.1145/3379597.3387463", 3239, "3,239 projects
+10+ commits matching one regular expression on commit messages
+10+ commits matching another regular expression on commit messages
+They characterize dataset at the end and point to the bias."
+"INCOMPATIBLE", "", "", "??", "Abdellatif:2020:MSR", "Challenges in Chatbot Development: A Study of Stack Overflow Posts", "Ahmad Abdellatif and Diego Costa and Khaled Badran and Rabe Abdalkareem and Emad Shihab", "MSR", "2020", "10.1145/3379597.3387472", , "StackOverflow post analysis."
+"STARS", "DIVERSITY", "GitHub", "??", "Sousa:2020:MSR", "Characterizing and Identifying Composite Refactorings: Concepts, Heuristics and Patterns", "Leonardo Da Silva Sousa and Diego Cedrim and Alessandro Garcia and Willian Oizumi and Ana Carla Bibiano and Daniel Oliveira and Miryung Kim and Anderson Oliveira", "MSR", "2020", "10.1145/3379597.3387477", 48, "48 projects
+90%+ Java code
+has issue tracking 
+stars: different levels of popularity (stratified sampling?)
+Projects selected based on related studies to have a diversity of structure, domain, size, and popularity."
+"FILTER ", "size", "GitHub", "??", "Borrelli:2020:MSR", "Detecting Video Game-Specific Bad Smells in Unity Projects", "Antonio Borrelli and Vittoria Nardone and Giuseppe Di Lucca and Gerardo Canfora and Massimiliano Di Penta", "MSR", "2020", "10.1145/3379597.3387454", 100, "100 projects
+100 largest projects that have “Game in Unity"" in their descriptions"
+"EVERYTHING", "", "World of Code", "??", "Dey:2020:MSR", "Detecting and Characterizing Bots that Commit Code", "Tapajit Dey and Sara Mousavi and Eduardo Ponce and Tanner Fry and Bogdan Vasilescu and Anna Filippova and Audris Mockus", "MSR", "2020", "10.1145/3379597.3387478", 73000000, "73M projects from World of code dataset
+everything
+No specific reason given for selection of WoC"
+"RANDOM SAMPLE", "", "collection of organizations", "??", "Pecorelli:2020:MSR", "Developer-Driven Code Smell Prioritization", "Fabiano Pecorelli and Fabio Palomba and Foutse Khomh and Andrea De Lucia", "MSR", "2020", "10.1145/3379597.3387457 ", 9, "9 projects from 2576 projects belonging to Apache and Eclipse
+Belong to Apache and Eclipse, Java projects, 500+ classes, 5+ years lifespan, 1K+ commits, 20+ contributors, randomly select 9 (from 682)
+Java: best tooling for smell detection and analysis
+Diversity of domain, longevity, activity, and populations."
+"RANDOM SAMPLE", "", "GHTorrent and Reaper", "??", "Gonzalez:2020:MSR", "Did You Remember To Test Your Tokens?", "Danielle Gonzalez and Michael Rath and Mehdi Mirakhorli", "MSR", "2020", "10.1145/3379597.3387471", 53, "53 projects.
+Random sample of 100K Java projects from GH (from GHT and Reaper). 
+Removed: empty, duplicates, inactive (no recent push), projects without unit tests, JHipster projects, projects not using Spring Security authentication.
+Forks replaced with originals."
+"STARS", "TOP", "another paper", "??", "Compton:2020:MSR", "Embedding Java Classes with code2vec: Improvements from Variable Obfuscation", "Rhys Compton and Eibe Frank and Panos Patros and Abigail Koay", "MSR", "2020", "10.1145/3379597.3387445", 9500, "Uses java-large, from https://arxiv.org/pdf/1808.01400.pdf
+9.5K top-starred Java projects collected since Jan 2007 (presumably until 2019)."
+"DOMAIN", "", "TravisListener", "??", "Durieux:2020:MSR", "Empirical Study of Restarted and Flaky Builds on Travis CI", "Thomas Durieux and Claire Le Goues and Michael Hilton and Rui Abreu", "MSR", "2020", "10.1145/3379597.3387460", 171057, "171,057 projects from GH/TravisListener for 40 days starting from Oct 2019.
+Using Travis CI.
+Diversity of projects and languages."
+"INCOMPATIBLE", "", "", "??", "Gold:2020:MSR", "Ethical Mining – A Case Study on MSR Mining Challenges", "Nicolas Gold and Jens Krinke", "MSR", "2020", "10.1145/3379597.3387462", , "metastudy"
+"EVERYTHING", "", "Software Heritage Graph and GHTorrent", "??", "Pietri:2020:MSR", "Forking Without Clicking: on How to Identify Software Repository Forks", "Antoine Pietri and Guillaume Rousseau and Stefano Zacchiroli", "MSR", "2020", "10.1145/3379597.3387450", 41490000, "41.49M non-empty repositories appearing in both Software Heritage Graph and GHTorrent."
+"DOMAIN", "", "website", "??", "Jia:2020:MSR", "From Innovations to Prospects: What Is Hidden Behind Cryptocurrencies?", "Ang Jia and Ming Fan and Xi Xu and Di Cui and Wenying Wei and Zijiang Yang and Kai Ye and Ting Liu", "MSR", "2020", "10.1145/3379597.3387439", 1698, "1698 projects for cryptocurrency implementations."
+"EVERYTHING", "", "organization", "??", "Haque:2020:MSR", "Improved Automatic Summarization of Subroutines via Attention to File Context", "Sakib Haque and Alexander LeClair and Lingfei Wu and Collin McMillan", "MSR", "2020", "10.1145/3379597.3387449", 4600, "~4600 projects from apache SF containing source code"
+"EVERYTHING", "", "collection of organizations", "??", "Spadini:2020:MSR", "Investigating Severity Thresholds for Test Smells", "Davide Spadini and Martin Schvarcbacher and Ana Maria Oprescu and Magiel Bruntink and Alberto Bacchelli", "MSR", "2020", "10.1145/3379597.3387453", 1489, "1489 projects from apache sf and Eclipse foundation
+Diversity of size and scope."
+"INCOMPATIBLE", "", "", "??", "Fang:2020:MSR", "Need for tweet. How open-source developers use Twitter to talk about their GitHub work", "Hongbo Fang and Daniel Klug and Hemank Lamba and James Herbsleb and Bogdan Vasilescu", "MSR", "2020", "10.1145/3379597.3387466", , "Tweets that by users who have GitHub links in their bios."
+"DOMAIN", "", "GitHub Search", "??", "Muse:2020:MSR", "On the Prevalence, Impact, and Evolution of SQL code smells in Data-Intensive Systems", "Biruk Asmare Muse and Masud Rahman and Csaba Nagy and Anthony Cleve and Foutse Khomh and Giuliano Antoniol", "MSR", "2020", "10.1145/3379597.3387467", 150, "150 projects.
+tags: android, app, hibernate, JPA, Java. Code cotnains SQL. Contain one of top 50 keywords in the dataset. At least 10 db queries."
+"INCOMPATIBLE", "", "", "??", "Zarif:2020:MSR", "On the Relationship between User Churn and Software Issues", "Omar El Zarif and Daniel Alencar Da Costa and Safwat Hassan and Ying Zou", "MSR", "2020", "10.1145/3379597.3387456", , "software recommendations on altenrativeto.net"
+"INCOMPATIBLE", "", "", "??", "Minh:2020:MSR", "PUMiner: Mining Security Posts from Developer Question and Answer Websites with PU Learning", "Triet Le Huynh Minh and David Hin and Roland Croft and Muhammad Ali Babar", "MSR", "2020", "10.1145/3379597.3387443", , "stack overflow posts"
+"INCOMPATIBLE", "", "", "??", "Yang:2020:MSR", "Painting Flowers: Reasons for Using Single-State State Machines in Model-Driven Engineering", "Nan Yang and Pieter Cuijpers and Ramon Schiffelers and Johan Lukkien and Alexander Serebrenik", "MSR", "2020", "10.1145/3379597.3387452", , "semiconductor devices, i think"
+"TOOL", "", "", "??", "Barmpis:2020:MSR", "Polyglot and Distributed Software Repository Mining with CROSSFLOW", "Konstantinos Barmpis and Patrick Neubauer and Jonathan Co and Dimitris Kolovos and Nicholas Matragkas and Richard Paige", "MSR", "2020", "10.1145/3379597.3387481", , "A tool for mining repositories"
+"CURATED", "", "", "??", "Mattis:2020:MSR", "RTPTorrent: An Open-source Dataset for Evaluating Regression Test Prioritization", "Toni Mattis and Patrick Rein and Falco Dürsch and Robert Hirschfeld", "MSR", "2020", "10.1145/3379597.3387458", 20, "20 java projects
+Java, many logged failures, 
+Java: avaiability of tooling, diverse sizes, maturoituy and GH community"
+"CURATED", "", "", "??", "Singh:2020:MSR", "SoftMon: A Tool to Compare Similar Open-source Software from a Performance Perspective", "Shubhankar Suman Singh and Smruti Ranjan Sarangi", "MSR", "2020", "10.1145/3379597.3387444", 15, "15 proejcts"
+"CASE", "", "", "??", "Walden:2020:MSR", "The Impact of a Major Security Event on an Open Source Project: The Case of OpenSSL", "James Walden", "MSR", "2020", "10.1145/3379597.3387465", , "just openssl"
+"STARS", "THRESHOLD", "GitHub Search", "??", "Jebnoun:2020:MSR", "The Scent of Deep Learning Code: An Empirical Study", "Hadhemi Jebnoun and Masud Rahman and Foutse Khomh and Houssem Ben Braiek ", "MSR", "2020", "10.1145/3379597.3387479", 118, "2 x 59 projects from GitHub API
+DL subset: Deep learning keywords, 57+ commits, Python, 
+manually remove tutorials, immature projects, unpopular projects (issue count, commit count, contributor count, forks, stars), 4+ releases
+Trad subset: 1000+ stars, 
+remove dead projects, random sleection 59"
+"STARS", "THRESHOLD", "GitHub API", "??", "Gonzalez:2020:MSR", "The State of the ML-universe: 10 Years of Artificial Intelligence & Machine Learning Software Development on GitHub", "Danielle Gonzalez and Thomas Zimmermann and Nachiappan Nagappan", "MSR", "2020", "10.1145/3379597.3387473", 9325, "5,224 AI\ML and 4,101 application projects
+AI\ML subset: search by tags, manual filtering to remove coding challenges, resource storage, etc.
+application subset: 10000 projects from 2019, most starred, not containg relevant tags;
+>0KB, 5+ stars or forks, last commit within 2019, available, manual filtering            
+Filtering big space."
+"STARS", "TOP", "collection of organizations", "??", "Liu:2020:MSR", "Traceability Support for Multi-Lingual Software Projects", "Yalin Liu and Jinfeng Lin and Jane Cleland-Huang", "MSR", "2020", "10.1145/3379597.3387440", 17, "17 projects
+projects belonging to Alibaba, Tencent, Meitaun, JD, Baidu, NetEase and XiaoMi
+40+ issues, 40+ commits, 1%+ foreign terms in vocabulary
+(sorted by stars)
+commits tagged with issue IDs, diversity in size of link between issues and commits"
+"DOMAIN", "", "GitHub", "??", "Bryksin:2020:MSR", "Using Large-Scale Anomaly Detection on Code to Improve Kotlin Compiler", "Timofey Bryksin and Victor Petukhov and Ilya Alexin and Stanislav Prikhodko and Alexey Shpilman and Vladimir Kovalenko and Nikita Povarov", "MSR", "2020", "10.1145/3379597.3387447", 47700, "47.7K projects
+kotlin repositories created before march 2018, not forks"
+"FILTER ", "50+ commits", "website", "??", "Mujahid:2020:MSR", "Using Others' Tests to Avoid Breaking Updates", "Suhaib Mujahid and Rabe Abdalkareem and Emad Shihab and Shane McIntosh", "MSR", "2020", "10.1145/3379597.3387476", 290000, "290K packages
+npm packages with GH repositories
+2+ commits touching package.json"
+"TOOL", "", "", "??", "Svitkov:2020:MSR", "Visualization of Methods Changeability Based on VCS Data", "Sergey Svitkov and Timofey Bryksin", "MSR", "2020", "10.1145/3379597.3387451", , "tool"
+"STARS", "TOP", "GitHub API", "??", "Pfeiffer:2020:MSR", "What constitutes Software? An Empirical, Descriptive Study of Artifacts", "Rolf-Helge Pfeiffer", "MSR", "2020", "10.1145/3379597.3387442", 32718, "32,718 projects
+1020 top-starred projects in a given language from 25 hand-picked languages
+deduplicated (presumably by URL) yielding a dataset of unique repositories"
+"CURATED", "", "", "??", "Pinto:2020:MSR", "What is the Vocabulary of Flaky Tests?", "Gustavo Pinto and Breno Miranda and Supun Dissanayake and Marcelo d'Amorim and Christoph Treude and Antonia Bertolino", "MSR", "2020", "10.1145/3379597.3387482", 25, "25 projects
+deflaker benchmark"
+"DOMAIN", "", "GitHub API", "??", "Pimentel:2019:MSR", "A Large-scale Study about Quality and Reproducibility of Jupyter Notebooks", "João Felipe Pimentel and Leonardo Murta and Vanessa Braganholo and Juliana Freire", "MSR", "2019", "10.1109/MSR.2019.00077", 265000, "265K projects
+Created between 1 Jan 2013 and 15 Apr 2018, contains 1+ file whose language is ""Jupyter notebook""."
+"TOOL", "", "", "??", "Zerouali:2019:MSR", "ConPan: A Tool to Analyze Packages in Software Containers", "Ahmed Zerouali and Valerio Cosentino and Jesus M. Gonzalez-Barahona and Gregorio Robles and Tom Mens", "MSR", "2019", "10.1109/MSR.2019.00089", , "a tool working on docker images"
+"FILTER ", "diverse forks and age ", "GitHub API", "??", "Zhu:2019:MSR", "An Empirical Study of Multiple Names and Email Addresses in OSS Version Control Repositories", "Jiaxin Zhu and Jun Wei", "MSR", "2019", "10.1109/MSR.2019.00068", 255, "46 + 19 + 16 + 16 + 158 repositories 
+3 age intervals (creation date: 1- years, 5 years, 10 years),
+3 popularity intevals (forks: 10-, 100-200, 1000+),
+50 project from each combination o age/popularity
+not forks
+last push after 1 jun 2018"
+"DOMAIN", "", "GitHub", "??", "Bleser:2019:MSR", "Assessing Diffusion and Perception of Test Smells in Scala Projects", "Jonas De Bleser and Dario Di Nucci and Coen De Roover", "MSR", "2019", "10.1109/MSR.2019.00072", 164, "164 projects
+created between Jan 2010 and July 2018
+remove projects without tests and sbt and do not compile
+keep projects that use ScaltaTest and have 1+ KLOC"
+"INCOMPATIBLE", "", "", "??", "Minh:2019:MSR", "Automated Software Vulnerability Assessment with Concept Drift", "Triet Le Huynh Minh and Bushra Sabir and Muhammad Ali Babar", "MSR", "2019", "10.1109/MSR.2019.00063", , "Analyzes software vulnerabilites"
+"RANDOM SAMPLE", "", "RepoReaper", "??", "Alqaimi:2019:MSR", "Automatically Generating Documentation for Lambda Expressions in Java", "Anwar Alqaimi and Patanamon Thongtanunam and Christoph Treude", "MSR", "2019", "10.1109/MSR.2019.00057", 51392, "51,392 repositories
+Random forest claffification by RepoReaper
+1+ lambda expression
+random sample 400 at a time and filter"
+"CURATED", "", "", "??", "Matsumoto:2019:MSR", "Beyond GumTree: A hybrid approach to generate edit scripts", "Junnosuke Matsumoto and Yoshiki Higo and Shinji Kusumoto", "MSR", "2019", "10.1109/MSR.2019.00082", 7, "7 projects
+""some Java OSS"""
+"INCOMPATIBLE", "", "", "??", "Mondal:2019:MSR", "Can Issues Reported at Stack Overflow Questions be Reproduced? An Exploratory Study", "Saikat Mondal and Masud Rahman and Chanchal K. Roy", "MSR", "2019", "10.1109/MSR.2019.00074", , "stack overflow questions"
+"FILTER ", "first 500, age, commits, collaborators", "DOECODE, JOSS, GitHub", "??", "Milewicz:2019:MSR", "Characterizing the Roles of Contributors in Open-source Scientific Software Projects", "Reed Milewicz and Gustavo Pinto and Paige Rodeghero ", "MSR", "2019", "10.1109/MSR.2019.00069", 7, "7 projects
+Search by topic: computational-neuroscience, bioinformatics, get first 500 projects
+links to a contributor list
+1+ year old, 500+ commits, 3+ collaborators (incl 1 junior)
+Looking for representativ projects"
+"STARS", "TOP", "organization", "??", "Perez:2019:MSR", "Cross-language clone detection by learning over abstract syntax trees", "Daniel Perez and Shigeru Chiba", "MSR", "2019", "10.1109/MSR.2019.00078", 1924, "1027 Java projects from Apache SF 
+897 Python fromjects form GH: 100KB-100MB. Non-viral license. Not forks. Ordered by stars. Not Python2.
+Diverse code to  genrate representative vocabulary. Stars as proxy for popularity."
+"TOOL", "", "", "??", "Kolovos:2019:MSR", "Crossflow: A Framework for Distributed Mining of Software Repositories", "Dimitris Kolovos and Patrick Neubauer and Konstantinos Barmpis and Nicholas Matragkas and Richard Paige", "MSR", "2019", "10.1109/MSR.2019.00032", , "tool"
+"EVERYTHING", "", "website", "??", "Scalabrino:2019:MSR", "Data-Driven Solutions to Detect API Compatibility Issues in Android: An Empirical Study", "Simone Scalabrino and Gabriele Bavota and Mario Linares-Vasquez and Michele Lanza and Rocco Oliveto", "MSR", "2019", "10.1109/MSR.2019.00055", 1170, "1170 projects from F-Droid website"
+"CURATED", "", "", "??", "Hoang:2019:MSR", "DeepJIT: An End-To-End Deep LearningFramework for Just-In-Time Defect Prediction", "Thong Hoang and Hoa Khanh Dam and Yasutaka Kamei and David Lo and Naoyasu Ubayashi", "MSR", "2019", "10.1109/MSR.2019.00016", , "2 well-known projects"
+"INCOMPATIBLE", "", "", "??", "Dietrich:2019:MSR", "Dependency Versioning in the Wild", "Jens Dietrich and David J. Pearce and Jacob Stringer and Amjed Tahir and Kelly Blincoe", "MSR", "2019", "10.1109/MSR.2019.00061", , "dependencies in package manager"
+"DOMAIN", "", "GHTorrent", "??", "Raghuraman:2019:MSR", "Does UML Modeling Associate with Lower Defect Proneness?: A Preliminary Empirical Investigation", "Adithya Raghuraman and Truong Ho-Quang and Michel Chaudron and Alexander Serebrenik and Bogdan Vasilescu", "MSR", "2019", "10.1109/MSR.2019.00024", 4650, "4,650 projects containing UML files from GHTorrent"
+"PROPRIETARY", "", "", "??", "Kiehn:2019:MSR", "Empirical study in using version histories for change risk classification", "Max Kiehn and Xiangyi Pan and Fatih Camci", "MSR", "2019", "10.1109/MSR.2019.00018", , ""
+"INCOMPATIBLE", "", "", "??", "Chatterjee:2019:MSR", "Exploratory Study of Slack Q&A Chats as a Mining Source for Software Engineering Tools", "Preetha Chatterjee and Kostadin Damevski and Lori Pollock and Vinay Augustine and Nicholas A. Kraft", "MSR", "2019", "10.1109/MSR.2019.00075", , "slack conversations"
+"INCOMPATIBLE", "", "", "??", "Biswas:2019:MSR", "Exploring Word Embedding Techniques to Improve Sentiment Analysis of Software Engineering Texts", "Eeshita Biswas and K. Vijay-Shanker and Lori Pollock", "MSR", "2019", "10.1109/MSR.2019.00020", , "stack overflow posts"
+"INCOMPATIBLE", "", "", "??", "Wang:2019:MSR", "Extracting API Tips from Developer Question and Answer Websites", "Shaohua Wang and Nhathai Phan and Yan Wang and Yong Zhao", "MSR", "2019", "10.1109/MSR.2019.00058", , "stack overflow posts"
+"STARS", "TOP", "GitHub API", "??", "Liu:2019:MSR", "Generating Commit Messages from Diffs using Pointer-generator Network", "Qin Liu and Zihe Liu and Hongming Zhu and Hongfei Fan and Bowen Du and Yu Qian", "MSR", "2019", "10.1109/MSR.2019.00056", 2081, "2081 projects
+Top Java projects."
+"CURATED", "", "", "??", "Montandon:2019:MSR", "Identifying Experts in Software Libraries and Frameworks among GitHub Users", "João Eduardo Montandon and Luciana L. Silva and Marco Tulio Valente", "MSR", "2019", "10.1109/MSR.2019.00054", 3, "3 projects
+react, mongodb, socket.io"
+"STARS", "TOP", "another paper", "??", "Hayashi:2019:MSR", "Impacts of Daylight Saving Time on Software Development", "Junichi Hayashi and Yoshiki Higo and Shinsuke Matsumoto and Shinji Kusumoto", "MSR", "2019", "10.1109/MSR.2019.00076", 969, "969 + 2500 projects
+projects containig merged pull-requests containing the phrase with ""daylight savings"" (etc)
+They also compare the characteristics of their dataset with 2.5K top-starred repositories from another paper. I'm not sure that counts."
+"STARS", "THRESHOLD", "GitHub", "??", "Theeten:2019:MSR", "Import2vec: learning embeddings for software libraries", "Bart Theeten and Frederik Vandeputte and Tom Van Cutsem", "MSR", "2019", "10.1109/MSR.2019.00014", 2072000, "120K + 260K + 380K + 310K + 110K + 260K + 130K + 110K + 130K + 69K + 100K + 93K
+Java, Js, Python, Ruby, PHP, or C#
+2+ stars,
+deduplicate based on imports in source files"
+"CURATED", "", "", "??", "Amann:2019:MSR", "Investigating Next-Steps in Static API-Misuse Detection", "Sven Amann and Hoan Nguyen and Sarah Nadi and Tien N. Nguyen and Mira Mezini", "MSR", "2019", "10.1109/MSR.2019.00053", 35, "5 + 30 projects (i think)
+they combine datasets from a TR and another paper and i'm not sure how many projects there are exactly after all that
+the TR provides 5 projects, apparently, which are the usual suspects: Linux, etc.
+the paper has 200 projects that used Maven, 1+ test, all tests pass, form these they picked based on whether there are correct usages"
+"CURATED", "", "PROMISE", "??", "Dam:2019:MSR", "Lessons learned from using a deep tree-based model for software defect prediction in practice", "Hoa Khanh Dam and Trang Pham and Shien Wee Ng and Truyen Tran and John Grundy and Aditya Ghose and Taeksu Kim and Chul-Joo Kim", "MSR", "2019", "10.1109/MSR.2019.00017", 10, "10 Java projects from PROMISE"
+"INCOMPATIBLE", "", "", "??", "Gao:2019:MSR", "Negative Results on Mining Crypto-API Usage Rules in Android Apps", "Jun Gao and Pingfan Kong and Li Li and Tegawendé F. Bissyandé and Jacques Klein", "MSR", "2019", "10.1109/MSR.2019.00065", , "reverse engineers binary-like releases (apk) of android apps"
+"CASE", "", "", "??", "Serra:2019:MSR", "On the Effectiveness of Manual and Automatic Unit Test Generation: Ten Years Later", "Domenico Serra and Giovanni Grano and Fabio Palomba and Filomena Ferrucci and Harald Gall and Alberto Bacchelli", "MSR", "2019", "10.1109/MSR.2019.00028", 1, "1 project (freenode)"
+"TOOL", "", "", "??", "Kovalenko:2019:MSR", "PathMiner : A Library for Mining of Path-Based Representations of Code", "Vladimir Kovalenko and Egor Bogomolov and Timofey Bryksin and Alberto Bacchelli", "MSR", "2019", "10.1109/MSR.2019.00013", , "a tool"
+"DOMAIN", "", "GitHub Search", "??", "Yang:2019:MSR", "Predicting Co-Changes between Functionality Specifications and Source Code in Behavior Driven Development", "Aidan Z.H. Yang and Daniel Alencar Da Costa and Ying Zou", "MSR", "2019", "10.1109/MSR.2019.00080", 133, "133 projects
+Java projects from Github Search API that contain a .feature file
+2+ commits on .feature file (indicative of actually using .feature)
+commit messages and status data are in English"
+"RANDOM SAMPLE", "", "GitHub IDs", "??", "Treude:2019:MSR", "Predicting Good Configurations for GitHub and Stack Overflow Topic Models", "Christoph Treude and Markus Wagner ", "MSR", "2019", "10.1109/MSR.2019.00022", 40000, "8 * 5000 projects
+language in C, C++, CSS, HTML, Java JavaScript, Python, Ruby
+random project (from projects with id 0-120M, which is all projects)
+contains README file with 100+ characters, does not contain non ASCII characters"
+"CURATED", "", "", "??", "Júnior:2019:MSR", "Recommending Energy-Efficient Java Collections", "Wellington de Oliveira Júnior and Renato Santos and Fernando Castor and José Benito Fernandes De Araújo Neto and Gustavo Pinto", "MSR", "2019", "10.1109/MSR.2019.00033", 12, "12 projects
+Barbecue, Battlecry, JodaTime, TomCat, Twfbplayer, Xalan, Xisemele, FastSearch, PasswordGen, Apache commons Math, Google Gson, XStream."
+"UNKNOWN", "", "GitHub", "??", "Akbar:2019:MSR", "SCOR: Source Code Retrieval With Semantics and Order", "Shayan Akbar and Avinash Kak", "MSR", "2019", "10.1109/MSR.2019.00012", 35000, "35000 projects
+approximately 35000 Java Source code repositories"
+"TOOL", "", "", "??", "Chren:2019:MSR", "STRAIT: A Tool for Automated Software Reliability Growth Analysis", "Stanislav Chren and Radoslav Micko and Barbora Buhnova and Bruno Rossi", "MSR", "2019", "10.1109/MSR.2019.00025", , "a tool with some analysis happening, but there isn't a dataset described for the analysis"
+"UNKNOWN", "", "GitHub", "??", "Owhadi-Kareshk:2019:MSR", "Scalable Software Merging Studies with MERGANSER", "Moein Owhadi-Kareshk and Sarah Nadi", "MSR", "2019", "10.1109/MSR.2019.00084", 744, "744 projects
+unknown criteria
+mostly a tool though, but it does do an experiment, so i'll count it as an experiment"
+"RANDOM SAMPLE", "", "organization", "??", "Ahluwalia:2019:MSR", "Snoring: a Noise in Defect Prediction Datasets", "Aalok Ahluwalia and Davide Falessi and Massimiliano Di Penta", "MSR", "2019", "10.1109/MSR.2019.00019", 6, "6 projects
+Apache SF
+10+ releases, JIRA, most commits are related to Java code
+then: random sample 4
++ two hand picked: Lucene and Jackrabbit
+avoid using toy projects, expecting higher quality of defect annotation"
+"DOMAIN", "", "GitHub", "??", "Matos:2019:MSR", "Splitting APIs: An Exploratory Study of Software Unbundling", "Anderson Severo de Matos and João Bosco Ferreira Filho and Lincoln Souza Rocha", "MSR", "2019", "10.1109/MSR.2019.00062", 71000, "71000 projects
+select 10 APIs, find GH projects that use these APIs"
+"INCOMPATIBLE", "", "", "??", "Kotti:2019:MSR", "Standing on Shoulders or Feet? The Usage of the MSR Data Papers", "Zoe Kotti and Diomidis Spinellis", "MSR", "2019", "10.1109/MSR.2019.00085", , "metastudy of MSR"
+"DOMAIN", "", "website", "??", "Trockman:2019:MSR", "Striking Gold in Software Repositories? An Econometric Study of Cryptocurrencies on GitHub", "Asher Trockman and Rijnard van Tonder and Bogdan Vasilescu", "MSR", "2019", "10.1109/MSR.2019.00036", 241, "241 projects from CoinMarketCap withh GH repos
+cryptocurrency projects"
+"STARS", "UNKNOWN", "", "??", "Zhai:2019:MSR", "Test Coverage in Python Programs", "Hongyu Zhai and Casey Casalnuovo and Prem Devanbu", "MSR", "2019", "10.1109/MSR.2019.00027", 5, "5 projects
+authors mention that these all have 5K stars among a lot of other conditions
+This is a matter of interpretation, but after going back and forth I'm going to assume that stars played some sort of role in selection, even if this role is not specifically defined"
+"INCOMPATIBLE", "", "", "??", "Soto-Valero:2019:MSR", "The Emergence of Software Diversity in Maven Central", "César Soto-Valero and Amine Benelallam and Nicolas Harrand and Olivier Barais and Benoit Baudry", "MSR", "2019", "10.1109/MSR.2019.00059", , "maven libraries, versions, dependencies"
+"CURATED", "", "", "??", "Funaki:2019:MSR", "The Impact of Systematic Edits in History Slicing", "Ryosuke Funaki and Shinpei Hayashi and Motoshi Saeki", "MSR", "2019", "10.1109/MSR.2019.00083", 2, "2 projects
+commons collections and commons net"
+"FILTER ", "developers", "website", "??", "Habchi:2019:MSR", "The Rise of Android Code Smells: Who Is to Blame?", "Sarra Habchi and Romain Rouvoy and Naouel Moha", "MSR", "2019", "10.1109/MSR.2019.00071", 324, "324 projects
+projects from FDroid
+2+ developers"
+"INCOMPATIBLE", "", "", "??", "Mitropoulos:2019:MSR", "Time Present and Time Past: Analyzing the Evolution of JavaScript Code in the Wild", "Dimitris Mitropoulos and Panos Louridas and Vitalis Salis and Diomidis Spinellis", "MSR", "2019", "10.1109/MSR.2019.00029", , "website analysis over time"
+"INCOMPATIBLE", "", "", "??", "Schipper:2019:MSR", "Tracing Back Log Data to its Log Statement: From Research to Practice", "Daan Schipper and Maurício Aniche and Arie van Deursen", "MSR", "2019", "10.1109/MSR.2019.00081", , "log analysis from a single? system"
+"TOOL", "", "", "??", "Ma:2019:MSR", "World of Code: An Infrastructure for Mining the Universe of Open Source VCS Data", "Yuxing Ma and Christopher Bogart and Sadika Amreen and Russell Zaretzki and Audris Mockus", "MSR", "2019", "10.1109/MSR.2019.00031", , "a tool"
+"TOOL", "", "", "??", "Gote:2019:MSR", "git2net - Mining Time-Stamped Co-Editing Networks from Large git Repositories", "Christoph Gote and Ingo Scholtes and Frank Schweitzer", "MSR", "2019", "10.1109/MSR.2019.00070", , "a tool, with an analysis of two projects"
+"STARS", "TOP", "GitHub", "??", "Markovtsev:2019:MSR", "style-analyzer: fixing code style inconsistencies with interpretable unsupervised algorithms", "Vadim Markovtsev and Hugo Mougard and Waren Long and Egor Bulychev and Konstantin Slavnov", "MSR", "2019", "10.1109/MSR.2019.00073", 19, "19 projects
+top starred from January 2019
+JavaScript is main language
+diversity of sizes
+a tool using 19 top starred repositories to evaluate their tool "

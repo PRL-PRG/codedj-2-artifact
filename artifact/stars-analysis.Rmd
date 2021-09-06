@@ -1,0 +1,229 @@
+---
+title: "Manual Analysis of Stars"
+output: html_notebook
+---
+
+We assume that you have already executed `dataset.Rmd` in RStudio and your environments are populated. 
+
+## Stars outliers
+
+Let's see what are the lowest ranking projects in the categories:
+
+```{r}
+get_lowest = function(dataset, columns) {
+  dataset = dataset %>% select(id, url, stars, locs, snapshots, lifetime, commits, max_hindex1, users)
+  result = dataset %>% arrange(locs) %>% head(20)
+  dataset = dataset %>% filter(! id %in% result$id)
+  result = rbind(result, dataset %>% arrange(snapshots) %>% head(20))
+  dataset = dataset %>% filter(! id %in% result$id)
+  result = rbind(result, dataset %>% arrange(lifetime) %>% head(20))
+  dataset = dataset %>% filter(! id %in% result$id)
+  result = rbind(result, dataset %>% arrange(commits) %>% head(20))
+  dataset = dataset %>% filter(! id %in% result$id)
+  result = rbind(result, dataset %>% arrange(max_hindex1) %>% head(20))
+  result %>% mutate(url = paste0("<a href=\"", url, "\">", url, "</a>"))
+}
+
+
+datatable(get_lowest(java_stars, columns), escape = F)
+```
+DEP, DOC, DOC, TUT, BABY, UI, BABY, UI, UI, TUT
+TUT, BABY, UI, UI, UI, UI, UI, UI, UI, BABY
+UI, TUT, UI, UI, UI, BABY, BABY, UI, UI, UI
+TUT, BABY, UI, UI, UI, UI, BABY, UI, UI, UI
+EXT, FP, TUT, BABY, UI, EXT, UI, EXT, UI, BABY
+EXT, TUT, BABY, FP, UI, TUT, FP, UI, FP, FP
+EXT, EXT, EXT, TUT, TUT, TUT, UI, UI, UI, BABY
+UI, UI, EXT, TUT, TUT, BABY, TUT, TUT, TUT, UI
+DOC, UI, FP, BABY, EXT, UI, UI, FP, UI, UI
+UI, TUT, FP, FP, UI, FP, BABY, UI, BABY, DOC 
+
+
+
+```{r}
+datatable(get_lowest(python_stars, columns), escape = F)
+```
+DOC,  DEP,  DEP,  BABY, DEP,  DOC,  TUT,  FP,   DEP,  BABY
+DOC,  BABY, BABY, TUT,  FP,   DOC,  BABY, BABY, BABY, DOC
+RES,  BABY, TUT,  FP,   BABY, DOC,  EXT,  BABY, DOC,  BABY
+BABY, RES,  RES,  BABY, BABY, TUT,  DOC,  BABY, DOC,  BABY
+EXT,  DOC,  BABY, EXT,  BABY, TUT,  BABY, BABY, BABY, BABY
+RES,  RES,  RES,  FP,   RES,  BABY, BABY, BABY, DEP,  RES
+RES,  BABY, RES,  RES,  RES,  BABY, RES,  RES,  FP,   EXT
+TUT,  TUT,  RES,  EXT,  BABY, RES,  TUT,  BABY, BABY, DOC
+DOC,  FP,   DOC,  FP,   RES,  DOC,  BABY, RES,  TUT,  FP 
+FP,   FP,   RES,  DOC,  FP,   BABY, RES,  FP,   FP,   RES
+
+
+```{r}
+datatable(get_lowest(js_stars, columns), escape = F)
+```
+DEP, BABY, FP,   DOC,  BABY, DOC,  BABY, DOC,  TUT,  BABY
+FP,  BABY, BABY, BABY, BABY, BABY, FP,   BABY, TUT,  EXT
+TUT, BABY, TUT,  BABY, DOC,  TUT,  EXT,  TUT,  UI,   TUT
+UI   UI,   UI,   DEP,  BABY, BABY, BABY, BABY, BABY, UI
+FP   BABY  BABY  TUT   EXT   EXT   BABY  UI    BABY  TUT
+BABY TUT   BABY  TUT   EXT   EXT   BABY  BABY  DEP   TUT
+UI   TUT   TUT   BABY  TUT   BABY  EXT   TUT   TUT   BABY
+DOC  BABY  UI    TUT   BABY  BABY  UI    TUT   UI    BABY
+FP   BABY  UI    BABY  DOC   DOC   BABY  BABY  UI    FP
+FP   FP    TUT   TUT   FP    UI    UI    TUT   BABY  BABY
+
+
+Kind  Java Python JS
+FP    10   13     9
+EXT   9    5      7
+UI    43   0      14
+DOC   4    15     7
+TUT   17   9      22
+BABY  16   32     38
+RES   0    21     0
+DEP   1    5      3
+
+
+
+## Manual Analysis of uninteresting stars
+
+Let's see what is there in the uninteresting stars, language by language. We classify into the following categories:
+
+False Positives = these are ok projects that for some error in the pipeline appear to have skewed statistics
+External Projects = projects that are real, but whose development happens elsewhere (dumps of private company repos, etc.)
+UI Widgets = UI widgets, such as Anrdoid, Browser, etc. not much of code or development, but real projects
+Documentation = Mostly text, snippets repositories, etc. 
+Tutorials = Sample projects, apps, etc. 
+Baby projects = small projects that have little code and little development and don't fit other categories
+Research Artifacts = Artifacts & demonstrations for papers, usually dumps of code
+Deprecated = Deprecated projects with files removed (can still be found in history or other branch)
+Errors = Not really in the language described
+
+```{r}
+datatable(java_stars %>% filter(id %in% java_uninteresting$id) %>% select(id, url, stars, max_hindex1, max_user_lifetime, lifetime, users, locs, snapshots, paths, commits) %>% mutate(url = paste0("<a href=\"", url, "\">", url, "</a>")), escape = F)
+```
+
+1  DOC  963877	https://github.com/twowaits/sde-interview-questions.git               Interview questions
+2  DOC  952697	https://github.com/doocs/source-code-hunter.git                       Documentation
+3  UI   47322	https://github.com/pomepuyn/blureffectforandroiddesign.git            Android Widget
+4  EXT  38116	https://github.com/white-cat/thinkandroid.git                         Android Development Framework Dump
+5  UI   114226	https://github.com/romainpiel/titanic.git                             Android Widget
+6  BABY 749766	https://github.com/videlalvaro/gifsockets.git                         Funny small tiny app
+7  UI   104161	https://github.com/markushi/android-circlebutton.git                  Android Widget
+8  TUT  90635	https://github.com/romainguy/road-trip.git                            Android example app
+9  UI   94982	https://github.com/flavienlaurent/discrollview.git                    Android Widget
+10 TUT  185032	https://github.com/antoniolg/materialeverywhere.git                   Android example app    
+11 EXT  3184	  https://github.com/xamarin/xobotos.git                                Android ported to C#
+12 UI   60551	https://github.com/romannurik/android-monthcalendarwidget.git         Android Widget   
+13 EXT  16722	https://github.com/designativedave/androrat.git                       Android Remote Management, Dump
+14 DEP  735931	https://github.com/purplecabbage/phonegap-plugins.git                 Deprecated repo with plugins (code deleted, just readme & history)
+15 UI   199219	https://github.com/chenupt/bezierdemo.git                             Andoid Widget  
+16 EXT  13692	https://github.com/sonyxperiadev/apkanalyser.git                      Android APK analyzer, dump   
+17 UI   131721	https://github.com/singwhatiwanna/pinnedheaderexpandablelistview.git  Android Widget
+18 BABY 574496	https://github.com/rom1v/sndcpy.git                                   Android as microphone, maybe dump? 
+19 UI   195347	https://github.com/bluemor/android-pulllayout.git                     Android App
+20 EXT  459880	https://github.com/bytedance/boostmultidex.git                        Android Tool, Dump
+
+```{r}
+datatable(python_stars %>% filter(id %in% python_uninteresting$id) %>% select(id, url, stars, max_hindex1, max_user_lifetime, lifetime, users, locs, snapshots, paths, commits) %>% mutate(url = paste0("<a href=\"", url, "\">", url, "</a>")), escape = F)
+```
+1 	DOC  1112888	https://github.com/30-seconds/30-seconds-of-python.git              Short code snippets library   
+2 	BABY 1061735	https://github.com/not-kennethreitz/osx-gcc-installer.git           GCC installer for OSX (not much python code, or code in general)
+3 	DEP  1073048	https://github.com/p0cl4bs/wifi-pumpkin-deprecated.git              Deprecated, deleted, only in history
+4 	DEP  1114344	https://github.com/automagica/automagica.git                        Deprecated (bought by a company), deleted, only in history
+5 	RES  56779	  https://github.com/princeton-vl/cornernet.git                       Dump (seems from a paper's artifact)
+6 	DOC  1166965	https://github.com/juliangaal/python-cheat-sheet.git                Documentation & snippets
+7 	BABY 22175	  https://github.com/angusshire/greenhat.git                          Dump, or toy project - creates GH history:) Been there, seen that   
+8 	DOC  25049	  https://github.com/fossasia/knitpat.git                             Knitting pattern - pretty much empty, have *no* idea what it is for and why it got so many stars
+9 	EXT  88312	  https://github.com/nobody132/masr.git                               Speech Recogniotion for mandarin, dump
+10	RES  51108	  https://github.com/arnaucube/coffeeminer.git                        Some mining, research, dump
+11	RES  79484	  https://github.com/megvii-nanjing/ml-gcn.git                        ML Paper artifact, Dump
+12	RES  55849	  https://github.com/brain-research/self-attention-gan.git            ML Paper artifact, Dump
+13	DEP  1104116	https://github.com/mmmxcc/ss-panel-and-ss-py-mu.git                 Some chinese thing, not sure what it does, default branch empty, history & other branch
+14	BABY 74664	  https://github.com/uvipen/quickdraw.git                             Toy drawing app (recognized from webcam) implementation, dump? 
+15	DOC  1129478	https://github.com/alantur1ng/nlp-bert--chineseversion.git          Chinese translation for a NLP repo, docs? 
+16	FP   1092223	https://github.com/jarun/imgp.git                                   Actual app, files w/o extension, so a proper project
+17	TUT  101730	https://github.com/aladdinpersson/machine-learning-collection.git   ML Tutorials
+18	DOC  1116939	https://github.com/lovelyyoshino/shadowsocks-hosts-or-v2ray.git     Collection of IP addresses I guess to bypass China's firewall?, few lines of python
+19	DEP  1086202	https://github.com/docker-archive/dockercloud-haproxy.git           Deprecated, main branch empty, otherwise valid
+20	EXT  92763	  https://github.com/ttcqaq/city-vein.git                             Urban networks visualizer, dead, drop
+21	FP   1099940	https://github.com/mhsabbagh/green-recorder.git                     Audio recorder, valid (no extension)
+22	RES  73766	  https://github.com/xiaomi-automl/falsr.git                          ML paper artifact, dump
+23	EXT  44837	  https://github.com/openmihome/mihome-binary-protocol.git            Smart Home API, dump
+24	DOC  1078062	https://github.com/chyyuu/ucore_os_docs.git                         Documentation in chinese
+25	FP   1069121	https://github.com/heroku-python/pip-pop.git                        Valid, no extension
+26	BABY 1066603	https://github.com/vpnguy-zz/ntpdos.git                             Vulnerability Script, valid
+27	TUT  40913	  https://github.com/rnevius/minimal-django.git                       Example app
+28	BABY 88417	  https://github.com/harshibar/common-intern.git                      Script that applies to hundreds of jobs, valid I guess
+29	BABY 1128592	https://github.com/blacknbunny/cve-2018-10933.git                   Vulnerability, valid- ish
+30	BABY 92768	  https://github.com/ssize-t/inlinec.git                              PLugin for inlining C in python, valid
+31	EXT  15330	  https://github.com/hpdang/pdfinator.git                             Turns images to pdf, dump
+32	EXT  22530	  https://github.com/ycjuan/kaggle-avazu.git                          Kaggle project dump
+33	EXT  82736	  https://github.com/notadamking/stock-trading-environment.git        ML dump
+34	BABY 1111529	https://github.com/mthbernardes/rsg.git                             Reverse shell, valid
+35	EXT  41559	  https://github.com/keon/deepstock.git                               ML dump
+
+```{r}
+datatable(js_stars %>% filter(id %in% js_uninteresting$id) %>% select(id, url, stars, max_hindex1, max_user_lifetime, lifetime, users, locs, snapshots, paths, commits) %>% mutate(url = paste0("<a href=\"", url, "\">", url, "</a>")), escape = F)
+```
+1	  FP   242	    https://github.com/odoo/odoo.git                                                        Completely valid. Miscalculated lifetime
+2	  UI   19500	  https://github.com/jordansinger/hook.git                                                JQuery plugin
+3	  DOC  147646	https://github.com/coffe1891/frontend-hard-mode-interview.git                           Documentation
+4	  BABY 2954146	https://github.com/learnk8s/xlskubectl.git                                              Kubernetes tool, dump or really tiny
+5	  UI   160290	https://github.com/arkadiyt/zoom-redirector.git                                         Browser extension
+6	  BABY 245099	https://github.com/genderev/prerender.js.git                                            Tool, dump, small?
+7	  UI   2560986	https://github.com/alyssaxuu/figma-to-google-slides.git                                 Browser extension, dump
+8	  TUT  14642	  https://github.com/feross/md5-password-cracker.js.git                                   Crypto example app
+9	  BABY 479104	https://github.com/abeisgoat/-_-.js.git                                                 Joke, UTF emoji replacement for console.warn
+10	TUT  16907	  https://github.com/hubwiz/example-node.git                                              Example app
+11	UI   2862473	https://github.com/fireship-io/229-multi-level-dropdown.git                             React Widget
+12	DEP  140414	https://github.com/zzpiglet/task.git                                                    Not sure, chinese disclaimer, no info, empty main branch, only history
+13	UI   3283499	https://github.com/arleyguolei/wx-words-pk.git                                          Some wechat plugin I guess, drop
+14	EXT  3027479	https://github.com/anvil-works/anvil-runtime.git                                        Webapp runtime for python, looks like an updated drop
+15	BABY 2789884	https://github.com/kikiletgo/universesim.git                                            N body like animation in JS, I guess valid 
+16	ERR  1155	  https://github.com/buttplugio/buttplug.git                                              In rust actually - a wifi enabled butt plug sex toy controller IN RUST!!!! I pass no judgement
+17	EXT  2489386	https://github.com/lmgonzalves/pieces.git                                               Library to animate images, dump?
+18	BABY 297626	https://github.com/danakt/pshe.git                                                      Some git tool, I guess translation to russian? dump
+19	EXT  2727169	https://github.com/jeffheaton/encog-javascript.git                                      ML for js, dump   
+20	TUT  2965894	https://github.com/nosy-b/holography.git                                                Demo app for tensorflow in browser
+21	BABY 2781482	https://github.com/jh3y/meanderer.git                                                   JS library, dump
+22	TUT  2768175	https://github.com/gabgoh/epcalc.git                                                    Template app
+23	BABY 2784882	https://github.com/johntitus/bungholio.git                                              Tiny twilio bot, real
+24	TUT  449919	https://github.com/spite/virtual-webcam.git                                             Proof of concept example 
+25	DOC  2841361	https://github.com/cloudflare-internship-2020/internship-application-fullstack.git      Documentation with few lines of js   
+26	TUT  2959564	https://github.com/beneater/boids.git                                                   Demonstration
+27	BABY 2484702	https://github.com/rauchg/node.dbslayer.js.git                                          Tiny library
+28	BABY 3268051	https://github.com/bradtraversy/breaking-bad-cast.git                                   Tiny app to show breaking bad character thigies
+29	DOC  12912	  https://github.com/webbushka/atom-react-snippets.git                                    Snippets
+30	EXT  2659915	https://github.com/sindresorhus/transliterate.git                                       NPM package, dump?
+31	TUT  2737725	https://github.com/fireship-io/223-electron-screen-recorder.git                         Electron tutorial
+32	TUT  2749589	https://github.com/wesbos/rona.git                                                      I think tutorial   
+33	TUT  562356	https://github.com/gregwolanski/eleventy-tailwindcss-alpinejs-starter.git               Tutorial
+34	TUT  2773701	https://github.com/xpoet/node.js-mongodb-movie-site.git                                 Tutorial   
+35	TUT  310486	https://github.com/leerob/nextjs-vercel-firebase.git                                    Demo/Dump
+36	EXT  3264762	https://github.com/rauchg/jamstack-ecommerce.git                                        Dump
+37	BABY 13289	  https://github.com/callahanrts/bar.git                                                  OSX widget, valid   
+38	BABY 2482624	https://github.com/jamesgpearce/foxjs.git                                               JS utility
+39	BABY 2643119	https://github.com/mathdroid/twitter-dev-salaries-scraper.git                           Simple scrapper
+40	BABY 157758	https://github.com/kevinsimler/outbreak.git                                             Disease simulator
+41	BABY 139232	https://github.com/coddx-hq/coddx-alpha.git                                             Real tiny thing  
+42	BABY 2894249	https://github.com/aruelius/cloud189_greasyfork.git                                     Some chinese could storage client (tiny, but seems legit)
+43	TUT  2725730	https://github.com/cornflourblue/react-hooks-redux-registration-login-example.git       React tutorial
+44	EXT  408538	https://github.com/jacksoup/hivemetamgr.git                                             Looks like dump, chinese  
+45	TUT  3197392	https://github.com/fireship-io/this-video-has-n-views.git                               Youtube API example
+46	DOC  728368	https://github.com/pdyck/hearthstone-db.git                                             JSON collection of hearthstone cards, empty to support HongKong protesters  
+47	EXT  3012779	https://github.com/broken5/shots.git                                                    Valid, dump
+48	TUT  2496533	https://github.com/ddenyss/gulp-template.git                                            Template     
+49	BABY 284587	https://github.com/sk7725/commandblocks.git                                             Minecraft mod  
+50	DOC  2781687	https://github.com/coding-blocks-archives/data-structures-in-real-life.git              Course Repository   
+51	TUT  2496722	https://github.com/natsu90/whoiscomingto.party.git                                      Face recognition ML example   
+52	EXT  10070	  https://github.com/credittone/hooker.git                                                Reverse toolkit in chinese, dump
+
+Kind  Java Python JS
+FP    0    3      1
+EXT   5    7      8
+UI    8    0      5
+DOC   2    6      5
+TUT   2    2      15
+BABY  2    8      16
+RES   0    5      0
+DEP   1    4      1
+ERR   0    0      1
+Total 20   35     52

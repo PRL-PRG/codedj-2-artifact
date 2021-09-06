@@ -1,0 +1,325 @@
+---
+title: "What Constitutes Software"
+output: html_notebook
+---
+
+```{r}
+source("artifact/helpers.R")
+initialize_log(name = "software")
+
+```
+
+> The original paper is available [here](http://itu.dk/people/ropf/blog/assets/msr2020_pfeiffer.pdf). It also has an artifact, available [here](https://github.com/HelgeCPH/msr2020_what_constitutes_software/tree/v1.1-data).
+
+Top starred projects for 25 languages: ABAP, Ada, Assembler, C, COBOL, C++, C#, D, Erlang, Fortran, F#, Go, Groovy, Java, JavaScript, Kotlin, Lua, Objective-C, OCaml, Perl, PHP, Python, Ruby, Scala, and Swift. Only the head is used. Files are unpacked and analyzed using [`file`](http://www.darwinsys.com/file/) and [`droid`](https://digital-preservation.github.io/droid/). The files are then grouped into several categories, which themselves group into 4 main categories: 
+
+- Code (source code, and *binaries* )
+- Data (image, video, music, databases, fonts, archives, *build and infrastructure code*). I.e. if I understand correctly, `Makefile`, `CMakeLists.txt` and friends are data...
+- Documentation (text files, markdown, legal thingies, readmes, licenses, etc.)
+- Other (extremely rarely used things that were not classified into the above three categories)
+
+The categorization was done manually, by greedily checking the artifact types until all but tiny percentage were classified ([details](https://github.com/HelgeCPH/msr2020_what_constitutes_software/blob/ffffc004547ecadc1524f95c726accadae03b706/src/interpretation.py#L655)). 
+
+
+```{bash}
+cd reproductions/what-constitutes-software
+if ! [ -f local/java-sample ]; then
+  curl -o local.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/what-constitutes-software-local.tgz" -L
+  tar -zxvf local.tgz
+  rm local.tgz     
+fi
+```
+
+```{r}
+get_file_extension = function(filename) {
+  tolower(sapply(strsplit(filename, "[.]"), function (x) { tail(x, 1) }))
+}
+
+get_filename = function(filename) {
+  tolower(sapply(strsplit(filename, "[/]"), function (x) { tail(x, 1) }))
+}
+
+EXT_CODE = c(
+  # source code
+  "java", "dart", "js", "cs", "py", "css", "jsp", "groovy", "scala", "vb", "php", "h", "bat", "sh", "sql", "q", "c", "cpp", "hpp", "vm", "kt", "p", "vbs", "clj", "go", "mat", "mk", "cmd", "xsl", "ejs",
+  # binary files
+  "class", "bin", "elf", "jar", "dll", "pyc", "so", "exe", "mo", "obj", "pdb", "dex",
+  # build files
+  "gradle", "rake", "sbt", "proj", "jam", "bazel", "jenkins", "ninja","makefile", "csproj", "project", "sln", "yml", "yaml", "gradlew", "vbproj",
+  # others
+  "frag", "ftl", "m", "vert" 
+)
+
+FILENAME_CODE = c(
+  # build files
+  "gruntfile.js", "gruntfile.coffee", "default.ps1", "psake.ps1", ".travis.yml", "mix.exs", "project.clj", "appveyor.yml", "jenkinsfile", "azure-pipelines.yml", ".bitrise.yml", "bitrise.yml", "buildkite-pipeline.yml", "concourse.yml", "bitbucket-pipelines.yml"
+)
+
+EXT_DATA = c(
+  # data - images
+  "png", "ico", "iff", "psp", "bmp", "gif", "jpg", "svg","cur", "jpeg",
+  # data - video
+  "flash", "mov","fli",
+  # data - music
+  "mp3", "ogg", "wav",
+  # data - fonts
+  "ttf", "otf",
+  # data - markup
+  "xml", "tex", "troff", "bib", "html", "sgml",
+  # data - configuration
+  "ini", "cfg", "properties", "config", "settings",
+  # data - archive
+  "zip", "tgz", "gz",
+  # ebooks it seems
+  "lin",
+  # others
+  "gitignore", "json", "prefs", "data", "gitattributes", "dump", "cache", "csv", "xaml", "npmignore", "svn-base", "meta", "index", "info", "xsd", "classpath", "resx", "iml", "bcmap", "less", "pro", "scss", "res", "dat", "wsdl", "woff", "jelly", "rb", "ins", "log", "tag", "prefab", "plist", "mtl", "datasource", "history", "ltm", "xsb"
+)
+
+FILENAME_DATA = c(
+  
+)
+
+EXT_DOC = c(
+    "pdf", "ps", "wpf","doc","docx","xls","xlsx", "odt", "lyx", "asciidoc", "adoc", "asc", "creole", "po", "pot", "md", "markdown", "mdown", "mdwn", "mdx", "mkd", "mkdn", "mkdown", "ronn", "workbook", "mediawiki", "wiki", "org", "pod", "pod6", "rdoc", "rmd", "texinfo", "texi", "txi", "txt", "fr", "nb", "ncl", "no", "textile", "rst", "rest", "eml", "htm", "xhtml", "yml"
+  
+)
+
+FILENAME_DOC = c(
+    "contents.lr", "copying", "copying.regex", "copyright.regex", "fontlog", "install", "install.mysql", "license", "license.mysql", "news", "readme.1st", "read.me", "readme.mysql", "click.me", "delete.me", "go.mod", "go.sum", "keep.me", "read.me",  "test.me", "readme", "owners", "authors", "notice", "todo", "version", "contributors", "patents", "copyright", "maintainers", "changelog", "changes", "description"
+)
+
+# we try to mimic how the original paper classifies the contents but with less precission, i.e. only looking at the path itself, not contents. For the vast majority of cases this should be sufficient as our aim is not to classify perfectly, but to show variance. Therefore some outliers, such as "java" files not being java source code do not change our results.
+get_contents_category = function(filename) {
+    ext = get_file_extension(filename)
+    fname = get_filename(filename)
+    # code - source code
+    if (ext %in% EXT_CODE)
+      "code"
+    else if (filename %in% FILENAME_CODE)
+      "code"
+    else if (ext %in% EXT_DATA)
+      "data"
+    else if (filename %in% FILENAME_DATA)
+      "data"
+    else if (ext %in% EXT_DOC)
+      "documentation"
+    else if (filename %in% FILENAME_DOC)
+      "documentation"
+    else 
+      "other"
+}
+
+# summarizes already exported projects
+#summarize_projects = function(exported_projects, name) {
+summarize_projects = function(exported_projects) {
+  exported_projects = exported_projects %>% rowwise() %>% mutate(category = get_contents_category(path))
+  #result = list(name = name)
+  result = list()
+  result$totalFiles = nrow(exported_projects)
+  result$otherFiles = nrow(exported_projects %>% filter(category == "other"))
+  exported_projects$category = as.factor(exported_projects$category)
+  result$full = exported_projects
+  x = exported_projects %>% group_by(pid, category) %>% count()
+  result$summary = x %>% group_by(pid) %>% mutate(pct = n / sum(n))
+  #result
+  result$summary
+}
+
+```
+
+We use djanco to obtain the samples for stars, random sample, interesting projects (>=100 locs, >= 7 days, >= 10 commits)
+
+```{r}
+import_codedj_results = function(path) {
+    result = list()
+    result$s0 = read_csv(paste0(path, "/sample_stars.csv"))
+    result$s1 = read_csv(paste0(path, "/sample_all.csv"))
+    result$s2 = read_csv(paste0(path, "/sample_100loc_7d_10c.csv"))
+    result$s3 = read_csv(paste0(path, "/sample_1000loc_180d_100c.csv"))
+    result
+}
+
+import_local_results = function(path, name) {
+    result = list()
+    result$s0 = read_csv(paste0(path, "/", name, "-stars.csv"))
+    result$s1 = read_csv(paste0(path, "/", name, "-sample.csv"))
+    result$s2 = read_csv(paste0(path, "/", name, "-sample-interesting.csv"))
+    result$s3 = read_csv(paste0(path, "/", name, "-sample-developed.csv"))
+    result
+}
+
+#sw_java = import_codedj_results("reproductions/what-constitutes-software/codedj/java")
+#sw_python = import_codedj_results("reproductions/what-constitutes-software/codedj/python")
+#sw_js = import_codedj_results("reproductions/what-constitutes-software/codedj/js")
+sw_java = import_local_results("reproductions/what-constitutes-software/local", "java")
+sw_python = import_local_results("reproductions/what-constitutes-software/local", "py")
+sw_js = import_local_results("reproductions/what-constitutes-software/local", "js")
+```
+
+```{r}
+summarize_and_join = function(java, python, js, sample) {
+  result = summarize_projects(java[[sample]] %>% mutate(pid = paste0("j",pid)))
+  result = rbind(result, summarize_projects(python[[sample]] %>% mutate(pid = paste0("p", pid))))
+  result = rbind(result, summarize_projects(js[[sample]] %>% mutate(pid = paste0("js",pid))))
+  result
+}
+
+summary_s0 = summarize_and_join(sw_java, sw_python, sw_js, "s0")
+summary_s1 = summarize_and_join(sw_java, sw_python, sw_js, "s1")
+summary_s2 = summarize_and_join(sw_java, sw_python, sw_js, "s2")
+summary_s3 = summarize_and_join(sw_java, sw_python, sw_js, "s3")
+```
+
+```{r}
+ggplot(summary_s0, aes(x=category, y=pct)) + 
+  geom_boxplot() +
+  ggtitle("Reference")
+```
+Let's actually focus on the research questions asked by the paper and their answers and see what we can infer from the datasets we have so far:
+
+```{r}
+convert_summary = function(summary) {
+    # calculate table3, which lists all the possible combinations of the categories and the percentage of projects that have them
+    result = spread(summary %>% select(pid, category, n), key = c(category), value = n, fill = 0) %>% mutate(sum = code + data + documentation + other, hasCode = code > 0, hasData = data > 0, hasDocumentation = documentation > 0, hasOther = other > 0)
+    result$numCategories = result$hasCode + result$hasData + result$hasDocumentation
+    result$numValid = result$code + result$data + result$documentation
+    result
+}
+
+s0 = convert_summary(summary_s0)
+s1 = convert_summary(summary_s1)
+s2 = convert_summary(summary_s2)
+s3 = convert_summary(summary_s3)
+```
+
+### RQ1: To which degree is software more than code?
+
+There are projects that contain only code. 
+On average 2/3 of a project is code
+1% of projects contain *only* code and they are small, from 1 to 152 artifacts
+
+> Since such a high amount (more than 96%) of repositories contain artifacts from at least three concrete categories and since frequencies of each single combination are quite low, we do not only conclude that software is usually more than code but also that it is usually quite diverse in terms of kinds of artifacts.
+
+```{r}
+rq1 = function(summary, name) {
+    LOGPct(paste0(name,"ThreeCategories"), nrow(summary %>% filter(numCategories == 3)), nrow(summary))
+    LOGPct(paste0(name, "OnlyCode"), nrow(summary %>% filter(numCategories == 1 & code > 0)), nrow(summary))
+    LOGPct(paste0(name, "OnlyData"), nrow(summary %>% filter(numCategories == 1 & data > 0)), nrow(summary))
+    LOGPct(paste0(name, "OnlyDocumentation"), nrow(summary %>% filter(numCategories == 1 & documentation > 0)), nrow(summary))
+}
+
+rq1(s0, "SNought")
+rq1(s1,"SOne")
+rq1(s2,"STwo")
+rq1(s3, "SThree")
+```
+
+### RQ2: Is documentation an integral constituent of software?
+
+> Since ca. 98% of the repositories contain documentation, of which the majority is usually prose, and since on average about a tenth of the artifacts in these repositories are prose, we consider documentation to be an integral constituent of software, i.e., in the “wild” it is quite unlikely to find code or data artifacts that are not associated with documentation artifacts.
+
+```{r}
+rq2 = function(summary, name) {
+    LOGPct(paste0(name,"ContainsDocumentation"), nrow(summary %>% filter(documentation > 0)), nrow(summary))
+}
+
+rq2(s0, "SNought")
+rq2(s1,"SOne")
+rq2(s2,"STwo")
+rq2(s3, "SThree")
+```
+
+### RQ3: Does software without data artifacts exist?
+
+> We realize that software without data exists as ca. 7% of all repositories do not contain data in separate artifacts. For small software (≤ 10 artifacts) that share increases to above 13%. Additionally, it seems as if software without data mainly appears in certain domains [(libraries, API documentation, etc.)]
+
+```{r}
+rq3 = function(summary, name) {
+    LOGPct(paste0(name,"WithoutData"), nrow(summary %>% filter(data == 0)), nrow(summary))
+    smallArtifacts = summary %>% filter(numValid <= 10)
+    LOGPct(paste0(name,"SmallArtifacts"), nrow(smallArtifacts), nrow(summary))
+    LOGPct(paste0(name,"WithoutDataSmallArtifacts"), nrow(smallArtifacts %>% filter(data == 0)), nrow(smallArtifacts))
+}
+
+rq3(s0, "SNought")
+rq3(s1,"SOne")
+rq3(s2,"STwo")
+rq3(s3, "SThree")
+```
+
+### RQ4: Does software without code exist?
+
+> Even though quite rare, we find that software without code exists. [0.26%] Remember, that this only means that there are no separate code artifacts. Multiple of the no-code repositories contain code embedded in prose artifacts but not as separate code artifacts
+
+```{r}
+rq4 = function(summary, name) {
+    LOGPct(paste0(name,"WithoutCode"), nrow(summary %>% filter(code == 0)), nrow(summary))
+}
+
+rq4(s0, "SNought")
+rq4(s1,"SOne")
+rq4(s2,"STwo")
+rq4(s3, "SThree")
+```
+
+### RQ5: Does a characteristic distribution of frequencies of artifact categories exist?
+
+> None found. 
+
+### RQ6: Does the ratio between frequencies of artifact categories depend on the size of software?
+
+> Weak correlation found, authors don't generalize.
+
+
+# Graphs
+
+Let's do a barplot that shows the various percentages of projects:
+
+```{r}
+add_summary = function(x, summary, datasetName) {
+  d = data.frame(
+    dataset = rep(datasetName, 2),
+    kind = c("C1", "C2"),
+    pct = c(
+      1 - nrow(summary %>% filter(numCategories == 3)) / nrow(summary),
+      1 - nrow(summary %>% filter(documentation > 0)) / nrow(summary)
+    )
+  )
+  rbind(x, d)
+}
+
+d = NULL
+d = add_summary(d, s0, "S0")
+d = add_summary(d, s1, "S1")
+d = add_summary(d, s2, "S2")
+d = add_summary(d, s3, "S3")
+#d = add_summary(d, reference, "S0")
+#d = add_summary(d, datasetSample, "S1")
+#d = add_summary(d, interestingSample, "S2")
+#d = add_summary(d, developedSample, "S3")
+d$dataset = factor(d$dataset, levels = rev(c("S0", "S1", "S2", "S3")))
+d$kind = factor(d$kind, levels = c("C2", "C1"))
+
+g = ggplot(d, aes(fill = dataset, x = kind, y = pct, label = paste0(round(pct,2) * 100, "%"))) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.6), width = 0.6) +
+  geom_text(size = 4, position = position_dodge(width = 0.6), hjust = - 0.2) +
+  scale_y_continuous(limits = c(0, 0.36)) +
+  scale_fill_manual(name = NULL, values = rev(c("gray", "#ff0000", "#c00000", "#800000"))) +
+  coord_flip() +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())  +
+  theme(legend.position = c(0.5, 0.1), legend.direction = "horizontal") + xlab("") + ylab("%") +
+  theme(plot.margin = margin(t = 0, b = 0, l =0, r = 0)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())  
+  
+  
+ggsave("figs/what-constitutes-software/software.pdf", plot = g, width = 6, height = 3)
+g
+```
+
+```{r}
+flush_log()
+```

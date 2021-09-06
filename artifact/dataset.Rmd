@@ -1,0 +1,444 @@
+---
+title: "Dataset Preparation & basic analysis"
+output: html_notebook
+---
+
+> TODO calculate user lifetime and then max user lifetime for a project
+
+```{r}
+source("artifact/helpers.R")
+source("artifact/latex-log.R")
+initialize_log(name = "dataset")
+```
+
+# Getting required data
+
+```{bash}
+mkdir -p dataset
+cd dataset
+if ! [ -f java/projects_codedj_2_a ]; then
+  curl -o java.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/java.tgz" -L
+  tar -zxvf java.tgz
+  rm java.tgz     
+fi
+if ! [ -f python/projects_codedj_2_a ]; then
+  curl -o python.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/python.tgz" -L
+  tar -zxvf python.tgz
+  rm python.tgz
+fi
+if ! [ -f js/projects_codedj_2_a ]; then
+  curl -o js.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/js.tgz" -L
+  tar -zxvf js.tgz
+  rm js.tgz
+fi
+```
+
+> TODO There should also be a section on how to actually produce this from the raw dataset with djanco & friends.
+
+    target/release/clones -o /mnt/data/codedj-icse/output/1m1 -d /mnt/data/codedj-icse/java-1m1-merged -c /mnt/data/codedj-icse/cache/1m1
+    target/release/clones -o /mnt/data/codedj-icse/output/python -d /mnt/data/codedj-icse/python -c /mnt/data/codedj-icse/cache/python
+
+> TODO should update djanco to select substore properly!!!
+
+To lower djanco's memory requirements, the datasets are presented as 4 tables that must be joined together. While joining we also fix units and values where necessary:
+
+```{r}
+load_raw_dataset = function(name) {
+    d = read_csv(paste0("dataset/",name,"/projects_codedj_2_a"))
+    dx = read_csv(paste0("dataset/",name,"/projects_codedj_2_b"))
+    d = dplyr::inner_join(d, dx)
+    dx = read_csv(paste0("dataset/",name,"/projects_codedj_2_c"))
+    d = dplyr::inner_join(d, dx)
+    dx = read_csv(paste0("dataset/",name,"/projects_codedj_2_d"))
+    d = dplyr::inner_join(d, dx)
+    dx = read_csv(paste0("dataset/",name,"/projects_codedj_2_e"))
+    d = dplyr::inner_join(d, dx)
+    d = d[!duplicated(d$url),]
+    d$major_language_ratio[is.na(d$major_language_ratio)] = 0
+    d$locs[is.na(d$locs)] = 0
+    d$max_c_delta = ceiling(d$max_c_delta / 3600 / 24)
+    d$avg_c_delta = ceiling(d$avg_c_delta / 3600 / 24)
+    d$max_user_lifetime = ceiling(d$max_user_lifetime / 3600 / 24)
+    d
+}
+
+calculate_extra_columns = function(dataset) {
+    dataset$lifetime = pmax(ceiling((pmin(dataset$newestCommitTime, dataset$latestUpdateTime) - dataset$oldestCommitTime) / 3600 / 24), 1)
+    # we want the time of the latest commit we have in the store to the time we got the projects. However, this is not as easy because we got them from GhTorrent, and therefore need to compare the latest commit to the date of GHTorrent snapshot. This is not pergfect itself because that means that 
+    dataset
+}
+```
+
+### Java
+
+```{r}
+java_raw = load_raw_dataset("java")
+LOG("javaProjectsInDatastore", nrow(java_raw))
+java_all = java_raw %>% filter(commits > 0)
+LOG("javaProjectsWithCommit", nrow(java_all))
+java_all = java_all %>% filter(language == "Java")
+LOG("javaActualProjects", nrow(java_all))
+set.seed(43)
+java = sample_n(java_all, 1000000)
+LOGPct("javaSampledProjects", nrow(java), nrow(java_all))
+java = calculate_extra_columns(java)
+```
+
+
+### Python
+
+```{r}
+python_raw = load_raw_dataset("python")
+LOG("pythonProjectsInDatastore", nrow(python_raw))
+python_all = python_raw %>% filter(commits > 0)
+LOG("pythonProjectsWithCommit", nrow(python_all))
+python_all = python_all %>% filter(language == "Python")
+LOG("pythonActualProjects", nrow(python_all))
+set.seed(1)
+python = sample_n(python_all, 200000)
+LOGPct("pythonSampledProjects", nrow(python), nrow(python_all))
+python = calculate_extra_columns(python)
+```
+### Javascript
+
+```{r}
+js_raw = load_raw_dataset("js")
+LOG("jsProjectsInDatastore", nrow(js_raw))
+js_all = js_raw %>% filter(commits > 0)
+LOG("jsProjectsWithCommit", nrow(js_all))
+js_all = js_all %>% filter(language == "JavaScript")
+LOG("jsActualProjects", nrow(js_all))
+js = calculate_extra_columns(js_all)
+js = js %>% filter(! is.na(lifetime))
+set.seed(43)
+js = sample_n(js, 1000000)
+LOGPct("jsSampledProjects", nrow(js), nrow(js_all))
+```
+# Calculated columns
+
+```{r}
+LOG("javaCalculatedColumns", length(names(java)) - 6) # ignore project, url, substore, buggy issues, issues, all_issues 
+LOG("pythonCalculatedColumns", length(names(python)) - 6) # ignore project, url, substore, buggy issues, issues, all_issues 
+LOG("jsCalculatedColumns", length(names(js)) - 6) # ignore project, url, substore, buggy issues, issues, all_issues 
+```
+# Dataset Description
+
+```{r}
+columns = c(
+    #"Commits" = "commits",
+    #"Files" = "paths",
+    "Versions" = "snapshots",
+    "Locs" = "locs",
+    "Devs " = "users",
+    "Age" = "lifetime",
+    #"Dev Lifetime" = "max_user_lifetime", 
+    "C-index" = "max_hindex1"
+)
+datasets_overview = function(java, python, javascript, columns) {
+    java = java %>% select(c(id, columns))
+    java = melt(java, "id")
+    java$language = "Java"
+    python = python %>% select(c(id, columns))
+    python = melt(python, "id")
+    python$language = "Python"
+    javascript = javascript %>% select(c(id, columns))
+    javascript = melt(javascript, "id")
+    javascript$language = "Javascript"
+    x = rbind(java, python, javascript)
+    ggplot(x, aes(x = value, y = variable, color = language, height = ..ndensity..)) +
+      geom_density_ridges(stat = "binline", bins = 50, draw_baseline = FALSE, aes(scale = 0.9), alpha = 1, fill = NA) +
+      theme_ridges() + 
+      theme(legend.position = "bottom") +
+      ylab("") + xlab("") +
+      scale_x_continuous(breaks = c(1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8), labels = c("1","10", "100", "1k", "10k", "100k", "1m", "10m", "100m"), trans = "pseudo_log") +
+#      scale_fill_manual(values = c("gray", "red"), name = "") +
+      scale_color_manual(values = c("red", "green","blue"), name = "") +
+      ggtitle("Histograms of selected attributed for Java, Python and Javascript datasets")
+}
+datasets_overview(java, python, js, columns)
+```
+```{r}
+LOG("javaLifetimeMedian", median(java$lifetime))
+LOG("pyLifetimeMedian", median(python$lifetime))
+LOG("jsLifetimeMedian", median(js$lifetime))
+LOG("javaDevsMedian", median(java$users))
+LOG("pyDevsMedian", median(python$users))
+LOG("jsDevsMedian", median(js$users))
+LOG("javaLOCSMedian", median(java$locs))
+LOG("pyLOCSMedian", median(python$locs))
+LOG("jsLOCSMedian", median(js$locs))
+LOG("javaChangesMedian", median(java$snapshots))
+LOG("pyChangesMedian", median(python$snapshots))
+LOG("jsChangesMedian", median(js$snapshots))
+LOG("javaFilesMedian", median(java$paths))
+LOG("pyFilesMedian", median(python$paths))
+LOG("jsFilesMedian", median(js$paths))
+LOG("javaCommitsMedian", median(java$commits))
+LOG("pyCommitsMedian", median(python$commits))
+LOG("jsCommitsMedian", median(js$commits))
+LOG("javaCIndexMedian", median(java$max_hindex1))
+LOG("pyCIndexMedian", median(python$max_hindex1))
+LOG("jsCIndexMedian", median(js$max_hindex1))
+LOGPct("javaLessThanWeek", nrow(java %>% filter(lifetime < 7)), nrow(java))
+LOGPct("pyLessThanWeek", nrow(python %>% filter(lifetime < 7)), nrow(python))
+LOGPct("jsLessThanWeek", nrow(js %>% filter(lifetime < 7)), nrow(js))
+LOGPct("javaSingleDev", nrow(java %>% filter(users == 1)), nrow(java))
+LOGPct("pySingleDev", nrow(python %>% filter(users == 1)), nrow(python))
+LOGPct("jsSingleDev", nrow(js %>% filter(users == 1)), nrow(js))
+LOG("javaMainLangMedian", round(median(java$major_language_ratio),2))
+LOG("pyMainLangMedian", round(median(python$major_language_ratio), 2))
+LOG("jsMainLangMedian", round(median(js$major_language_ratio), 2))
+LOGPct("javaSingleCommit", nrow(java %>% filter(commits == 1)), nrow(java))
+LOGPct("pySingleCommit", nrow(python %>% filter(commits == 1)), nrow(python))
+LOGPct("jsSingleCommit", nrow(js %>% filter(commits == 1)), nrow(js))
+```
+## Validation
+
+```{r}
+g = ggplot() +
+  geom_histogram(data = java, aes(x = created, fill = "Java"), alpha = 0.5) + 
+  geom_histogram(data = python, aes(x = created, fill = "Python"), alpha = 0.5) + 
+  geom_histogram(data = js, aes(x = created, fill = "JavaScript"), alpha = 0.5) + 
+  #ggtitle("Projects Created Date") +
+  xlab("") + theme_pubclean() + ylab("Project created") + 
+  scale_x_continuous(breaks = c(1199142000,	1230764400, 1262300400,1293836400,1325372400, 1356994800,1388530800, 1420066800, 1451602800, 1483225200, 1514761200, 	1546297200, 1577833200,	1609455600), labels = c("2008", "2009", "2010", "2011","2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020","2021")) +
+  scale_y_continuous(trans = "pseudo_log", breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000), labels= c("0", "10", "100", "1k", "10k", "100k", "1m")) +
+  scale_fill_manual(name = NULL, values = c("red", "blue", "#008000"), labels = c("Java", "Python", "JavaScript")) +
+  theme(legend.position = c(0.3, 0.95), legend.direction = "horizontal", plot.margin = margin(t = 0, b = 0, l =0, r = 0)) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1))
+  
+ggsave("figs/lang_projects_created.pdf", plot = g, width = 6, height = 3)
+g
+```
+We also plot the error rate for JavaScript projects, as these are affected the worst and combining error rates from different datasets is not easy:
+
+```{bash}
+# commented out as the large dataset is not part of the artifact at the moment
+#mistletoe --datastore /mnt/data/icse/javascript-raw check-projects > dataset/js-project-errors.csv
+```
+
+```{r}
+js_project_errors = read_csv("dataset/js-project-errors.csv")
+LOGPct("jsProjectErrors", js_project_errors$errors[[1]], js_project_errors$total[[1]])
+```
+
+
+
+## Cummulative Density Functions for our attributes
+
+```{r}
+cummulate = function(column) {
+    d = data.frame(value = column)
+    d = d %>% group_by(value) %>% summarize(count = n()) %>% arrange(value) %>% mutate(total = cumsum(count)) %>% mutate(ratio = total / sum(count))
+    d    
+}
+g = ggplot() +
+    geom_line(data = cummulate(java$max_hindex1), aes(x = value, y = ratio, color = "C-Index")) + 
+    geom_line(data = cummulate(java$lifetime), aes(x = value, y = ratio, color = "Age")) + 
+    geom_line(data = cummulate(java$users), aes(x = value, y = ratio, color = "Devs")) + 
+    geom_line(data = cummulate(java$locs), aes(x = value, y = ratio, color = "Locs")) + 
+    geom_line(data = cummulate(java$snapshots), aes(x = value, y = ratio, color = "Versions")) + 
+    geom_line(data = cummulate(java$stars), aes(x = value, y = ratio, color = "Stars")) + 
+    #geom_line(data = cummulate(python$locs), aes(x = value, y = ratio, color = "Python", linetype = "LOC")) + 
+    #geom_line(data = cummulate(js$locs), aes(x = value, y = ratio, color = "JavaScript", linetype = "LOC")) + 
+    #geom_line(data = cummulate(java$lifetime), aes(x = value, y = ratio, color = "Java", linetype = "age")) + 
+    #geom_line(data = cummulate(python$lifetime), aes(x = value, y = ratio, color = "Python", linetype = "age")) + 
+    #geom_line(data = cummulate(js$lifetime), aes(x = value, y = ratio, color = "JavaScript", linetype = "lifetime")) + 
+    #geom_line(data = cummulate(js$stars), aes(x = value, y = ratio, color = "JavaScript", linetype = "stars")) + 
+    scale_x_continuous(breaks = c(1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8), labels = c("1","10", "100", "1k", "10k", "100k", "1m", "10m", "100m"), trans = "pseudo_log", limits = c(0, 1000000)) +
+    scale_color_hue(name = NULL) +
+    #scale_linetype_manual(values = c("solid", "dashed", "dotted"), breaks = c("LOC", "age", "stars"), name = NULL) + 
+    #ggtitle("Cummulative Density Function for lifetime, LOCs and stars")
+    theme_minimal() +
+    #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())  +
+    theme(legend.position = c(0.8, 0.5)) + xlab("") + ylab("%") +
+    theme(legend.position = "none")  
+    #theme(axis.title.x=element_blank(),
+    #      axis.text.x=element_blank(),
+    #      axis.ticks.x=element_blank())  
+  
+ggsave("figs/lang_cdf_raw.pdf", plot = g, width = 6, height = 3)
+g
+LOGPct("javaNoStars", nrow(java %>% filter(stars == 0)), nrow(java))
+LOGPct("javaLessThanTenStars", nrow(java %>% filter(stars < 10)), nrow(java))
+LOGPct("javaLessThanTenDays", nrow(java %>% filter(lifetime < 10)), nrow(java))
+LOGPct("javaLessThanMonth", nrow(java %>% filter(lifetime < 30)), nrow(java))
+LOGPct("javaLessThanYear", nrow(java %>% filter(lifetime < 365)), nrow(java))
+LOGPct("javaLessThanTenVersions", nrow(java %>% filter(snapshots < 10)), nrow(java))
+LOGPct("javaLessThanHundredVersions", nrow(java %>% filter(snapshots < 100)), nrow(java))
+LOGPct("javaLessThanOneKVersions", nrow(java %>% filter(snapshots < 1000)), nrow(java))
+LOGPct("javaLessThanTenLocs", nrow(java %>% filter(locs < 10)), nrow(java))
+LOGPct("javaLessThanHundredLocs", nrow(java %>% filter(locs < 100)), nrow(java))
+LOGPct("javaLessThanOneKLocs", nrow(java %>% filter(locs < 1000)), nrow(java))
+```
+## Subsetting By Stars
+
+Let's now do the stars subset and analyze:
+
+```{r}
+get_top_stars = function(dataset, name) {
+    # check that we are getting projects with at least 1 star, otherwise we'll be random sampling from all projects... This should not happen in the large datasets we use for the paper though
+    result = dataset %>% filter(stars > 0) %>% arrange(desc(stars)) %>% head(1000)
+    LOG(paste0(name,"TopOneKStars"), nrow(result))
+    LOG(paste0(name,"MinOneKStars"), min(result$stars))
+    LOG(paste0(name,"MaxOneKStars"), max(result$stars))
+    LOG(paste0(name,"MedianOneKStars"), median(result$stars))
+    LOG(paste0(name,"MedianOneKStarsLifetime"), median(result$lifetime))
+    LOG(paste0(name,"MedianOneKStarsDevs"), median(result$users))
+    LOG(paste0(name,"MedianOneKStarsLocs"), median(result$locs))
+    LOG(paste0(name,"MedianOneKStarsChanges"), median(result$snapshots))
+    LOG(paste0(name,"MedianOneKStarsCommits"), median(result$commits))
+    LOG(paste0(name,"MedianOneKStarsCIndex"), median(result$max_hindex1))
+    result
+}
+java_stars = get_top_stars(java, "Java")
+python_stars = get_top_stars(python, "Python")
+js_stars = get_top_stars(js, "JavaScript")
+```
+Compare stars to full datasets:
+
+```{r}
+compare_selection_to_dataset = function(java, python, js, java_sel, python_sel, js_sel, columns, selection_name) {
+  f = function(dataset, selection, columns, color, selection_name, datasetName) {
+    data = dataset %>% select(c(id, columns))
+    data = melt(data, "id")
+    data$kind = datasetName
+    sel = selection %>% select(c(id, columns))
+    sel = melt(sel, "id")
+    sel$kind = selection_name
+    x = rbind(data, sel)
+    x$kind = factor(x$kind, levels = c(datasetName, selection_name))
+    medians = data.frame(
+      value = sapply(columns, function(x) {median(dataset[[x]])}),
+      valueSel = sapply(columns, function(x) {median(selection[[x]])}),
+      variable = factor(columns, levels = columns)
+    )
+    ggplot(x) +
+      geom_density_ridges(aes(x = value, y = variable, color = kind, fill = kind, height = ..ndensity.., scale = 0.9),stat = "binline", bins = 50, draw_baseline = FALSE, alpha = 0.4) +
+      geom_segment(data = medians, aes(x = value, xend = value, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 1.1), color = "black") +
+      geom_segment(data = medians, aes(x = valueSel, xend = valueSel, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 1.1), color = color) +
+      theme_ridges() + 
+      ylab("") + xlab("") +
+      scale_x_continuous(breaks = c(1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8), labels = c("1","10", "100", "1k", "10k", "100k", "1m", "10m", "100m"), trans = "pseudo_log", limits = c(0, 10000000)) +
+      scale_y_discrete(expand = expand_scale(mult = c(0.01, 0.25))) +    
+      scale_fill_manual(values = c("gray", color), name = "") +
+      scale_color_manual(values = c("gray", color), name = "") +
+      theme(legend.position = c(0.5, 0.95), legend.direction = "horizontal", plot.margin = margin(t = 0, b = 0, l =0, r = 0))
+    
+  }
+  java = f(java, java_sel, columns, "red", selection_name, "Java")
+  python = f(python, python_sel, columns, "blue", selection_name, "Python") + 
+      theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank())      
+  #js = f(js, js_sel, columns, "#008000", selection_name) +
+  #    theme(axis.title.y=element_blank(),
+  #        axis.text.y=element_blank(),
+  #        axis.ticks.y=element_blank())      
+  java + python + #js +
+      plot_layout(ncol =2, nrow = 1, widths = c(6, 6), heights = c(4)) + 
+      theme(plot.margin = margin(t = 0, b = 0, l =0, r = 0))
+      #ggtitle(paste0("Comparison of ",selection_name," to entire dataset for Java and Python"))  
+  
+}
+
+g = compare_selection_to_dataset(java, python, js, java_stars, python_stars, js_stars, columns, "Top 1k Stars")
+ggsave("figs/lang_stars_attributes.pdf", plot = g, width = 12, height = 7)
+g
+```
+
+## Subsetting by Interesting Projects
+
+```{r}
+UNINTERESTING_LOCS = 100
+UNINTERESTING_LIFETIME = 7
+UNINTERESTING_COMMITS = 10
+LOG("uninterestingLocs", UNINTERESTING_LOCS)
+LOG("uninterestingLifetime", UNINTERESTING_LIFETIME)
+LOG("uninterestingCommits", UNINTERESTING_COMMITS)
+
+get_uninteresting_projects = function(dataset, starred, name, minLocs = UNINTERESTING_LOCS, minLifetime = UNINTERESTING_LIFETIME, minCommits = UNINTERESTING_COMMITS) {
+  uninteresting = dataset %>% filter(locs < minLocs | lifetime < minLifetime | commits < minCommits) %>% select(id)
+  LOGPct(paste0(name, "UninterestingProjects"), nrow(uninteresting), nrow(dataset))
+  LOGPct(paste0(name, "StarredUninteresting"), nrow(starred %>% filter(id %in% uninteresting$id)), nrow(starred))
+  uninteresting
+}
+
+get_interesting = function(dataset, uninteresting, name) {
+    # check that we are getting projects with at least 1 star, otherwise we'll be random sampling from all projects... This should not happen in the large datasets we use for the paper though
+    result = dataset %>% filter(! id %in% uninteresting$id)
+    LOGPct(paste0(name,"InterestingProjects"), nrow(result), nrow(dataset))
+    LOG(paste0(name,"MedianInterestingLifetime"), median(result$lifetime))
+    LOG(paste0(name,"MedianInterestingDevs"), median(result$users))
+    LOG(paste0(name,"MedianInterestingLocs"), median(result$locs))
+    LOG(paste0(name,"MedianInterestingChanges"), median(result$snapshots))
+    LOG(paste0(name,"MedianInterestingCommits"), median(result$commits))
+    LOG(paste0(name,"MedianInterestingCIndex"), median(result$max_hindex1))
+    result
+}
+
+java_uninteresting = get_uninteresting_projects(java, java_stars, "java")
+python_uninteresting = get_uninteresting_projects(python, python_stars, "python")
+js_uninteresting = get_uninteresting_projects(js, js_stars, "js")
+
+java_interesting = get_interesting(java, java_uninteresting, "java")
+python_interesting = get_interesting(python, python_uninteresting, "python")
+js_interesting = get_interesting(js, js_uninteresting, "js")
+```
+How would the histograms change if we remove the uninteresting projects? 
+
+```{r}
+datasets_overview = function(all, stars, interesting, columns, language, color) {
+    x = all %>% select(c(id, columns))
+    x = melt(x, "id")
+    x$kind = language
+    y = stars %>% select(c(id, columns))
+    y = melt(y, "id")
+    y$kind = "Top Stars"
+    z = interesting %>% select(c(id, columns))
+    z = melt(z, "id")
+    z$kind = "Interesting"
+    x = rbind(x, z, y)
+    x$kind = factor(x$kind, levels = c(language, "Interesting", "Top Stars"))
+    x$variable = factor(x$variable, levels = rev(names(columns)))
+    medians = data.frame(
+      value = sapply(columns, function(x) {median(all[[x]])}),
+      valueStars = sapply(columns, function(x) {median(stars[[x]])}),
+      valueInteresting = sapply(columns, function(x) {median(interesting[[x]])}),
+      variable = factor(columns, levels = rev(columns))
+    )
+    ggplot() +
+      geom_density_ridges(data = x, aes(x = value, y = variable, color = kind, height = ..ndensity.., scale = 0.7), stat = "binline", bins = 50, draw_baseline = FALSE, alpha = 0.5, fill = NA) +
+      geom_segment(data = medians, aes(x = value, xend = value, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = "gray") +
+      geom_segment(data = medians, aes(x = valueInteresting, xend = valueInteresting, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = "black") +
+      geom_segment(data = medians, aes(x = valueStars, xend = valueStars, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = color) +
+      theme_ridges() + 
+      theme(legend.position = "bottom") +
+      ylab("") + xlab("") +
+      scale_x_continuous(breaks = c(1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8), labels = c("1","10", "100", "1k", "10k", "100k", "1m", "10m", "100m"), trans = "pseudo_log", limits=c(0, 10000000)) +
+      scale_y_discrete(expand = expand_scale(mult = c(0.01, 0.25))) +    
+      scale_color_manual(values = c("gray", "black",color), name = "") +
+      theme(legend.position = c(0.6, 0.93), legend.direction = "vertical", plot.margin = margin(t = 0, b = 0, l =0, r = 0))
+}
+
+g = datasets_overview(java, java_stars, java_interesting, c( "C-Index" = "max_hindex1", "Age" = "lifetime", "Devs" = "users","Locs" = "locs", "Versions" = "snapshots"), "Entire Dataset", "red") 
+ggsave("figs/lang_interesting_stars.pdf", plot = g, width = 6, height = 6)
+g
+
+```
+
+
+
+
+
+
+
+
+
+
+
+# Finally, flush the log
+
+```{r}
+flush_log()
+```

@@ -1,0 +1,11 @@
+dataset/*/*
+*.nb.html
+main.aux
+main.bbl
+main.blg
+main.log
+main.out
+main.pdf
+reproductions/what-constitutes-software/local
+reproductions/what-constitutes-software/codedj
+

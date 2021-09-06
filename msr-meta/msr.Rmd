@@ -1,0 +1,147 @@
+---
+title: "MSR metaanalysis post-processing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(readr)
+library(scales)
+library(kableExtra)
+
+flexible_format <- function(x, digits=NULL) {
+  ifelse(x %% 1 == 0, x, format(x, digits=digits, scientific=FALSE))
+}
+
+with_unit<- function(x, unit) {
+  paste0(x, unit)
+}
+
+chop_insignificant_digits <- function(x, precision) {
+  floor((x/10 ** precision) * 10)/10
+}
+
+pretty_large_numbers <- function(x, digits=2) {
+  ifelse(x < 0,       paste0("-", pretty_large_numbers(-x, digits=digits)),
+  ifelse(x < 10 ** 3, with_unit(flexible_format(x, digits=digits), ""),
+  ifelse(x < 10 ** 6, with_unit(flexible_format(chop_insignificant_digits(x, 6 - 3),  digits=digits), "K"),
+  ifelse(x < 10 ** 9, with_unit(flexible_format(chop_insignificant_digits(x, 9 - 3),  digits=digits), "M"),
+                      with_unit(flexible_format(chop_insignificant_digits(x, 12 - 3), digits=digits), "B")))))
+}
+```
+
+```{r}
+msr <- read.csv("msr.csv", strip.white = T)
+all = msr %>% count %>% pull
+```
+
+```{r}
+#classification <- function(x) {
+#  ifelse(x == "CASE", "case study",
+#         x == "CURATED", "curated dataset",
+#         x == "EVERYTHING", "")
+#}
+
+msr_groupped <- msr %>% group_by(class) %>% 
+  summarize(count=n(), min=min(selected.projects, na.rm = T), max=max(selected.projects, na.rm = T)) %>% 
+  mutate(min=ifelse(is.infinite(min), NA, min), max=ifelse(is.infinite(max), NA, max)) %>% 
+  mutate(min=pretty_large_numbers(min), max=pretty_large_numbers(max)) %>%
+  mutate(perc=format((count*100/all), digits=0)) %>%
+  arrange(desc(perc))
+
+msr_groupped  
+```
+  
+```{r}
+x<-pdf("pie.pdf")
+slices <- msr_groupped$count
+labels <- tolower(msr_groupped$class)
+pie(slices, labels = labels) 
+dev.off()
+```  
+  
+```{r}
+praxis <- msr %>% 
+  filter(class != "INCOMPATIBLE") %>%
+  filter(class != "TOOL") %>%
+  filter(class != "CASE") %>%
+  filter(class != "CURATED");
+
+all_praxis <- praxis %>% count %>% pull
+  
+praxis_groupped <- praxis %>% group_by(class) %>% 
+  summarize(count=n(), min=min(selected.projects, na.rm = T), max=max(selected.projects, na.rm = T), mean=mean(selected.projects, na.rm = T), median=median(selected.projects, na.rm = T)) %>% 
+  mutate(min=ifelse(is.infinite(min), NA, min), max=ifelse(is.infinite(max), NA, max)) %>% 
+  mutate(min=pretty_large_numbers(min), max=pretty_large_numbers(max), mean=pretty_large_numbers(mean), median=pretty_large_numbers(median)) %>%
+  mutate(perc=format((count*100/all_praxis), digits=0)) %>%
+  arrange(desc(perc))
+
+praxis_groupped
+```
+
+```{r}
+tbl <- praxis_groupped %>% 
+  mutate(count = paste0(count, " (", perc, "%", ")")) %>%
+  mutate(size = paste0(min, "--", max)) %>%
+  mutate(description = "") %>%
+  mutate(class = tolower(class)) %>%
+  select(class, count, size, description) %>% 
+  kable(col.names = c("classification", "papers", "dataset size", "description"), format = "latex")
+
+kableExtra_latex_packages()
+cat(tbl)
+```
+
+
+```{r}
+slices <- praxis_groupped$count
+labels <- praxis_groupped$class
+pie(slices, labels = labels) 
+```
+
+```{r}
+filtering <- praxis %>% 
+  filter(class != "EVERYTHING") %>%
+  filter(class != "CURATED") %>%
+  filter(class != "CASE") %>%
+  filter(class != "PROPRIETARY") %>%
+  filter(class != "DOMAIN") %>%
+  filter(class != "UNKNOWN")
+
+all_filtering <-filtering  %>% count %>% pull
+  
+filtering %>% group_by(class) %>% 
+  summarize(count=n(), min=min(selected.projects, na.rm = T), max=max(selected.projects, na.rm = T), mean=mean(selected.projects, na.rm = T), median=median(selected.projects, na.rm = T)) %>% 
+  mutate(min=ifelse(is.infinite(min), NA, min), max=ifelse(is.infinite(max), NA, max)) %>% 
+  mutate(min=pretty_large_numbers(min), max=pretty_large_numbers(max), mean=pretty_large_numbers(mean), median=pretty_large_numbers(median)) %>%
+  mutate(perc=format((count*100/all_filtering), digits=0)) %>%
+  arrange(desc(perc))
+```
+
+```{r}
+filtering %>% group_by(class, subclass) %>% 
+  summarize(count=n(), min=min(selected.projects, na.rm = T), max=max(selected.projects, na.rm = T), mean=mean(selected.projects, na.rm = T), median=median(selected.projects, na.rm = T)) %>% 
+  mutate(min=ifelse(is.infinite(min), NA, min), max=ifelse(is.infinite(max), NA, max)) %>% 
+  mutate(min=pretty_large_numbers(min), max=pretty_large_numbers(max), mean=pretty_large_numbers(mean), median=pretty_large_numbers(median)) %>%
+  mutate(perc=format((count*100/all_filtering), digits=0)) %>%
+  arrange(desc(perc))
+```
+
+```{r}
+stars <- filtering %>% 
+  filter(class == "STARS")
+
+all_stars <- stars %>% count %>% pull
+  
+stars %>% group_by(class, subclass) %>% 
+  summarize(count=n(), min=min(selected.projects, na.rm = T), max=max(selected.projects, na.rm = T), mean=mean(selected.projects, na.rm = T), median=median(selected.projects, na.rm = T)) %>% 
+  mutate(min=ifelse(is.infinite(min), NA, min), max=ifelse(is.infinite(max), NA, max)) %>% 
+  mutate(min=pretty_large_numbers(min), max=pretty_large_numbers(max), mean=pretty_large_numbers(mean), median=pretty_large_numbers(median)) %>%
+  mutate(perc=format((count*100/all_stars), digits=0)) %>%
+  arrange(desc(perc))
+```
+

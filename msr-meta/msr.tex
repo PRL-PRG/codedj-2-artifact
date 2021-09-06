@@ -1,0 +1,1194 @@
+We analyzed papers from the \emph{Mining Software Repositories} (MSR) conference
+from years 2019 and 2020 to determine how researchers select projects from \gh
+for their research. MSR is dedicated to the practical software engineering
+research involving source code repositories and often involves research analyzing 
+large collections of projects form \gh and similar sources.
+
+There are 47 accepted technical paper submissions at MSR 2019 and 45 at MSR 2020.
+
+% >> CURATED
+% Bugzbook
+% A Large-Scale Comparative Evaluation of IR-Based Tools for Bug Localization
+% Shayan A. Akbar, Avinash C. Kak
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387474
+% 29
+% POPULAR PROJECTS|ANOTHER PAPER
+% 29 Projects (Bugzbook). They construct Bugzbook.
+% Arbitrary Java projects from Apache, arbitrary C/C++ and Python large-scale projects.
+% @ Apache projects because its software developer community is believed to be the largest in the open-source software world with regards to Java programming language. 
+% @ Also, other large-scale open-source projects.
+
+% >> UNKNOWN
+% GitHub
+% A Machine Learning Approach for Vulnerability Curation
+% Chen Yang, Andrew Santosa, Ang Ming Yi, Abhishek Sharma , Asankhaya Sharma, David Lo
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387461
+% 20447
+% FAMILIARITY
+% Seleted 20,447 repositories of libraries from GH. 
+% @ We build our list of servers and repositories based on the open-source libraries that we frequently encounter in customer scans.
+
+% >> CURATED
+% Bugzbook
+% A Soft Alignment Model for Bug Deduplication
+% Irving Muller Rodrigues, Daniel Aloise, Eraldo Rezende Fernandes, Michel Dagenais
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387470
+% 3
+% ANOTHER PAPER
+% 3 projects
+% OpenOffice, Eclipse, NetBeans and Mozilla.
+% Criteria not specified.
+% No justification for criteria.
+% Bugzbook: Apache projects because its software developer community is believed to be the largest in the open-source software world with regards to Java programming language. we only selected those projects for which we could find the bug reports online in the well managed Jira. Bugzbook also contains bug reports from other large-scale open-source Projects, such as Tensorflow, OpenCV, Chrome, and Pandas.
+
+% >> STARS(THRESHOLD)
+% Public Git Archive
+% A Study of Potential Code Borrowing and License Violations in Java Projects on GitHub
+% Yaroslav Golubev, Maria Eliseeva, Nikita Povarov, Timofey Bryksin
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387455
+% 23378
+% ??
+% 23,378 Projects from Public Git Archive (PGA). 
+% 50+ stars and 1+ lines of Java.
+% Collected early 2018
+% 
+% Java: popularity in the industry, where legal concerns have particular weight. 
+% Repositories containing any code at all.
+
+% >> INCOMPATIBLE
+% 
+% A Study on the Accuracy of OCR Engines for Source Code Transcription from Programming Screencasts
+% Abdulkarim Malkadi, Mohammad Alahmadi, Sonia Haiduc
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387468
+% 
+% ??
+% Source screenshots from videos and documents.
+
+% >> FILTER (10+ docker builds)
+% Google BigQuery
+% A Tale of Docker Build Failures: A Preliminary Study
+% Yiwen Wu, Yang Zhang, Tao Wang, Huaimin Wang
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387483
+% 3828
+% ??
+% 3,828 projects from Google BigQuery GH data 
+% Has dockerfile, is listed on Docker Hub, is a public project, has 10+ docker builds
+% Collected July 2019.
+%
+% 10+ build: serious docker projects rather than small experiments
+
+% >> EVERYTHING
+% collection of websites
+% AIMMX: Artificial Intelligence Model Metadata Extractor
+% Jason Tsay, Alan Braz, Martin Hirzel, Avraham Shinnar, Todd Mummert
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387448
+% 8017
+% ??
+%   284 project from model zoos of popular frameworks, (well-documented and maintained)
+% 3,409 projects selected form papers and Kaggle, 
+% 4,324 projects from Paper With Code website.
+% No specific date.
+
+% >> STARS(TOP)
+% GitHub
+% An Empirical Study of Method Chaining in Java
+% Tomoki Nakamaru, Tomomasa Matsunaga, Tetsuro Yamazaki, Soramichi Akiyama, Shigeru Chiba
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387441
+% 2814
+% ??
+% 2,814 Java repositories from GitHub.
+% Within 1000 most starred Java projects during collection period.
+% Nov--Dec 2019.
+%
+% No justification for criteria.
+
+% >> DOMAIN
+% collection of organizations
+% An Empirical Study on Regular Expression Bugs
+% Peipei Wang, Chris Brown, Jamie Jennings, Kathryn Stolee
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387464
+% 195
+% ??
+% 195 projects from GH GraphQL API.
+% Organizations: Apache, Mozilla, Google, and Facebook. 
+% Containing merged pull requests with "regular expression" or “regex" 
+% in the title or description with the last update time before February 1st, 2019.
+% Java, JavaScript, or Python as the primary language.
+%
+% Focus on real resolutions to real bugs. Established organizations with mature
+% development processes and active projects. Intuition to get many commits,
+% contributors, and culture of pull request use.
+% Languages: most popular programming languages used on GitHub 
+
+% >> INCOMPATIBLE
+% 
+% Automatically Granted Permissions in Android apps
+% Paolo Calciati, Konstantin Kuznetsov, Alessandra Gorla, Andreas Zeller
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387469
+%
+% ??
+% Android apps from Android app stores.
+
+% >> CURATED
+% collection of organizations
+% Behind the Intents: An In-depth Empirical Study on Software Refactoring in Modern Code Review
+% Matheus Paixao, Anderson Uchôa, Ana Carla Bibiano, Daniel Oliveira, Alessandro Garcia, Jens Krinke, Emilio Arvonio
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387475
+% 6
+% ??
+% 6 projects from Code Review Open Platform (CROP).
+% Java projects from Eclipse and Couchbase, employing Gerrit for code review.
+%
+% Access to a rich dataset of source code changes.
+
+% >> CURATED
+% familiar systems
+% Beyond the Code: Mining Self-Admitted Technical Debt in Issue Tracker Systems
+% Laerte Xavier, Fabio da Silva Ferreira, Rodrigo Brito, Marco Tulio Valente
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387459
+% 5
+% ??
+% 5 projects. 
+% GitLab (due to familiarity and 4 systems using similar methods of tagging technical debt as GL.
+
+% >> TOOL
+% 
+% Boa Views: Easy Modularization and Sharing of MSR Analyses
+% Che Shian Hung, Robert Dyer
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387480
+%
+% ??
+% Introduces a tool and re-creates past MSR papers for evaluation.
+
+% >> INCOMPATIBLE
+% 
+% Can We Use SE-specific Sentiment Analysis Tools in a Cross-Platform Setting?
+% Nicole Novielli, Fabio Calefato, Davide Dongiovanni, Daniela Girardi, Filippo Lanubile
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387446
+% 
+% ??
+% Analyzes 7,000 pull requests and commits. Project/commit/pr selection not described.
+
+% >> DOMAIN
+% GitHub API
+% Capture the Feature Flag: Detecting Feature Flags in Open-Source
+% Jens Meinicke, Juan Hoyos, Bogdan Vasilescu, Christian Kaestner
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387463
+% 3239
+% ??
+% 3,239 projects
+% 10+ commits matching one regular expression on commit messages
+% 10+ commits matching another regular expression on commit messages
+%
+% They characterize dataset at the end and point to the bias.
+
+% >> INCOMPATIBLE
+%
+% Challenges in Chatbot Development: A Study of Stack Overflow Posts
+% Ahmad Abdellatif, Diego Costa, Khaled Badran, Rabe Abdalkareem, Emad Shihab
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387472
+%
+% ??
+% StackOverflow post analysis.
+
+% >> STARS(DIVERSITY)
+% GitHub
+% Characterizing and Identifying Composite Refactorings: Concepts, Heuristics and Patterns
+% Leonardo Da Silva Sousa, Diego Cedrim, Alessandro Garcia, Willian Oizumi, Ana Carla Bibiano, Daniel Oliveira, Miryung Kim, Anderson Oliveira
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387477
+% 48
+% ??
+% 48 projects
+% 90%+ Java code
+% has issue tracking 
+% stars: different levels of popularity (stratified sampling?)
+% 
+% Projects selected based on related studies to have a diversity of structure, domain, size, and popularity.
+
+% >> FILTER (size)
+% GitHub
+% Detecting Video Game-Specific Bad Smells in Unity Projects
+% Antonio Borrelli, Vittoria Nardone, Giuseppe Di Lucca, Gerardo Canfora, Massimiliano Di Penta
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387454
+% 100
+% ??
+% 100 projects
+% 100 largest projects that have “Game in Unity" in their descriptions
+
+% >> EVERYTHING
+% World of Code
+% Detecting and Characterizing Bots that Commit Code
+% Tapajit Dey, Sara Mousavi, Eduardo Ponce, Tanner Fry, Bogdan Vasilescu, Anna Filippova, Audris Mockus
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387478
+% 73000000
+% ??
+% 73M projects from World of code dataset
+% everything
+%
+% No specific reason given for selection of WoC
+
+% >> RANDOM SAMPLE| FILTER (classes, commits, lifespan, constributors)
+% collection of organizations
+% Developer-Driven Code Smell Prioritization
+% Fabiano Pecorelli, Fabio Palomba, Foutse Khomh, Andrea De Lucia
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387457 
+% 9
+% ??
+% 9 projects from 2576 projects belonging to Apache and Eclipse
+% Belong to Apache and Eclipse, Java projects, 500+ classes, 5+ years lifespan, 1K+ commits, 20+ contributors, randomly select 9 (from 682)
+%
+% Java: best tooling for smell detection and analysis
+% Diversity of domain, longevity, activity, and populations.
+
+% >> RANDOM SAMPLE
+% GHTorrent and Reaper
+% Did You Remember To Test Your Tokens?
+% Danielle Gonzalez, Michael Rath, Mehdi Mirakhorli
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387471
+% 53
+% ??
+% 53 projects.
+% Random sample of 100K Java projects from GH (from GHT and Reaper). 
+% Removed: empty, duplicates, inactive (no recent push), projects without unit tests, JHipster projects, projects not using Spring Security authentication.
+% Forks replaced with originals.
+
+% >> STARS(TOP)| TIME PERIOD
+% another paper
+% Embedding Java Classes with code2vec: Improvements from Variable Obfuscation
+% Rhys Compton, Eibe Frank, Panos Patros, Abigail Koay
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387445
+% 9500
+% ??
+% Uses java-large, from https://arxiv.org/pdf/1808.01400.pdf
+% 9.5K top-starred Java projects collected since Jan 2007 (presumably until 2019).
+
+% >> DOMAIN| TIME PERIOD
+% TravisListener
+% Empirical Study of Restarted and Flaky Builds on Travis CI
+% Thomas Durieux, Claire Le Goues, Michael Hilton, Rui Abreu
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387460
+% 171057
+% ??
+% 171,057 projects from GH/TravisListener for 40 days starting from Oct 2019.
+% Using Travis CI.
+%
+% Diversity of projects and languages.
+
+% >> INCOMPATIBLE
+% 
+% Ethical Mining – A Case Study on MSR Mining Challenges
+% Nicolas Gold, Jens Krinke
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387462
+% 
+% ??
+% metastudy
+
+% >> EVERYTHING
+% Software Heritage Graph and GHTorrent
+% Forking Without Clicking: on How to Identify Software Repository Forks
+% Antoine Pietri, Guillaume Rousseau, Stefano Zacchiroli
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387450
+% 41490000
+% ??
+% 41.49M non-empty repositories appearing in both Software Heritage Graph and GHTorrent.
+
+% >> DOMAIN
+% website
+% From Innovations to Prospects: What Is Hidden Behind Cryptocurrencies?
+% Ang Jia, Ming Fan, Xi Xu, Di Cui, Wenying Wei, Zijiang Yang, Kai Ye, Ting Liu
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387439
+% 1698
+% ??
+% 1698 projects for cryptocurrency implementations.
+
+% >> EVERYTHING
+% organization
+% Improved Automatic Summarization of Subroutines via Attention to File Context
+% Sakib Haque, Alexander LeClair, Lingfei Wu, Collin McMillan
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387449
+% 4600
+% ??
+% ~4600 projects from apache SF containing source code
+
+% >> EVERYTHING
+% collection of organizations
+% Investigating Severity Thresholds for Test Smells
+% Davide Spadini, Martin Schvarcbacher, Ana Maria Oprescu, Magiel Bruntink, Alberto Bacchelli
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387453
+% 1489
+% ??
+% 1489 projects from apache sf and Eclipse foundation
+%
+% Diversity of size and scope.
+
+% >> INCOMPATIBLE
+% 
+% Need for tweet. How open-source developers use Twitter to talk about their GitHub work
+% Hongbo Fang, Daniel Klug, Hemank Lamba, James Herbsleb, Bogdan Vasilescu
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387466
+%
+% ??
+% Tweets that by users who have GitHub links in their bios.
+
+% >> DOMAIN
+% GitHub Search
+% On the Prevalence, Impact, and Evolution of SQL code smells in Data-Intensive Systems
+% Biruk Asmare Muse, Masud Rahman, Csaba Nagy, Anthony Cleve, Foutse Khomh, Giuliano Antoniol
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387467
+% 150
+% ??
+% 150 projects.
+% tags: android, app, hibernate, JPA, Java. Code cotnains SQL. Contain one of top 50 keywords in the dataset. At least 10 db queries.
+
+% >> INCOMPATIBLE
+% 
+% On the Relationship between User Churn and Software Issues
+% Omar El Zarif, Daniel Alencar Da Costa, Safwat Hassan, Ying Zou
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387456
+%
+% ??
+% software recommendations on altenrativeto.net
+
+% >> INCOMPATIBLE
+%
+% PUMiner: Mining Security Posts from Developer Question and Answer Websites with PU Learning
+% Triet Le Huynh Minh, David Hin, Roland Croft, Muhammad Ali Babar
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387443
+% 
+% ??
+% stack overflow posts
+
+% >> INCOMPATIBLE
+%
+% Painting Flowers: Reasons for Using Single-State State Machines in Model-Driven Engineering
+% Nan Yang, Pieter Cuijpers, Ramon Schiffelers, Johan Lukkien, Alexander Serebrenik
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387452
+%
+% ??
+% semiconductor devices, i think
+
+% >> TOOL
+%
+% Polyglot and Distributed Software Repository Mining with CROSSFLOW
+% Konstantinos Barmpis , Patrick Neubauer, Jonathan Co, Dimitris Kolovos, Nicholas Matragkas, Richard Paige
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387481
+%
+% ??
+% A tool for mining repositories
+
+% >> CURATED
+%
+% RTPTorrent: An Open-source Dataset for Evaluating Regression Test Prioritization
+% Toni Mattis, Patrick Rein, Falco Dürsch, Robert Hirschfeld
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387458
+% 20
+% ??
+% 20 java projects
+% Java, many logged failures, 
+%
+% Java: avaiability of tooling, diverse sizes, maturoituy and GH community
+
+% >> CURATED
+% 
+% SoftMon: A Tool to Compare Similar Open-source Software from a Performance Perspective
+% Shubhankar Suman Singh, Smruti Ranjan Sarangi
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387444
+% 15
+% ??
+% 15 proejcts
+
+% >> CASE
+%
+% The Impact of a Major Security Event on an Open Source Project: The Case of OpenSSL
+% James Walden
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387465
+%
+% ??
+% just openssl
+
+% >> STARS(THRESHOLD)
+% GitHub Search
+% The Scent of Deep Learning Code: An Empirical Study
+% Hadhemi Jebnoun, Masud Rahman, Foutse Khomh, Houssem Ben Braiek 
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387479
+% 118
+% ??
+% 2 x 59 projects from GitHub API
+% DL subset: Deep learning keywords, 57+ commits, Python, 
+%            manually remove tutorials, immature projects, unpopular projects (issue count, commit count, contributor count, forks, stars), 4+ releases
+% Trad subset: 1000+ stars, 
+%              remove dead projects, random sleection 59
+
+% >> STARS(THRESHOLD)| TIME PERIOD
+% GitHub API
+% The State of the ML-universe: 10 Years of Artificial Intelligence & Machine Learning Software Development on GitHub
+% Danielle Gonzalez, Thomas Zimmermann, Nachiappan Nagappan
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387473
+% 9325
+% ??
+% 5,224 AI\ML and 4,101 application projects
+% AI\ML subset: search by tags, manual filtering to remove coding challenges, resource storage, etc.
+% application subset: 10000 projects from 2019, most starred, not containg relevant tags;
+%                     >0KB, 5+ stars or forks, last commit within 2019, available, manual filtering            
+%
+% Filtering big space.
+
+% >> STARS(TOP)
+% collection of organizations
+% Traceability Support for Multi-Lingual Software Projects
+% Yalin Liu, Jinfeng Lin, Jane Cleland-Huang
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387440
+% 17
+% ??
+% 17 projects
+% projects belonging to Alibaba, Tencent, Meitaun, JD, Baidu, NetEase and XiaoMi
+% 40+ issues, 40+ commits, 1%+ foreign terms in vocabulary
+% (sorted by stars)
+% commits tagged with issue IDs, diversity in size of link between issues and commits
+
+% >> DOMAIN| TIME PERIOD
+% GitHub
+% Using Large-Scale Anomaly Detection on Code to Improve Kotlin Compiler
+% Timofey Bryksin, Victor Petukhov, Ilya Alexin, Stanislav Prikhodko, Alexey Shpilman, Vladimir Kovalenko, Nikita Povarov
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387447
+% 47700
+% ??
+% 47.7K projects
+% kotlin repositories created before march 2018, not forks
+
+% >> FILTER (50+ commits)
+% website
+% Using Others' Tests to Avoid Breaking Updates
+% Suhaib Mujahid, Rabe Abdalkareem, Emad Shihab, Shane McIntosh
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387476
+% 290000
+% ??
+% 290K packages
+% npm packages with GH repositories
+% 2+ commits touching package.json
+
+% >> TOOL
+%
+% Visualization of Methods Changeability Based on VCS Data
+% Sergey Svitkov, Timofey Bryksin
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387451
+%
+% ??
+% tool
+
+% >> STARS(TOP)
+% GitHub API
+% What constitutes Software? An Empirical, Descriptive Study of Artifacts
+% Rolf-Helge Pfeiffer
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387442
+% 32718
+% ??
+% 32,718 projects
+% 1020 top-starred projects in a given language from 25 hand-picked languages
+% deduplicated (presumably by URL) yielding a dataset of unique repositories
+
+% >> CURATED
+% 
+% What is the Vocabulary of Flaky Tests?
+% Gustavo Pinto, Breno Miranda, Supun Dissanayake, Marcelo d'Amorim, Christoph Treude, Antonia Bertolino
+% MSR 2020
+% https://doi.org/10.1145/3379597.3387482
+% 25
+% ??
+% 25 projects
+% deflaker benchmark
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% >> DOMAIN| TIME PERIOD
+% GitHub API
+% A Large-scale Study about Quality and Reproducibility of Jupyter Notebooks
+% João Felipe Pimentel, Leonardo Murta, Vanessa Braganholo, Juliana Freire
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00077
+% 265000
+% ??
+% 265K projects
+% Created between 1 Jan 2013 and 15 Apr 2018, contains 1+ file whose language is "Jupyter notebook".
+
+% >> TOOL
+%
+% ConPan: A Tool to Analyze Packages in Software Containers
+% Ahmed Zerouali, Valerio Cosentino, Jesus M. Gonzalez-Barahona, Gregorio Robles, Tom Mens
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00089
+%
+% ??
+% a tool working on docker images
+
+% >> FILTER (diverse forks and age) | TIME PERIOD
+% GitHub API
+% An Empirical Study of Multiple Names and Email Addresses in OSS Version Control Repositories
+% Jiaxin Zhu, Jun Wei
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00068
+% 255
+% ??
+% 46 + 19 + 16 + 16 + 158 repositories 
+% 3 age intervals (creation date: 1- years, 5 years, 10 years),
+% 3 popularity intevals (forks: 10-, 100-200, 1000+),
+% 50 project from each combination o age/popularity
+% not forks
+% last push after 1 jun 2018
+
+% >> DOMAIN| TIME PERIOD
+% GitHub
+% Assessing Diffusion and Perception of Test Smells in Scala Projects
+% Jonas De Bleser, Dario Di Nucci, Coen De Roover
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00072
+% 164
+% ??
+% 164 projects
+% created between Jan 2010 and July 2018
+% remove projects without tests and sbt and do not compile
+% keep projects that use ScaltaTest and have 1+ KLOC
+
+% >> INCOMPATIBLE
+% 
+% Automated Software Vulnerability Assessment with Concept Drift
+% Triet Le Huynh Minh, Bushra Sabir, Muhammad Ali Babar
+% MSR 2019 
+% https://doi.org/10.1109/MSR.2019.00063
+% 
+% ??
+% Analyzes software vulnerabilites
+
+% >> RANDOM SAMPLE
+% RepoReaper
+% Automatically Generating Documentation for Lambda Expressions in Java
+% Anwar Alqaimi, Patanamon Thongtanunam, Christoph Treude
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00057
+% 51392
+% ??
+% 51,392 repositories
+% Random forest claffification by RepoReaper
+% 1+ lambda expression
+% random sample 400 at a time and filter
+
+% >> CURATED
+% 
+% Beyond GumTree: A hybrid approach to generate edit scripts
+% Junnosuke Matsumoto, Yoshiki Higo, Shinji Kusumoto
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00082
+% 7
+% ??
+% 7 projects
+% "some Java OSS"
+
+% >> INCOMPATIBLE
+% 
+% Can Issues Reported at Stack Overflow Questions be Reproduced? An Exploratory Study
+% Saikat Mondal, Masud Rahman, Chanchal K. Roy
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00074
+%
+% ??
+% stack overflow questions
+
+% >> FILTER (first 500, age, commits, collaborators)
+% DOECODE, JOSS, GitHub
+% Characterizing the Roles of Contributors in Open-source Scientific Software Projects
+% Reed Milewicz, Gustavo Pinto, Paige Rodeghero 
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00069
+% 7
+% ??
+% 7 projects
+% Search by topic: computational-neuroscience, bioinformatics, get first 500 projects
+% links to a contributor list
+% 1+ year old, 500+ commits, 3+ collaborators (incl 1 junior)
+%
+% Looking for representativ projects
+
+% >> STARS(TOP)
+% organization
+% Cross-language clone detection by learning over abstract syntax trees
+% Daniel Perez, Shigeru Chiba
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00078
+% 1924
+% ??
+% 1027 Java projects from Apache SF 
+% 897 Python fromjects form GH: 100KB-100MB. Non-viral license. Not forks. Ordered by stars. Not Python2.
+%
+% Diverse code to  genrate representative vocabulary. Stars as proxy for popularity.
+
+% >> TOOL
+%
+% Crossflow: A Framework for Distributed Mining of Software Repositories
+% Dimitris Kolovos, Patrick Neubauer, Konstantinos Barmpis , Nicholas Matragkas, Richard Paige
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00032
+%
+% ??
+% tool
+
+% >> EVERYTHING
+% website
+% Data-Driven Solutions to Detect API Compatibility Issues in Android: An Empirical Study
+% Simone Scalabrino, Gabriele Bavota, Mario Linares-Vasquez, Michele Lanza, Rocco Oliveto
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00055
+% 1170
+% ??
+% 1170 projects from F-Droid website
+
+% >> CURATED
+% 
+% DeepJIT: An End-To-End Deep LearningFramework for Just-In-Time Defect Prediction
+% Thong Hoang, Hoa Khanh Dam, Yasutaka Kamei, David Lo, Naoyasu Ubayashi
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00016
+%
+% ??
+% 2 well-known projects
+
+% >> INCOMPATIBLE
+%
+% Dependency Versioning in the Wild
+% Jens Dietrich, David J. Pearce, Jacob Stringer, Amjed Tahir, Kelly Blincoe
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00061
+% 
+% ??
+% dependencies in package manager
+
+% >> DOMAIN
+% GHTorrent
+% Does UML Modeling Associate with Lower Defect Proneness?: A Preliminary Empirical Investigation
+% Adithya Raghuraman, Truong Ho-Quang, Michel Chaudron, Alexander Serebrenik, Bogdan Vasilescu
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00024
+% 4650
+% ??
+% 4,650 projects containing UML files from GHTorrent
+
+% >> PROPRIETARY
+%
+% Empirical study in using version histories for change risk classification
+% Max Kiehn, Xiangyi Pan, Fatih Camci
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00018
+%
+% ??
+
+% >> INCOMPATIBLE
+%
+% Exploratory Study of Slack Q&A Chats as a Mining Source for Software Engineering Tools
+% Preetha Chatterjee, Kostadin Damevski, Lori Pollock, Vinay Augustine, Nicholas A. Kraft
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00075
+%
+% ??
+% slack conversations
+
+% >> INCOMPATIBLE
+% 
+% Exploring Word Embedding Techniques to Improve Sentiment Analysis of Software Engineering Texts
+% Eeshita Biswas, K. Vijay-Shanker, Lori Pollock
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00020
+%
+% ??
+% stack overflow posts
+
+% >> INCOMPATIBLE
+%
+% Extracting API Tips from Developer Question and Answer Websites
+% Shaohua Wang, Nhathai Phan, Yan Wang, Yong Zhao
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00058
+%
+% ??
+% stack overflow posts
+
+% >> STARS(TOP)
+% GitHub API
+% Generating Commit Messages from Diffs using Pointer-generator Network
+% Qin Liu, Zihe Liu, Hongming Zhu, Hongfei Fan, Bowen Du, Yu Qian
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00056
+% 2081
+% ??
+% 2081 projects
+% Top Java projects.
+
+% >> CURATED
+%
+% Identifying Experts in Software Libraries and Frameworks among GitHub Users
+% João Eduardo Montandon, Luciana L. Silva, Marco Tulio Valente
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00054
+% 3
+% ??
+% 3 projects
+% react, mongodb, socket.io
+
+% >> STARS(TOP)
+% another paper
+% Impacts of Daylight Saving Time on Software Development
+% Junichi Hayashi, Yoshiki Higo, Shinsuke Matsumoto, Shinji Kusumoto
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00076
+% 969
+% ??
+% 969 + 2500 projects
+% projects containig merged pull-requests containing the phrase with "daylight savings" (etc)
+% They also compare the characteristics of their dataset with 2.5K top-starred repositories from another paper. I'm not sure that counts.
+
+% >> STARS(THRESHOLD)
+% GitHub
+% Import2vec: learning embeddings for software libraries
+% Bart Theeten, Frederik Vandeputte, Tom Van Cutsem
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00014
+% 2072000
+% ??
+% 120K + 260K + 380K + 310K + 110K + 260K + 130K + 110K + 130K + 69K + 100K + 93K
+% Java, Js, Python, Ruby, PHP, or C#
+% 2+ stars,
+% deduplicate based on imports in source files
+
+% >> CURATED
+% 
+% Investigating Next-Steps in Static API-Misuse Detection
+% Sven Amann, Hoan Nguyen, Sarah Nadi, Tien N. Nguyen, Mira Mezini
+% MSR 2019 
+% https://doi.org/10.1109/MSR.2019.00053
+% 35
+% ??
+% 5 + 30 projects (i think)
+% they combine datasets from a TR and another paper and i'm not sure how many projects there are exactly after all that
+% the TR provides 5 projects, apparently, which are the usual suspects: Linux, etc.
+% the paper has 200 projects that used Maven, 1+ test, all tests pass, form these they picked based on whether there are correct usages
+
+% >> CURATED
+% PROMISE
+% Lessons learned from using a deep tree-based model for software defect prediction in practice
+% Hoa Khanh Dam, Trang Pham, Shien Wee Ng, Truyen Tran, John Grundy, Aditya Ghose, Taeksu Kim, Chul-Joo Kim
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00017
+% 10
+% ??
+% 10 Java projects from PROMISE
+
+% >> INCOMPATIBLE
+% 
+% Negative Results on Mining Crypto-API Usage Rules in Android Apps
+% Jun Gao, Pingfan Kong, Li Li, Tegawendé F. Bissyandé, Jacques Klein
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00065
+% 
+% ??
+% reverse engineers binary-like releases (apk) of android apps
+
+% >> CASE
+% 
+% On the Effectiveness of Manual and Automatic Unit Test Generation: Ten Years Later
+% Domenico Serra, Giovanni Grano, Fabio Palomba, Filomena Ferrucci, Harald Gall, Alberto Bacchelli
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00028
+% 1
+% ??
+% 1 project (freenode)
+
+% >> TOOL
+% 
+% PathMiner : A Library for Mining of Path-Based Representations of Code
+% Vladimir Kovalenko, Egor Bogomolov, Timofey Bryksin, Alberto Bacchelli
+% MSR 2019 
+% https://doi.org/10.1109/MSR.2019.00013
+%
+% ??
+% a tool
+
+% >> DOMAIN
+% GitHub Search
+% Predicting Co-Changes between Functionality Specifications and Source Code in Behavior Driven Development
+% Aidan Z.H. Yang, Daniel Alencar Da Costa, Ying Zou
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00080
+% 133
+% ??
+% 133 projects
+% Java projects from Github Search API that contain a .feature file
+% 2+ commits on .feature file (indicative of actually using .feature)
+% commit messages and status data are in English
+
+% >> RANDOM SAMPLE
+% GitHub IDs
+% Predicting Good Configurations for GitHub and Stack Overflow Topic Models
+% Christoph Treude, Markus Wagner 
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00022
+% 40000
+% ??
+% 8 * 5000 projects
+% language in C, C++, CSS, HTML, Java JavaScript, Python, Ruby
+% random project (from projects with id 0-120M, which is all projects)
+% contains README file with 100+ characters, does not contain non ASCII characters
+
+% >> CURATED
+% 
+% Recommending Energy-Efficient Java Collections
+% Wellington de Oliveira Júnior, Renato Santos, Fernando Castor, José Benito Fernandes De Araújo Neto, Gustavo Pinto
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00033
+% 12
+% ??
+% 12 projects
+% Barbecue, Battlecry, JodaTime, TomCat, Twfbplayer, Xalan, Xisemele, FastSearch, PasswordGen, Apache commons Math, Google Gson, XStream.
+
+% >> UNKNOWN
+% GitHub
+% SCOR: Source Code Retrieval With Semantics and Order
+% Shayan Akbar, Avinash Kak
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00012
+% 35000
+% ??
+% 35000 projects
+% approximately 35000 Java Source code repositories
+
+% >> TOOL
+% 
+% STRAIT: A Tool for Automated Software Reliability Growth Analysis
+% Stanislav Chren, Radoslav Micko, Barbora Buhnova, Bruno Rossi
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00025
+% 
+% ??
+% a tool with some analysis happening, but there isn't a dataset described for the analysis
+
+% >> UNKNOWN
+% GitHub
+% Scalable Software Merging Studies with MERGANSER
+% Moein Owhadi-Kareshk, Sarah Nadi
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00084
+% 744
+% ??
+% 744 projects
+% unknown criteria
+% mostly a tool though, but it does do an experiment, so i'll count it as an experiment
+
+% >> RANDOM SAMPLE
+% organization
+% Snoring: a Noise in Defect Prediction Datasets
+% Aalok Ahluwalia, Davide Falessi, Massimiliano Di Penta
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00019
+% 6
+% ??
+% 6 projects
+% Apache SF
+% 10+ releases, JIRA, most commits are related to Java code
+% then: random sample 4
+% + two hand picked: Lucene and Jackrabbit
+%
+% avoid using toy projects, expecting higher quality of defect annotation
+
+% >> DOMAIN
+% GitHub
+% Splitting APIs: An Exploratory Study of Software Unbundling
+% Anderson Severo de Matos, João Bosco Ferreira Filho, Lincoln Souza Rocha
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00062
+% 71000
+% ??
+% 71000 projects
+% select 10 APIs, find GH projects that use these APIs
+
+% >> INCOMPATIBLE
+% 
+% Standing on Shoulders or Feet? The Usage of the MSR Data Papers
+% Zoe Kotti, Diomidis Spinellis
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00085
+% 
+% ??
+% metastudy of MSR
+
+% >> DOMAIN
+% website
+% Striking Gold in Software Repositories? An Econometric Study of Cryptocurrencies on GitHub
+% Asher Trockman, Rijnard van Tonder, Bogdan Vasilescu
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00036
+% 241
+% ??
+% 241 projects from CoinMarketCap withh GH repos
+% cryptocurrency projects
+% @ 
+
+% >> STARS(UNKNOWN)
+% 
+% Test Coverage in Python Programs
+% Hongyu Zhai, Casey Casalnuovo, Prem Devanbu
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00027
+% 5
+% NONE
+% 5 projects
+% authors mention that these all have 5K stars among a lot of other conditions
+% This is a matter of interpretation, but after going back and forth I'm going to assume that stars played some sort of role in selection, even if this role is not specifically defined
+%
+% @ We choose 5 Python projects for study: flask, matplotlib,
+% @ pandas, scikit-learn, and scrapy. All are under active devel-
+% @ opment, include detailed guidelines for contributing, and have
+% @ more than 5000 stars on Github. Table I displays information
+% @ on the size and version of each project, ranging from smaller
+% @ projects like flask to larger ones like matplotlib.
+
+% >> INCOMPATIBLE
+% 
+% The Emergence of Software Diversity in Maven Central
+% César Soto-Valero, Amine Benelallam, Nicolas Harrand, Olivier Barais, Benoit Baudry
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00059
+%
+% 
+% maven libraries, versions, dependencies
+
+% >> CURATED
+% 
+% The Impact of Systematic Edits in History Slicing
+% Ryosuke Funaki, Shinpei Hayashi, Motoshi Saeki
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00083
+% 2
+% NONE
+% 2 projects
+% commons collections and commons net
+%
+% @ To answer the stated research question, we applied the
+% @ implemented history slicing to several histories of open-source
+% @ systems written in Java from the Apache Commons ecosystem.
+
+% >> FILTER (developers)
+% website
+% The Rise of Android Code Smells: Who Is to Blame?
+% Sarra Habchi, Romain Rouvoy, Naouel Moha
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00071
+% 324
+% REMOVE GARBAGE
+% 324 projects
+% projects from FDroid
+% 2+ developers
+%
+% @ To select the apps eligible for our study, we relied on the
+% @ famous FDROID online repository2. This choice allowed us
+% @ to include published Android apps and exclude dummy apps,
+% @ templates, and libraries that could be available on GitHub.
+
+% >> INCOMPATIBLE
+% 
+% Time Present and Time Past: Analyzing the Evolution of JavaScript Code in the Wild
+% Dimitris Mitropoulos, Panos Louridas, Vitalis Salis, Diomidis Spinellis
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00029
+%
+% 
+% website analysis over time
+
+% >> INCOMPATIBLE
+% 
+% Tracing Back Log Data to its Log Statement: From Research to Practice
+% Daan Schipper, Maurício Aniche, Arie van Deursen
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00081
+%
+% 
+% log analysis from a single? system
+
+% >> TOOL
+% 
+% World of Code: An Infrastructure for Mining the Universe of Open Source VCS Data
+% Yuxing Ma, Christopher Bogart, Sadika Amreen, Russell Zaretzki, Audris Mockus
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00031
+% 
+% 
+% a tool
+
+% >> TOOL
+% 
+% git2net - Mining Time-Stamped Co-Editing Networks from Large git Repositories
+% Christoph Gote, Ingo Scholtes, Frank Schweitzer
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00070
+% 
+% 
+% a tool, with an analysis of two projects
+
+% >> STARS(TOP)
+% GitHub
+% style-analyzer: fixing code style inconsistencies with interpretable unsupervised algorithms
+% Vadim Markovtsev, Hugo Mougard, Waren Long, Egor Bulychev, Konstantin Slavnov
+% MSR 2019
+% https://doi.org/10.1109/MSR.2019.00073
+% 19
+% NONE
+% 19 projects
+% top starred from January 2019
+% JavaScript is main language
+% diversity of sizes
+%
+% a tool using 19 top starred repositories to evaluate their tool 
+%
+% @ The [benchmark] aims to measure how well STYLE-ANALYZER models the
+% @ style of a repository by applying a trained model on a held-
+% @ out test dataset. The predictions of the model are considered
+% @ correct if they match the actual formatting elements in the
+% @ original source code. We carry out this evaluation on a col-
+% @ lection composed of 19 top-starred repositories from GitHub
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I could use some input on how to name classifications of papers in MSR. Here's what I've got. Category names are in CAPITALS (this will not be the case in the paper).
+
+Generally speaking there are 3 parts to project selection: 
+1. the source dataset from which the authors select projects eg. we use World of Code, we use GH Search API, we use Apache Software Foundation4
+2. a set of requirements that describe the domain of the selection, eg. we select cryptocurrency projects, we select Java projects, we select projects that have a README file of size 100KB+.
+3. a filter to whittle down the dataset retrieved from 1 and 2 into a more manageable level, eg. we take projects with 10+ commits, we take 100 largest projects, and, of course, we take 1000 top starred proejcts.
+
+I looked at 92 papers from MSR 2019 and MSR 2020. Out of these 
+* 20 (22%) are INCOMPATIBLE with project selection (they work on Stack Overflow posts, tweets, images, etc.),
+* 9 (10%) are TOOL papers that do not perform a practical experiment,
+* 63 (68%) perform some sort of practical experiment which involves selecting projects from GH (and sometimes additional sources).
+
+Out of those 63 practical papers:
+* 4 (7%) papers do not provide information about project selection, out of which 1 uses a PROPRIETARY dataset of unknown construction, and 3 the information is just not provided in the paper.
+* 2 (3%) papers are CASE STUDIES which use data from one specific project. 
+* 14 (22%) papers use CURATED dataset which consist of arbitrarily selected small handfuls of arbitrary projects (between 2 and 35), presumably hand-picked. There is sometimes a justification (eg. team more familiar with technology, well-known open source projects), and sometimes there isn't.
+* 6 (10%) papers retrieve EVERYTHING they are able to retrieve either from a precompiled dataset (eg. World of Code, GHTorrent), one or more organizations (eg. Apache Software Foundation, Eclipse Foundation), or projects appearing on one or more websites (eg. F-Droid). Sometimes there is very basic filtering (eg. explicit or implicit period of time, non-empty projects, non-forks). The smallest of these datasets is 1.1K projects and the largest is 73M.
+* 12 (19%) papers apply filters but only to limit the projects to a specific DOMAIN (eg. games in Unity, projects with UML files).
+* 25 (40%) papers apply additional processing to get a smaller sample of projects in a domain, which they obtain in various ways.
+
+Out of those 25 papers:
+* 5 (20% or 8% of practical papers) get a RANDOM SAMPLE,
+* 14 (56% or 22% of practical papers) use a filter which includes filtering by STARS in some capacity, and
+* 6 (20% or 7% of practical papers) FILTER without using stars (eg. by size, commits, developers, age).
+
+Among the 14 papers that use stars:
+* 8 (57%) take n top-starred projects (anywhere between 17 and 33K projects, often 1K in a given language),
+* 4 (29%) take projects above a certain star threshold (1K+, 50+, 5+, 2+),
+* 1 (7%) takes project to allow for a diversity of star counts among them,
+* 1 (7%) uses stars in an unspecified fashion.
+
+Note to self: DOMAIN and EVERYTHING allow minimal filtering, eg. 1+ files, non-empty, not fork
+
+% Selection has two dimensions: domain, and "sampling." Domain specifies things
+% like language, technology, tags. Sampling specifies how to cut down a large
+% dataset into a manageable dataset, but the projects that are cut are not
+% distinct in terms of domain.
+%
+% SPECIFIC TECH: Selection by domain is very tight. It leaves a manageable
+% dataset that does not need to be sampled further. Eg. projects using Unity.
+%
+% CURATED: A small group of hand-picked projects, or projects selected by
+% filtering a trusted source (eg. projects from big Chinese companies with extra
+% conditions).
+%
+% TRUSTED SOURCE: A group of projects selected by aggregating from one or more
+% trusted sources (eg. all from Apache SF, or all model zoos) and either takign
+% all projects, or applying additional criteria (eg. 40+ issues, 40+ commits,
+% 1%+ foreign language vocabulary in commit messages)
+%
+% CASE: A single software project under scrutiny.
+%
+% EVERYTHING: Domain is large, but no sampling is done anyway. Only minimal
+% filtering is done (empty projects, duplicates). Instead an attempt to process
+% everything is made. Eg. All non-empty Kotlin projects.
+%
+% STARS: Domain is large, sampling is done completely by using stars, or using
+% other criteria, but also stars. Eg. All Java projects, 1000 most starred (or
+% 100+ stars).
+%
+% OTHER: Domain is large, sampling is done without the use of stars. Eg. All
+% Java projects, 1000 largest projects or 50+ commits.
+%
+% PROPRIETARY: proprietary dataset.
+%
+% INCOMPATIBLE: the study is done on a dataset comprised of things other than
+% software projects: metastudies, studies of SO posts, tweets, android
+% applications, project dependencies in project managers.
+%
+% TOOL: a tool.
+%
+% N/A: Could not determine method of project selection.
+
+% MSR 2020:
+%   13 CURATED (one of which uses stars)
+%    5 EVERYTHING
+%   13 NA
+%    1 OTHER (50+ commits)
+%    6 SPECIFIC TECH
+%    7 STARS
+
+% TODO reaper paper tlaks about stars
+% TODO 
+
+% Among research using stars there are the following kinds:
+% - TOP: sorting by stars and returning the top N results. Either when doing the
+%   query from GH, the results are ordered by stars, or this is a discrete step
+%   in filtering a dataset obtained in some other way.
+% - DIVERSITY: sampling from dataset to get some number of highly starred, some
+%   number of medium-starred, some number of low-starred projects, or similar.
+%   Or, vague stattement of sampling for diversity usnig stars.
+% - THRESHOLD: filtering to retrieve all projects that have more than N stars.
+
+% One paper had two datasets constructing different methodology.
