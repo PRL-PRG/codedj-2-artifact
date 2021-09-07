@@ -1,0 +1,440 @@
+---
+title: "The Scent of Deep Learning Code: An Empirical Study"
+output: html_notebook
+---
+
+FIRST EXECUTE artifact/dataset.Rmd!!!
+
+```{r}
+library("rjson")
+library("readr")
+library("dplyr")
+library("ggplot2")
+library("tidyverse")
+library("GGally")
+library(gridExtra)
+library("ggeffects")
+library(ggrepel)
+```
+
+```{r}
+# initializes log to create Latex macros
+initialize_log(name = "scent_dl")
+```
+
+# Getting required data
+
+```{bash}
+cd reproductions/scent_dl
+if ! [ -f smells/stars/LargeClass.csv ]; then
+  curl -o smells.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/smells.tgz" -L
+  tar -zxvf smells.tgz
+  rm smells.tgz
+fi
+```
+
+
+# Functions we need to process data
+```{r}
+get_project_smells = function(directory) {
+    # this function looks into the directory passed as a parameter for the following files:
+    files = c('ComplexContainerComprehension','ComplexLambdaExpression', 'LargeClass', 'LongBaseClassList', 'LongMessageChain', 'LongMethod', 'LongParameterList', 'LongScopeChaining', 'LongTernaryConditionalExpression', 'MultiplyNestedContainer')
+    
+    df_result = data.frame(subject=c(), n=c(), smell=c())
+    for(file in files) { 
+        temp_df = read_csv(paste("./reproductions/scent_dl/smells/",directory,file,".csv", sep=""))
+        
+        # get the count of smells per project_id (a.k.a subject).
+        temp_df = temp_df %>% group_by(subject) %>% tally()
+        
+        # the name of the smell is also the name of the file
+        temp_df = temp_df %>% mutate(smell=file)
+        
+        # we append current count of this smell to the overall result
+        df_result = rbind(df_result, temp_df)
+    }
+    
+    df_result = df_result %>% rename(project_id=subject) %>% rename(count_smell=n)
+    
+    return(df_result)
+}
+```
+
+
+
+
+
+```{r}
+# according to the authors a project is considered small if it has SLOCS <=4000
+sloc_small = 4000
+# according to the authors a project is considered medium size if it has SLOCS <=15000
+sloc_medium = 15000
+
+LOG("dlSlocSmall", sloc_small)
+LOG("dlSlocMedium", sloc_medium)
+```
+
+
+```{r}
+merge_dataframes = function(djanco_df, smells_df) {
+    # returns a dataframe that contains data from djanco and the data from the smells algorithm
+    
+    total_smells = smells_df %>% group_by(project_id) %>% summarise(smell_count=sum(count_smell))
+    
+    # some projects might not have smells, but we still want to consider them. For them, we add a row saying they have 0 smells.
+    ids_not_in_smells = djanco_df %>% filter(! (djanco_df$project_id %in% smells_df$project_id))
+    for(id in ids_not_in_smells$project_id){
+        total_smells = total_smells %>% add_row(project_id=id, smell_count=0)
+    }
+    
+    #combine the dataframes
+    all = inner_join(djanco_df, total_smells, by="project_id")
+    
+    # calculate smell density
+    all = all %>% mutate(density_smell=ifelse(sloc==0, 0, smell_count/sloc)) %>% select(project_id, sloc, smell_count, density_smell)
+    
+    # add size category to each project
+    all = all %>% mutate(project_type=ifelse(sloc<=sloc_small, "small", ifelse(sloc<=sloc_medium, "medium", "large")))
+    return(all)
+}
+```
+
+
+# build dataframe for Deep Learning
+
+1. About the deep_learning.csv: 
+This is the file we get when running the djanco query that is located in 
+`artifacts/scent_dl/dl_projects_cloner` over the datastore of deep learning 
+projects.
+
+2. About the folder `smells_dl`:
+- It contains files. The name of the file denotes the type of smell, while its contents
+tell you which files, line the smell is located.
+- The tool tool to get the smells is located at `artifacts/scent_dl/tools/pysmell`. 
+The instructions to run this tool are located at `artifacts/scent_dl/tools/README.md`.
+
+3. To run the tool to detect smells you should first clone repositories. 
+The instructions to clone repositories are in `artifacts/scent_dl/tools/README.md` 
+as well.
+
+
+```{r}
+
+#loads a dataframe that contains data of smells for 57 deep learning projects
+dl_smells = get_project_smells("smells_dl/") 
+
+
+#This is the djanco-table of the 57 deep learning projects
+dl_djanco = read_csv("./reproductions/scent_dl/deep_learning.csv")
+dl_djanco = dl_djanco %>% rename(sloc=locs)
+```
+
+
+```{r}
+# we merge all both dataframes
+all_dl = merge_dataframes(dl_djanco, dl_smells)
+all_dl
+```
+```{r}
+all_dl %>% group_by(project_type) %>% tally()
+```
+
+```{r}
+get_project_type_count = function(project_type_){
+    # given a project type such as "small", "medium", or "large", 
+    # this functions return how many projects are with this project_type_.
+    project_type_counts = all_dl %>% group_by(project_type) %>% tally()
+    project_type_counts = project_type_counts %>% filter(project_type==project_type_)
+    project_type_count = project_type_counts$n
+    return(project_type_count[1])
+}
+```
+
+```{r}
+LOG("countSmallDL", get_project_type_count('small'))
+LOG("countMediumDL", get_project_type_count('medium'))
+LOG("countLargeDL", get_project_type_count('large'))
+```
+
+
+we only have 57 deep learning projects, since we 2 of them do not exist anymore.
+```{r}
+size_dl_dataframe = nrow(dl_djanco)
+LOG("sizeDLDataframe", size_dl_dataframe)
+```
+
+```{r}
+dl_djanco
+```
+
+# Build dataframe Stars
+
+The djanco receipt of this query is at 
+`artifacts/scent_dl/traditional-queries/src/lib.rs::starred_query`
+```{r}
+set.seed(43)
+sample_stars = python %>% arrange(-stars) %>% head(106) %>% sample_n(size_dl_dataframe) %>% select(id, locs)
+write.csv(sample_stars,'./reproductions/scent_dl/project_indices/stars.csv', row.names = FALSE)
+```
+
+
+```{r}
+#loads a dataframe that contains data of smells for 57 deep learning projects
+stars_smells = get_project_smells("stars/") 
+```
+
+
+```{r}
+# we merge all 3 dataframes
+all_stars = merge_dataframes(sample_stars %>% rename(project_id=id) %>% rename(sloc=locs), stars_smells)
+all_stars
+```
+
+# Comparing various samples 
+```{r}
+get_indices_strat = function (num_samples=10, seed=111,filename="10l_10c_s.csv", target_population=NULL) {
+    set.seed(seed)
+    indices = data.frame(id=c())
+    if(is.null(target_population)) {
+      print("target population is null")
+      target_population = python %>% filter(locs>10  & commits > 10)  
+    }else{
+      print("target population is not null")
+    }
+    
+    for(i in 1:num_samples) {
+        # stratified sample by size
+        df_small = target_population %>% filter(locs<=4000) %>% sample_n(6) %>% select(id)
+        df_medium = target_population %>% filter(locs>4000 & locs<=15000) %>% sample_n(13) %>% select(id)
+        df_large = target_population %>% filter(locs>15000) %>% sample_n(38) %>% select(id)
+
+       df_indices  = rbind(df_small, df_medium, df_large)
+      
+        indices = rbind(indices, df_indices)
+    }
+    write.csv(indices %>% distinct(id),paste('./reproductions/scent_dl/project_indices/', filename, sep=""), row.names = FALSE)
+    return(indices)
+}
+```
+
+
+```{r}
+or_hindex_lowerbound = 5
+or_locs_lowerbound = 10000
+or_lifetime_lowerbound = 180
+or_commits_lowerbound = 100
+LOG("dlHIndexLowerboundOr", or_hindex_lowerbound)
+LOG("dlLocsLowerboundOr", or_locs_lowerbound)
+LOG("dlLifetimeLowerboundOr", or_lifetime_lowerbound)
+LOG("dlCommitsLowerboundAnd", or_commits_lowerbound)
+
+```
+
+
+The djanco receipt for this filter is 
+`artifacts/scent_dl/traditional-queries/src/lib.rs::custom_query`
+```{r}
+  get_indices_strat(num_samples=5, seed=43, filename="long_filter.csv", target_population = python %>% filter(max_hindex1 >= or_hindex_lowerbound| lifetime >= or_lifetime_lowerbound | locs >= or_locs_lowerbound | commits >= or_commits_lowerbound))
+```
+
+
+```{r}
+get_stratified_sample = function(n=1, num_samples=10, seed=111, target_population=NULL) {
+    # specify the seed, and return the nth sample.
+    set.seed(seed)
+    if(is.null(target_population)){
+      target_population = python %>% filter(locs>10  & commits > 10)
+    }
+    for(i in 1:num_samples){
+        df_small = target_population %>% filter(locs<=sloc_small) %>% sample_n(get_project_type_count('small')) %>% select(id)
+        df_medium = target_population %>% filter(locs>sloc_small & locs<=sloc_medium) %>% sample_n(get_project_type_count('medium')) %>% select(id)
+        df_large = target_population %>% filter(locs>sloc_medium) %>% sample_n(get_project_type_count('large')) %>% select(id)
+        if(i == n){
+            return(rbind(df_small, df_medium, df_large))
+        }
+    }
+}
+```
+
+```{r}
+combine_dataframes = function(dataframe1, dataframe2, repo_type1, repo_type2) {
+    dataframe1 = dataframe1 %>% mutate(repo_type=repo_type1)
+    dataframe2 = dataframe2 %>% mutate(repo_type=repo_type2)
+    combined = rbind(dataframe1, dataframe2)
+    return(combined)
+}
+```
+
+```{r}
+theme(
+  plot.title = element_text(),
+  plot.subtitle.title = element_text(),
+  plot.caption = element_text()
+)
+```
+
+
+```{r}
+is_greater = function(a,b) {
+  temp = a-b
+  return(sum(temp) > 0)
+}
+```
+
+
+```{r}
+get_p_value = function(a,b){
+  temp = wilcox.test(a,b,extact=F)
+  return(temp$p.value)
+}
+```
+
+```{r}
+get_target_population = function(population_name) {
+    return(
+      python %>% filter(
+        max_hindex1 >= or_hindex_lowerbound | 
+        lifetime >= or_lifetime_lowerbound | 
+        locs >= or_locs_lowerbound  | 
+        commits >= or_commits_lowerbound)
+      )
+}
+```
+
+
+```{r}
+get_all_df = function (plot_type) {
+  temp_stars = all_stars %>% mutate(sample_type="Top Stars")
+  temp_dl = all_dl %>% mutate(sample_type="Deep Learning")
+  answer = rbind(temp_stars, temp_dl)
+  return(answer)
+}
+```
+
+
+```{r}
+get_pvalues = function( dl_df, traditional_df) {
+    # returns a vector of the pvalues of small, medium and large projects.
+    values = c("small", "medium", "large")
+    pvalues = c()
+      for(val in values) {
+            p_value = get_p_value(
+                    (dl_df%>%filter(project_type==val))$smell_count,
+                    (traditional_df%>%filter(project_type==val))$smell_count
+                    )
+            p_value = round(p_value, 2)
+        
+            pvalues = append(pvalues,p_value)
+    
+      }
+      
+      return(pvalues)
+}
+```
+
+
+  
+```{r fig.height=3, fig.width=6} 
+plot_all_samples_single_graph = function(num_samples_=10,seed_=111, filenames=c(), target_populations=c()){
+    all_df = get_all_df(plot_type)
+    pvalues = get_pvalues(all_dl, all_stars)
+    LOG("dlPvalueStarsSmall", pvalues[1])
+    LOG("dlPvalueStarsMedium", pvalues[2])
+    LOG("dlPvalueStarsLarge", pvalues[3])
+    #labels_[2] = paste(pvalues, labels_[2], sep="\n" )
+
+    
+    current_index = 1
+    samples_names = c()
+    
+    #variable just for the latex macros
+    samples_latex = c("A", "B", "C")
+    for(filename in filenames){
+      target_population_ = get_target_population(filename)
+      
+      smells_df = get_project_smells(paste(filename,'/', sep=""))
+      
+      # we only use these 3 samples, cause the others don't provide additional discussion.
+      for (i in c(1,2,5)) {
+          indices = get_stratified_sample(n=i,num_samples=num_samples_,seed=seed_,target_population = target_population_)
+          indices = inner_join(indices %>% rename(project_id=id), python %>% select(id, locs) %>% rename(project_id=id), by="project_id")
+          indices = indices  %>% rename(sloc=locs)
+        
+          current_sample_df = merge_dataframes(indices, smells_df) 
+          pvalues = get_pvalues(all_dl, current_sample_df)
+          LOG(paste("dlPvalueRandomSmall", samples_latex[current_index],sep=""), pvalues[1])
+          LOG(paste("dlPvalueRandomMedium", samples_latex[current_index],sep=""), pvalues[2])
+          LOG(paste("dlPvalueRandomLarge", samples_latex[current_index],sep=""), pvalues[3])
+          # labels_[current_index+2] <- paste(pvalues, labels_[current_index+2], sep="\n")
+        
+          current_sample_df = current_sample_df %>% mutate(sample_type=paste("Sample #", current_index, sep=""))
+          samples_names = append(samples_names, paste("Sample #", current_index, sep=""))
+          current_index = current_index + 1
+          all_df = rbind(all_df, current_sample_df)
+      }
+    }
+
+    # some settings for the graph
+    all_df$sample_type= factor(all_df$sample_type, levels=append(c("Deep Learning","Top Stars"), samples_names))
+    my_breaks = c(1,10,100,1000,10000,100000)
+    my_breaks_labels = c("1", "10", "100", "1k", "10k", "100k")
+    all_df$project_type = factor(all_df$project_type, levels=c("small", "medium", "large"))
+    
+    # get medians
+    median_small_projects = median((all_df%>% filter(project_type=='small' & sample_type=='Deep Learning'))$smell_count)
+    median_medium_projects = median((all_df%>% filter(project_type=='medium' & sample_type=='Deep Learning'))$smell_count)
+    median_large_projects = median((all_df%>% filter(project_type=='large' & sample_type=='Deep Learning'))$smell_count)
+      
+      #create plot
+      plot <- ggplot( all_df , aes(x=sample_type, y=smell_count, color=project_type, fill=project_type, alpha=project_type)) +
+            #annotate("rect",xmin=0.6,xmax=2.5,ymin=0,ymax=Inf, alpha=0.5,  fill="grey")+
+            geom_vline(xintercept=1.5, color="black", linetype="dotted", size=0.35) +
+            geom_vline(xintercept=2.5, color="black", linetype="dotted", size=0.35) +
+            scale_x_discrete("",labels = c("Deep Learning", "Top Stars", "", "","")) + #labels_,expand = expansion(mult = c(0, 0))) +
+            ylab("# smells")+
+            geom_hline(yintercept=median_small_projects, linetype="dotted", color = "#f8766d", size=0.35) + # small projects median    //red
+            geom_hline(yintercept=median_medium_projects, linetype="dotted", color = "#00ba38", size=0.35) + # mediam projects median  //green
+            geom_hline(yintercept=median_large_projects, linetype="dotted", color = "#619cff", size=0.35) + # mediam projects large    //blue
+            scale_y_continuous(trans = "log10", breaks=my_breaks, labels=my_breaks_labels)+
+            #scale_fill_manual(values=c("#e68193","#aa8f43","#59a141"))+
+            scale_alpha_manual(values=rep(0.5, 3)) +
+            theme_bw() +
+            theme(#axis.text=element_text(size=16), axis.title=element_text(size=16,face="bold"),
+                  legend.title = element_blank(), #element_text(size=16, face="bold"), 
+                  legend.text=element_text(size=8), 
+                  legend.key.size = unit(9, "pt"),
+                  panel.grid.major = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  panel.border = element_blank(),
+                  panel.background = element_blank(),
+                  legend.position = c(0.1, 0.9),
+                  text = element_text(size=14),
+                  legend.background = element_rect(#fill="#dedede", 
+                                  size=0.5, linetype="solid")
+                  )+
+            #guides(fill=guide_legend(title=""))+
+            geom_boxplot(width = 0.65, position = position_dodge(width=0.8), outlier.shape = 4, outlier.alpha = 1) 
+    
+    
+    return(plot)
+
+}
+```
+
+
+```{r}
+smell_frequencies = plot_all_samples_single_graph(num_samples_=5, filenames=c('long_filter'), seed_=43, target_populations=c())
+smell_frequencies
+ggsave("figs/scent-dl/smell_frequencies.pdf", plot = smell_frequencies, height=3, width=6 )
+```
+
+
+
+# END
+```{r}
+flush_log()
+```
+
+
+
