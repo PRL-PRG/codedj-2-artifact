@@ -24,6 +24,7 @@ We used the CodeDJ datasets available at the time. These are archived on our ser
 - `java-merged` = Java merged datastore, all substores from `java-raw` merged into generic
 - `python-merged` = Python merged datastore, all substores from `python-raw` merged into generic
 - `js-merged` = JavaScript merged datastore, JavaScript and small projects substores from `js-raw` merged into generic
+- `deep-learning` = raw python dataset that contain deep learning projects. It was obtained from the reproduction package of one of the papers we reproduced.
 
 ## Running
 
