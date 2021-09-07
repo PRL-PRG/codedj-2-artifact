@@ -1,0 +1,253 @@
+---
+title: "An Empirical Study of Method Chaining in Java"
+output: html_notebook
+---
+FIRST EXECUTE artifact/dataset.Rmd!!!
+
+```{r}
+library("rjson")
+library("readr")
+library("dplyr")
+library("ggplot2")
+library("tidyverse")
+library("GGally")
+library(gridExtra)
+library("ggeffects")
+library(ggrepel)
+```
+
+
+```{r}
+# java variable is being draged from artifact/dataset.Rmd
+big_dataset = java
+big_dataset = big_dataset %>% rename(project_id=id)
+
+# create a column of the year of creation
+big_dataset = big_dataset %>% mutate( created_year=format( as.Date( as.POSIXct(created, origin="1970-01-01") ), "%Y" ))
+
+# create a column of the last commit year
+big_dataset = big_dataset %>% mutate( last_commit_year=format( as.Date( as.POSIXct(newestCommitTime, origin="1970-01-01") ), "%Y" ))
+```
+
+
+# Gathering top starred projects
+
+This is our reproduction of what the authors did. 
+```{r}
+# since there are less than 1k project created in 2008, we gather all of them
+df = big_dataset %>% filter(created_year==2008) %>% select(project_id)
+
+
+for(year_ in 2009:2018) {
+  # get top 1k starred projects per year
+  df = rbind(df, big_dataset %>% filter(created_year==year_) %>% arrange(-stars) %>% head(1000) %>% select(project_id))  
+}
+
+
+set.seed(43)
+df = df %>% sample_n(3000) # random sample 3k of them
+
+# create dataframe to save as csv
+all_ids = df$project_id
+df = data.frame(snapshot_id=all_ids)
+
+# NOTE: write.csv will generate the column name within quotes. You must remove these quotes.
+write.csv(df,'./reproductions/empirical_method_chaining/top_starred_indices.csv',row.names = FALSE)
+```
+
+The djanco query to replicate this query is at 
+`./artifacts/empirical_method_chaining/top-starred-sampler`.
+
+# Some helper functions
+```{r}
+get_project_indices = function(years, method_chainings, is_top=TRUE, seed_=5) {
+  # this function is used to sample the valid indices.
+  set.seed(seed_)
+  if(is_top) {
+    # get indices of top starred_projects
+    print("is top")
+    valid_ids = method_chainings %>% filter(year %in% years)
+    valid_ids = valid_ids["project_id"][[1]]
+    temp_df = big_dataset %>% filter(project_id %in% valid_ids)
+    temp_df = temp_df %>% sample_n(250)
+  }else{
+    valid_ids = method_chainings %>% filter(year %in% years) %>% distinct(project_id)
+    valid_ids = valid_ids["project_id"][[1]]
+    return(valid_ids)
+  }
+  return(temp_df[[1]])
+}
+```
+
+
+U(n) is defined as the ratio of projects in a set that have at least 1 method chain
+of length $n$.
+```{r}
+f_un = function(n,projects_indices, method_chainings){
+  # computes Un function for a given n and a given set of projects.
+  
+  y = method_chainings %>% filter(project_id %in% projects_indices & chain_length >= n)
+  y = nrow(y %>% distinct(project_id))
+  
+  total_projects = length(projects_indices)
+  
+  y = y/total_projects  # return the ratio
+  return(y)
+}
+```
+
+```{r}
+get_dataframe_un = function(years,method_chainings_,bottom_n=1, top_n=100, dataset_size_=500, is_top_=TRUE, seed=5) {
+  # computes Un for each method chain length
+  n_s = c()
+  un_s = c()
+  c_years = c()
+  for(year in years){
+    project_indices = get_project_indices(c(year), method_chainings_,is_top=is_top_, seed_=seed) 
+    print(paste(year, "DATASET SIZE: ",length(project_indices)))
+    for(n in bottom_n:top_n){
+        current_un = f_un(n, project_indices, method_chainings_)
+        n_s = append(n_s, n)
+        un_s = append(un_s, current_un)
+        c_years = append(c_years, year)
+    }
+  }
+  return(data.frame(n=n_s, Un=un_s, year=c_years))
+}
+```
+
+
+```{r}
+get_difference_dataframe = function(df, name_) {
+  # returns a dataframe with the difference between Un of 2010 and 2018
+  old_values = df %>% filter(year==2010) %>% select(n,  Un) %>% rename(old=Un)
+  new_values = df %>% filter(year==2018) %>% select(n,  Un) %>% rename(recent=Un)
+  
+  new_df = inner_join(old_values, new_values, by="n")
+  new_df = new_df %>% mutate(diff=recent-old) %>% mutate(name=name_)
+  return(new_df)
+}
+```
+
+
+# Load samples
+
+The djanco query to sample and compute the frequencies of chain lengths, i.e the files of the samples we load,
+is at `./artifacts/empirical_method_chaining/sampler-by-commit`.
+```{r}
+# load sample 1
+df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_1.csv')
+df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_1.csv')
+all = rbind(df_2010, df_2018)
+all_un1 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
+
+p1 <- ggplot(all_un1, aes(x=n, y=Un, color=factor(year) )) +
+    geom_point() +
+    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
+    labs(y= "% of Projects", x = "chain_length") +
+    guides(colour=guide_legend(title=""))+ 
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
+                                  legend.text=element_text(size=16), panel.grid.major = element_blank())
+diff_df1 = get_difference_dataframe(all_un1, "sample 1")
+```
+
+
+```{r}
+# load sample 2
+df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_2.csv')
+df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_2.csv')
+all = rbind(df_2010, df_2018)
+all_un2 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
+
+p2 <- ggplot(all_un2, aes(x=n, y=Un, color=factor(year) )) +
+    geom_point() +
+    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
+    labs(y= "% of Projects", x = "chain_length") +
+    guides(colour=guide_legend(title=""))+ 
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
+                                  legend.text=element_text(size=16), panel.grid.major = element_blank())
+diff_df2 = get_difference_dataframe(all_un2, "sample 2")
+```
+
+
+```{r}
+# load sample 3
+df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_3.csv')
+df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_3.csv')
+all = rbind(df_2010, df_2018)
+all_un3 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
+
+p3 <- ggplot(all_un3, aes(x=n, y=Un, color=factor(year) )) +
+    geom_point() +
+    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
+    labs(y= "% of Projects", x = "chain_length") +
+    guides(colour=guide_legend(title=""))+ 
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
+                                  legend.text=element_text(size=16), panel.grid.major = element_blank())
+diff_df3 = get_difference_dataframe(all_un3, "sample 3")
+```
+
+
+
+```{r fig.height=3, fig.width=10}
+# plots the 3 samples 
+grid.arrange(p1,p2,p3, ncol=3, nrow=1)
+```
+
+`stars_1_chain_lengths.csv` is the output of running the Djanco query
+in `./artifacts/empirical_method_chaining/query_method_chainings`. We used the list of projects ids
+at `./artifacts/empirical_method_chaining/top_starred_indices.csv`.
+```{r}
+# laod the result of our reproduction of the methodology of the authors
+stars_method_chainings = read_csv("./reproductions/empirical_method_chaining/stars_1_chain_lengths.csv")
+```
+
+
+```{r}
+stars_dataframe = get_dataframe_un(c(2010,2018),stars_method_chainings, top_n=150,seed=777)
+pstars <- ggplot(stars_dataframe, aes(x=n, y=Un, color=factor(year) )) +
+    geom_point() +
+    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
+    labs(y= "% of Projects", x = "chain_length") +
+    guides(colour=guide_legend(title=""))+ 
+    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
+                                  legend.text=element_text(size=16), panel.grid.major = element_blank()) + 
+    ggtitle("Top Starred") 
+stars_difference_df  = get_difference_dataframe(stars_dataframe, "Stars")
+```
+
+```{r}
+difference_dataframe = rbind(diff_df1, diff_df2, diff_df3, stars_difference_df)
+```
+
+
+# Plot difference dataframe
+we plot for each sample the difference among U(n). We substract U(n) of 2010 to U(n) of 2018.
+```{r}
+difference_dataframe$name = factor(difference_dataframe$name, levels=c("Stars", "sample 1", "sample 2", "sample 3"))
+final_plot <- ggplot() + 
+  geom_line(data=difference_dataframe%>%filter(name=="Stars" & n<101),size=0.5,aes(x=n, y=diff),color="black") + 
+  geom_point(data=difference_dataframe%>%filter(name!="Stars" & n<101),size=0.75,aes(x=n, y=diff, color=name))+
+  scale_color_brewer(palette = "Dark2") +
+  geom_vline(xintercept=8, color="grey", size=0.2) + 
+  scale_x_continuous(breaks=c(0,8,25,50,75,100))+
+  xlab("")+
+  ylab("") +
+  theme(panel.background = element_blank(),legend.position = "none",text = element_text(size=20))
+final_plot
+```
+
+We are interested in the difference of U(8) since we are interested in the affirmation the authors do: 
+"Since chains of length 8 are unlikely to be composed by programmers who tend to avoid method chain- ing, this result is another supportive evidence for the widespread use of method chaining.".
+The authors obtain for 2010 a U(8)=50.1%, while in 2018 authors obtain a U(8)=42.7%.
+
+```{r}
+difference_dataframe %>% filter(n==8)
+```
+
+
+```{r}
+# create figure
+ggsave("figs/method_chainings/final_graph.pdf", plot=final_plot, height=7, width=10 )
+```
+

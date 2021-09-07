@@ -33,13 +33,6 @@ if ! [ -f js/projects_codedj_2_a ]; then
 fi
 ```
 
-> TODO There should also be a section on how to actually produce this from the raw dataset with djanco & friends.
-
-    target/release/clones -o /mnt/data/codedj-icse/output/1m1 -d /mnt/data/codedj-icse/java-1m1-merged -c /mnt/data/codedj-icse/cache/1m1
-    target/release/clones -o /mnt/data/codedj-icse/output/python -d /mnt/data/codedj-icse/python -c /mnt/data/codedj-icse/cache/python
-
-> TODO should update djanco to select substore properly!!!
-
 To lower djanco's memory requirements, the datasets are presented as 4 tables that must be joined together. While joining we also fix units and values where necessary:
 
 ```{r}
