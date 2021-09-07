@@ -1,7 +1,6 @@
 ---
 title: "style-analyzer: reproduction artifact"
 output: html_document
-author: Konrad Siek
 ---
 
 ```{r setup, include=FALSE}

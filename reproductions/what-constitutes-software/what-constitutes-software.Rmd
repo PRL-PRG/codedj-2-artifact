@@ -24,7 +24,7 @@ The categorization was done manually, by greedily checking the artifact types un
 ```{bash}
 cd reproductions/what-constitutes-software
 if ! [ -f local/java-sample ]; then
-  curl -o local.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/what-constitutes-software-local.tgz" -L
+  curl -o local.tgz "https://github.com/unknown-john/ICSE21-Anonymized/releases/download/v0.0/what-constitutes-software-local.tgz" -L
   tar -zxvf local.tgz
   rm local.tgz     
 fi

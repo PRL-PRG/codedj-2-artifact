@@ -1,12 +1,3 @@
-# TODO To deanonymize
-
-CHECK AND REMOVE THIS BEFORE ANONYMIZING
-
-- check for our names in files and remove
-- remove our names from the paper (!!!)
-- check prl-prg in names and files and verify that it's ok
-- replace the dataset getters to get them from the anonymized repo release
-
 # The Fault in Our Stars
 
 > This is the anonymized state of our artifact right after the paper submission. Everything should work, but there might be rough edges. A deanonymized, cleaned and polished version of this document will be published for the artifact evaluation if our paper is accepted. Everything in here *should* work, but the anonymization might have broken things here or there and rerunning the entire artifact from scratch takes a *lot* of time so not all errors might be fixed immediately.  

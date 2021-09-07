@@ -27,7 +27,7 @@ initialize_log(name = "scent_dl")
 ```{bash}
 cd reproductions/scent_dl
 if ! [ -f smells/stars/LargeClass.csv ]; then
-  curl -o smells.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/smells.tgz" -L
+  curl -o smells.tgz "https://github.com/unknown-john/ICSE21-Anonymized/releases/download/v0.0/smells.tgz" -L
   tar -zxvf smells.tgz
   rm smells.tgz
 fi

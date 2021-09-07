@@ -1,7 +1,7 @@
 [package]
 name = "what-constitutes-software-query"
 version = "0.1.0"
-authors = ["Konrad Siek <konrad.siek@gmail.com>"]
+authors = []
 edition = "2018"
 license = "MIT"
 

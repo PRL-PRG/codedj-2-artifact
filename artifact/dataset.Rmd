@@ -15,19 +15,19 @@ initialize_log(name = "dataset")
 
 ```{bash}
 mkdir -p dataset
-cd dataset
+cd dataset 
 if ! [ -f java/projects_codedj_2_a ]; then
-  curl -o java.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/java.tgz" -L
+  curl -o java.tgz "https://github.com/unknown-john/ICSE21-Anonymized/releases/download/v0.0/java.tgz" -L
   tar -zxvf java.tgz
   rm java.tgz     
 fi
 if ! [ -f python/projects_codedj_2_a ]; then
-  curl -o python.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/python.tgz" -L
+  curl -o python.tgz "https://github.com/unknown-john/ICSE21-Anonymized/releases/download/v0.0/python.tgz" -L
   tar -zxvf python.tgz
   rm python.tgz
 fi
 if ! [ -f js/projects_codedj_2_a ]; then
-  curl -o js.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/js.tgz" -L
+  curl -o js.tgz "https://github.com/unknown-john/ICSE21-Anonymized/releases/download/v0.0/js.tgz" -L
   tar -zxvf js.tgz
   rm js.tgz
 fi
