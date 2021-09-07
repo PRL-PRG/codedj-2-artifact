@@ -1,0 +1,24 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+advancednodejs_ci, https://github.com/shaaandi/advancednodejs_ci.git, 5385, 3602, 0, 3602, 0, 98, 
+plugin-battle-detail, https://github.com/poooi/plugin-battle-detail.git, 12379, 10642, 5141, 5501, 0.483086, 197, 90
+regular-expert, https://github.com/jonathan-meyer/regular-expert.git, 10521, 9986, 5713, 4273, 0.572101, 188, 79
+app, https://github.com/mgmxru/app.git, 75461, 64188, 54943, 9245, 0.85597, 201, 333
+forum_site, https://github.com/rmdegeorge/forum_site.git, 7715, 7766, 3249, 4517, 0.418362, 112, 29
+kingsland-blockchain-advanced-project, https://github.com/pappas999/kingsland-blockchain-advanced-project.git, 82368, 82368, 71355, 11013, 0.866295, 269, 674
+frozen-island, https://github.com/jschwantz/frozen-island.git, 7630, 4694, 2321, 2373, 0.494461, 155, 72
+bluetooh-developer-app, https://github.com/centipede5/bluetooh-developer-app.git, 105085, 105020, 81973, 23047, 0.780547, 329, 400
+react-component-mounting-and-unmounting-lab-re-coded_sanaa_web001, https://github.com/learn-co-students/react-component-mounting-and-unmounting-lab-re-coded_sanaa_web001.git, 1321, 1321, 194, 1127, 0.146858, 97, 22
+whats-new, https://github.com/j-poulter/whats-new.git, 2244, 2244, 473, 1771, 0.210784, 93, 22
+food-pickup-app, https://github.com/jfcon/food-pickup-app.git, 7143, 7148, 246, 6902, 0.0344152, 166, 89
+slurmprio200428, https://github.com/mmesiti/slurmprio200428.git, 65614, 63014, 42289, 20725, 0.671105, 223, 529
+anypoint-dropdown-menu, https://github.com/anypoint-web-components/anypoint-dropdown-menu.git, 9288, 9197, 5550, 3647, 0.603458, 59, 46
+governance-portal, https://github.com/zorancuc/governance-portal.git, 90569, 83485, 65294, 18191, 0.782105, 323, 278
+codearchive, https://github.com/shanemiller89/codearchive.git, 47573, 46295, 32302, 13993, 0.697743, 155, 103
+portfolio-site, https://github.com/dylanagibb/portfolio-site.git, 5969, 5942, 2132, 3810, 0.358802, 143, 60
+sysdevops, https://github.com/rmit-s3488937-tyler-larrad/sysdevops.git, 10833, 11269, 8785, 2484, 0.779572, 148, 85
+headstocks, https://github.com/guptabhavana08/headstocks.git, 69901, 69655, 53028, 16627, 0.761295, 363, 371
+avalon, https://github.com/laserbeam2045/avalon.git, 16501, 17494, 12492, 5002, 0.714073, 76, 79
+seniorproject, https://github.com/andy021/seniorproject.git, 18863, 19735, 13187, 6548, 0.668204, 238, 173
+best-webdriver, https://github.com/mobily-enterprises/best-webdriver.git, 9791, 9411, 4633, 4778, 0.492296, 90, 22
+fullstack, https://github.com/robertrantanen/fullstack.git, 25472, 16898, 13495, 3403, 0.798615, 223, 134
+octane-tech-talk, https://github.com/tomwayson/octane-tech-talk.git, 65614, 62734, 42105, 20629, 0.671167, 199, 531

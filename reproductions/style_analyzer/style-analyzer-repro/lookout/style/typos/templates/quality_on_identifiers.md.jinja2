@@ -1,0 +1,39 @@
+# Typos correction quality on identifiers
+{% do identifiers.__setitem__(IDENTIFIER_INDEX_COLUMN, range(identifiers|length)) %}
+{% set flat_identifiers = flatten_df_by_column(identifiers, "wrong", Columns.Token, tokenize) %}
+{% set flat_correct = flatten_df_by_column(identifiers, "correct", Columns.CorrectToken, tokenize) %}
+{% do flat_identifiers.__setitem__(Columns.CorrectToken, flat_correct[Columns.CorrectToken]) %}
+{% set flat_suggestions = {} %}
+{% for i, row in flat_identifiers.iterrows() %}
+        {% do flat_suggestions.__setitem__(i, suggestions.get(row[IDENTIFIER_INDEX_COLUMN], {}).get(
+        row[Columns.Token], [Candidate(row[Columns.Token], 1.0)]))%}
+{% endfor %}
+## Vocabulary insights
+
+{% set correct_tokens = flat_identifiers[Columns.CorrectToken] | unique | list %}
+{% set tokens = flat_identifiers[Columns.Token] | unique | list %}
+Total correct tokens                 {{ correct_tokens | length }}
+Correct tokens inside the vocabulary {{ correct_tokens | intersect(vocabulary_tokens) | length }}
+Total checked tokens                 {{ tokens | length }}
+Checked tokens inside the vocabulary {{ tokens | intersect(vocabulary_tokens) | length }}
+
+## Separate tokens report
+
+{{ generate_report(flat_identifiers, flat_suggestions) }}
+
+## Identifiers correction quality
+
+{% set typoed = identifiers["wrong"].ne(identifiers["correct"]).values %}
+{% set corrected = identifiers["sugg 0"].ne(identifiers["wrong"]).values %}
+
+{% set accuracies = {-1: 0} %}
+{% for pos in range(n_candidates) %}
+{% do accuracies.__setitem__(pos, accuracies[pos - 1] + 100 * (identifiers["sugg " + pos|string].eq(identifiers["correct"]).__and__(typoed).sum() / typoed.sum())) %}
+{% endfor %}
+
+Detection precision | {{ "%.2f%%" % (100.0 * corrected.__and__(typoed).sum() / corrected.sum()) }}
+Detection recall | {{ "%.2f%%" % (100.0 * corrected.__and__(typoed).sum() / typoed.sum()) }}
+Total top1 accuracy | {{ "%.2f%%" % (100.0 * identifiers["sugg 0"].eq(identifiers["correct"]).mean())}}
+Top1 accuracy on typo-ed | {{ "%.2f%%" % accuracies[0] }}
+Top2 accuracy on typo-ed | {{ "%.2f%%" % accuracies[1] }}
+Top3 accuracy on typo-ed | {{ "%.2f%%" % accuracies[2] }}

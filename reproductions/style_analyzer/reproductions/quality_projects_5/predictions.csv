@@ -1,0 +1,20 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+1-4_presents, https://github.com/kumajogo/1-4_presents.git, 39112, 46685, 35990, 10695, 0.770911, 124, 1519
+overlook, https://github.com/karlfunhouse/overlook.git, 8185, 7227, 2713, 4514, 0.375398, 215, 143
+sports_shop_fullstack, https://github.com/masko-vl/sports_shop_fullstack.git, 1638, 57222, 20938, 36284, 0.365908, 144, 232
+m, https://github.com/asd-xiv/m.git, 38150, 35240, 20855, 14385, 0.591799, 160, 119
+qixiang, https://github.com/jicaiming/qixiang.git, 4516, 4445, 637, 3808, 0.143307, 151, 70
+jcp_payroll, https://github.com/bridgetklingler/jcp_payroll.git, 5228, 5518, 0, 5518, 0, 86, 
+run_tracker, https://github.com/myk1118/run_tracker.git, 20826, 20357, 16094, 4263, 0.790588, 105, 134
+sauti-studio-fe-v2, https://github.com/labs13-sauti-studio/sauti-studio-fe-v2.git, 10735, 9344, 2155, 7189, 0.230629, 101, 67
+apprend, https://github.com/jorisnijkamp1/apprend.git, 39293, 45559, 38649, 6910, 0.848329, 136, 300
+imlachchatt, https://github.com/pgomez465/imlachchatt.git, 35888, 33938, 25598, 8340, 0.754258, 175, 163
+sonos, https://github.com/dudeofprosper/sonos.git, 20985, 19100, 3376, 15724, 0.176754, 114, 44
+employee-referral, https://github.com/namith-poojary/employee-referral.git, 112410, 109045, 97983, 11062, 0.898556, 234, 248
+patstagram, https://github.com/jaesukhwang/patstagram.git, 13658, 13393, 5602, 7791, 0.418278, 204, 115
+xnote, https://github.com/xupingmao/xnote.git, 111114, 104966, 75552, 29414, 0.719776, 323, 714
+reciperoost, https://github.com/michaelyonkman/reciperoost.git, 12580, 11066, 6906, 4160, 0.624074, 93, 54
+udemy_nodejs, https://github.com/woonglae/udemy_nodejs.git, 10138, 9975, 4648, 5327, 0.465965, 91, 55
+colesnyder.github.io, https://github.com/colesnyder/colesnyder.github.io.git, 99613, 99604, 80089, 19515, 0.804074, 315, 467
+gatsby-starter-netlify-cms1, https://github.com/rishpan/gatsby-starter-netlify-cms1.git, 2561, 5408, 2283, 3125, 0.422152, 67, 62
+desig-system-ta, https://github.com/andersonalmeida/desig-system-ta.git, 8055, 7920, 5513, 2407, 0.696086, 88, 31

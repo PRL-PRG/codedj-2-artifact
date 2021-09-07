@@ -1,0 +1,105 @@
+language: python
+sudo: false
+dist: xenial
+git:
+  depth: 9999999
+services:
+- docker
+addons:
+  apt:
+    packages:
+      - libsnappy-dev
+cache: pip
+before_cache:
+  - chown -R travis:travis $HOME/.cache/pip
+stages:
+  - style
+  - test
+  - name: deploy
+    # require any tag name
+    if: tag =~ .*
+  - name: deploy-k8s
+    if: tag =~ .*
+_install: &_install
+  - travis_retry make bblfsh-start
+  - pip install --upgrade pip cython codecov
+  - LOOKOUT_STYLE_ANALYZER_SETUP_INCLUDE_TESTS=1 pip install .[test,plot]
+  - cd $(pip show lookout-style|grep Location|cut -d' ' -f2)/lookout/style
+  - find . -name tests -type d -exec chmod 555 {} \;
+  - pip3 install git+https://github.com/facebookresearch/fastText@51e6738d734286251b6ad02e4fdbbcfe5b679382
+  - pip3 uninstall -y modelforge
+  - pip3 install --no-warn-conflicts modelforge>=0.12.1
+_coverage: &_coverage
+  - coverage run --concurrency=multiprocessing -m unittest discover
+  - coverage combine
+  - git clone --single-branch --depth 1 git://github.com/facebook/react
+  - find react -name '*.js' | xargs python3 -m lookout.style.format.langs -o /tmp/test
+matrix:
+  include:
+    - stage: style
+      python: 3.7
+      install:
+        - pip install -r doc/requirements.txt -r requirements-lint.txt
+        - cd lookout/style/format/visualizer && npm install && cd -
+      script:
+        - set -e
+        - make check
+        - rm -rf lookout/core/server
+        - cd doc && make
+        - cd ../lookout/style/format/visualizer && npm run build
+        - set +e
+    - stage: test
+      python: 3.5
+      script: *_coverage
+      install: *_install
+    - python: 3.6
+      # We test python 3.6 inside docker.
+      script:
+        - set -e
+        - make docker-check
+        - travis_retry make bblfsh-start
+        - make docker-build VERSION=test
+        - make docker-test
+        - set +e
+    - python: 3.7
+      script: *_coverage
+      install: *_install
+      after_success:
+        - codecov
+    - stage: deploy
+      python: 3.5
+      install:
+        - pip3 install --upgrade pip
+        - pip3 install twine pyopenssl
+      before_script: skip
+      script:
+        - test $(python3 setup.py --version) == $TRAVIS_TAG
+        - python3 setup.py bdist_wheel
+      deploy:
+        provider: script
+        script: twine upload dist/*py3-none-any* -u $PYPI_LOGIN -p $PYPI_PASS
+        skip_cleanup: true
+        on:
+          tags: true
+    - name: 'Push image to Docker Hub'
+      python: 3.5
+      stage: deploy
+      script:
+        - DOCKER_PUSH_LATEST=true make docker-push
+    - name: 'Deploy format to staging'
+      stage: deploy-k8s
+      python: 3.5
+      install:
+        - make install-helm
+      script:
+        - HELM_RELEASE=lookout-style-analyzer HELM_CHART=lookout-style-analyzer K8S_NAMESPACE=lookout HELM_ARGS="--tiller-namespace=lookout --repo https://src-d.github.io/charts/stable/ --set image.tag=$TRAVIS_TAG -f .helm_staging_format.yml" make deploy
+    - name: 'Deploy typos to staging'
+      stage: deploy-k8s
+      python: 3.5
+      install:
+        - make install-helm
+      script:
+        - HELM_RELEASE=lookout-typos-analyzer HELM_CHART=lookout-typos-analyzer K8S_NAMESPACE=lookout HELM_ARGS="--tiller-namespace=lookout --repo https://src-d.github.io/charts/stable/ --set image.tag=$TRAVIS_TAG -f .helm_staging_typos.yml" make deploy
+  fast_finish: true
+notifications:
+  email: false

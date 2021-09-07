@@ -1,0 +1,777 @@
+---
+title: "style-analyzer: reproduction artifact"
+output: html_document
+author: Konrad Siek
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preparing the datasets
+
+Move to the query:
+
+```bash
+cd style-analyzer-query
+```
+
+We generate project selections:
+
+```bash
+cargo run --bin select --release -- --output-path output --dataset-path /mnt/data/codedj-icse/javascript/ --cache-path /mnt/data/kondziu/codedj-icse/javascript-cache/
+```
+
+We create a dataset with just the projects we selected. Needs parasiter and a GitHub token (https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+
+```bash
+# Create a list of all unique projects in the selections.
+cat output/selections/*.csv | sort | uniq | head -n -1 | tail -n +2 > output/selections/all.csv
+
+# Prepare for running parasite
+mkdir -p /mnt/data/codedj-icse/js-selection/
+mkdir -p /mnt/data/codedj-icse/js-selection/repo_clones
+
+# Add projects to datastore
+parasite --datastore /mnt/data/codedj-icse/js-selection/ add output/selections/all.csv
+
+# Run parasite (updateall)
+parasite --datastore /mnt/data/codedj-icse/js-selection/ -ght ghtokens.csv -n 8 --interactive
+```
+
+Merge the dataset:
+
+```bash
+parasite --datastore /mnt/data/codedj-icse/js-selection-merged/ --merge-all /mnt/data/codedj-icse/js-selection Generic
+```
+
+Generate head and base commits for each project.
+
+```bash
+cargo run --bin generate_experiment_inputs --release -- --output-path output --dataset-path /mnt/data/codedj-icse/js-selection-merged/ --cache-path /mnt/data/kondziu/codedj-icse/js-selection-merged-cache/
+```
+
+# Setup
+
+```bash
+sudo apt update
+
+# I don't know if we actually need these, probably not.
+sudo apt install python3 python3-pip
+pip3 install pip install git+git://github.com/snowballstem/pystemmer
+pip3 install bblfsh
+
+# Docker
+sudo curl -sSL https://get.docker.com/ | sh
+sudo chmod 666 /var/run/docker.sock
+
+# Rust and djanco
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo install --git https://github.com/PRL-PRG/cargo-djanco
+
+# Start bblfsh
+make bblfsh-start
+```
+
+# Generate selections
+
+```bash
+cd style-selection-query
+
+# Prepare the query
+cargo djanco
+
+# Run for reproduction dataset
+cargo run --bin djanco --release -- --output-path output/repro \
+ --dataset-path /data/parasite/style-analyzer-merged/ \
+ --cache-path /data/parasite/style-analyzer-merged-cache/
+
+# Run for big dataset
+cargo run --bin djanco --release -- \
+  --output-path output --dataset-path /mnt/data/parasite/style-analyzer-merged/ \
+  --cache-path /data/parasite/style-analyzer-merged-cache/
+
+# Combine
+cp output/repro/info/javascript_projects.csv \
+   output/selections/repro_javascript_projects.csv
+cp output/repro/info/project_locs.csv \
+   output/selections/repro_project_locs.csv
+
+cd ..
+```
+
+# Process selections
+
+```bash
+make run-experiment
+```
+
+(To run just one or a few selections: `make run-experiment selections="x y z"`)
+
+Probably fix the access flags for the `reproductions` dir
+
+```bash
+sudo chmod -R a+rw reproductions
+```
+
+# Experiment
+
+```{R}
+library(readr)
+library(dplyr)
+library(stringr)
+library(kableExtra)
+library(ggplot2)
+library(scales)
+library(cowplot)
+library(gridExtra)
+library(ggridges)
+library(ggpubr)
+library(tidyr)
+library(digest)
+```
+
+```{r}
+PATH_PREFIX=""
+
+# This is where figures are generated into
+FIGS="figs/style-analyzer"
+dir.create(FIGS, recursive=TRUE)
+
+# This is where the results of style-analyzer-query live.
+# Must have a / at the end.
+DJANCO_DIR <- "style-analyzer-query/output/"
+
+# This is where the results of experiments live. 
+# Each experiment is a separatre subdir, containing reports and the execution log as .txt (not compressed). 
+# The path should not have spaces in it. Must have a / at the end.
+REPRO_DIR <- "reproductions/"
+
+# A list of all rperoductions, these are subdirectories of REPRO_DIR. These should not have spaces in them.
+# They are used as names, they should not have / in them.
+#random_projects <- paste0("random_projects_", c(0,2,3,6:9), "_", 10)
+#random_projects_by_size <- paste0("random_projects_by_size_", c(0:2, 6:9), "_", 10)
+quality_projects <- paste0("quality_projects_", c(0:3,6:9))
+EXPERIMENTS <- c("original_reproduction", "original", quality_projects)
+PAPER_EXPERIMENTS <- c("original", quality_projects)
+
+
+# Convert to bash variables
+Sys.setenv(REPRO_DIRS = paste(paste0(REPRO_DIR, "/", EXPERIMENTS), collapse = " "))
+```
+
+```{bash}
+# We execute this once for every experiment.
+for REPRO_DIR in $REPRO_DIRS 
+do
+  echo "Analyzing $REPRO_DIR"
+
+  # Calculate prediction rates by analyzing the log.
+  scripts/extract_prediction_rate.awk \
+      <"${REPRO_DIR}/logs.txt" \
+      >"${REPRO_DIR}/predictions.csv" 
+  
+  # Convert summary test report into CSV.
+  scripts/extract_summary.awk \
+      <"${REPRO_DIR}/summary-test_report.md" \
+      >"${REPRO_DIR}/summary.csv" \
+  || echo "Failed to generate summary.csv for ${REPRO_DIR}: this means the selection didn't finish processing." \
+          "It only matters if you want to generate the big table."
+  
+  # Extract unique label counts from individual reports.
+  scripts/extract_number_of_labels.sh \
+       "${REPRO_DIR}/" \
+      >"${REPRO_DIR}/labels.csv" 
+      
+  # Extract support and full support unmbers for training data.
+  scripts/extract_training_samples.sh \
+       "${REPRO_DIR}/" \
+      >"${REPRO_DIR}/training_samples.csv" 
+      
+  # Extract support and full support unmbers for training data.
+  scripts/extract_test_precision.sh \
+       "${REPRO_DIR}/" \
+      >"${REPRO_DIR}/precision.csv" 
+done    
+```
+
+```{r}
+# Some helper functions
+url_to_repo <- function(url) str_replace_all(url, c("(^.*/)|([.]git$)"), "")
+
+# Common: all projects and their locs
+all_projects_path <- paste0(DJANCO_DIR, "info/javascript_projects.csv")
+all_projects_extended_path <- paste0(DJANCO_DIR, "info/javascript_projects_extended.csv")
+project_locs_path <- paste0(DJANCO_DIR, "info/project_locs.csv")
+ 
+# Fix: these are now part of all projects 
+# Common: from small datatset containing only the projects from the paper
+#project_locs_path_repro <- paste0(DJANCO_DIR, "info/repro_project_locs.csv")
+#all_projects_path_repro <- paste0(DJANCO_DIR, "info/repro_javascript_projects.csv")
+
+# Load common data: this is only data for the 1000-or-so projects we use for analysis
+all_projects <- read_csv(all_projects_path) %>% mutate(repo = url_to_repo(url)) %>% mutate(url = str_replace(url, ".git$", ""))
+all_projects_extended <- read_csv(all_projects_extended_path) %>% mutate(repo = url_to_repo(url)) %>% mutate(url = str_replace(url, ".git$", ""))
+project_locs <- read_csv(project_locs_path) %>% mutate(repo = url_to_repo(url)) %>% mutate(url = str_replace(url, ".git$", ""))
+
+# Fix: these are now part of all projects 
+# Repro extras: attach the data from small dataset to the big dataset
+# all_projects_repro <- read_csv(all_projects_path_repro) %>% mutate(repo = url_to_repo(url))
+# project_locs_repro <- read_csv(project_locs_path_repro) %>% mutate(repo = url_to_repo(url))
+# all_projects <- bind_rows(all_projects, all_projects_repro) %>% distinct
+# project_locs <- bind_rows(project_locs, project_locs_repro) %>% distinct
+
+# Construct a table with the results of one experiment
+prepare_data <- function(experiment, size=19) {
+  cat(paste0("Preparing results for ", experiment))
+  
+  # Paths
+  predictions_path <- paste0(REPRO_DIR, experiment, "/predictions.csv")
+  summary_path <- paste0(REPRO_DIR, experiment, "/summary.csv")
+  labels_path <- paste0(REPRO_DIR, experiment, "/labels.csv")
+  samples_path <- paste0(REPRO_DIR, experiment, "/training_samples.csv")
+  precision_path <- paste0(REPRO_DIR, experiment, "/precision.csv")
+
+  # CSVs
+  predictions <- read_csv(predictions_path) %>% mutate(url = str_replace(url, ".git$", "")) # there is one in project_locs and this one has a different format
+  labels <- read_csv(labels_path) %>% mutate(repo = url_to_repo(repo))
+  samples <- read_csv(samples_path) %>% mutate(repo = url_to_repo(repo)) %>% rename(report_training_samples=support, report_full_training_samples=full_support)
+  precision <- read_csv(precision_path) %>% mutate(repo = url_to_repo(repo)) %>% rename(report_precision=precision)
+
+  # Summary is optional, since we're concentrating on graphs not tables.
+  # If the whole selection didn't finish processing, the summary won't be generated, 
+  # but everything else will be.
+  finished_processing <- file.exists(summary_path);
+  summary <-
+    if (finished_processing) read_csv(summary_path) %>% mutate(repo = url_to_repo(repo))
+    else tibble(repo=character(0), precision=numeric(0), 
+                recall=numeric(0), full_recall=numeric(0), 
+                f1=numeric(0), full_f1=numeric(0), 
+                ppcr=integer(0), 
+                support=integer(0), full_support=integer(0), 
+                `Rules Number`=integer(0), `Average Rule Len`=numeric(0))
+  
+  # Collate results 
+  collated <- predictions %>%
+    left_join(project_locs, by=c("url", "repo")) %>%
+    left_join(summary, by="repo") %>%
+    left_join(labels, by="repo") %>%
+    left_join(samples, by="repo") %>%
+    left_join(precision, by="repo")
+   
+  #browser()  
+  # Format the output
+  data <- collated %>%
+    select(-recall, -f1, -support, -precision) %>%
+    mutate(pred_r=predictions/samples) %>%
+    rename(recall=full_recall, 
+           precision=report_precision,
+           f1=full_f1,
+           support=report_training_samples,
+           avg_rule_len=`Average Rule Len`,
+           rules=`Rules Number`) %>%
+    select(url, repo, precision, pred_r, 
+           recall, f1, support, locs,
+           labels, rules, avg_rule_len,  
+           training_time) %>%
+    filter(!is.na(precision)) %>%
+    distinct
+    
+  print(paste0((data %>% count)$n, " projects in ", experiment))
+  
+  if ((data %>% count)$n > size) {
+    seed <- digest::digest2int(experiment, seed=1111)
+    set.seed(seed)
+    data %>% sample_n(size)
+  } else {
+    data
+  }
+}
+
+# Prepare data for all experiments. Put the results in a list.
+experiment_data <- lapply(EXPERIMENTS, prepare_data) 
+# prepare_data("top_starred_projects_5")
+names(experiment_data) <- EXPERIMENTS
+
+experiment_data[["paper"]] <- tibble(
+  repo       = c("node", "webpack", "meteor", "react", "atom", "react-native", "jquery", "storybook", "freeCodeCamp", "express", "30-seconds-of-code", "evergreen", "citgm", "axios", "create-react-app", "redux", "reveal.js", "carlo", "telescope"),
+  precision  = c(0.965,  0.957,     0.9,      0.943,   0.955,   0.94,          0.972,    0.94,        0.928,           0.937,    0.951,                0.894,       0.936,    0.94,   0.895,              0.937,    0.897,      0.878,   0.806),
+  support    = c(374298, 358012,    337627,   304465,  265521,  264961,        197072,   161366,      114020,          78411,    67737,                38387,       21941,    21130,  16718,              14783,    9974,       5529,    731)
+)
+
+min_precision = sapply(experiment_data, function(data) min(data$precision)) %>% min
+max_support = sapply(experiment_data, function(data) max(data$support)) %>% max
+
+for (experiment in experiment_data) {
+  print(experiment)
+}
+```
+
+See what finished processing:
+
+```{r}
+status_table <- tibble(experiment=character(0), url=character(0), locs=integer(0), done=logical(0))
+for (experiment in EXPERIMENTS) {
+  query_result_path <- paste0(DJANCO_DIR, "/specs/", experiment, ".csv")
+  if (!file.exists(query_result_path)) {
+    warning("Could not find file: ", query_result_path, ". Skipping.\n")
+  } else {
+    query_result <- read_csv(query_result_path) %>% select(url)
+    #print(paste0("WTF qr", experiment, "->", query_result  %>% count() %>% pull(n)))
+    processed_projects <- experiment_data[[experiment]] %>% select(url)
+    processed_projects_summary <- query_result %>% 
+      mutate(experiment=experiment) %>% 
+      left_join(processed_projects %>% mutate(done=TRUE), by="url") %>%
+      left_join(project_locs, by="url")
+    #print(processed_projects_summary)
+    #print(paste0("WTF ", experiment, "->", processed_projects_summary  %>% count() %>% pull(n)))
+    status_table <- bind_rows(status_table, processed_projects_summary %>% select(experiment, url, locs, done))
+  }
+}
+status_table
+```
+
+## Reproduction qualiy check
+
+```{r}
+comparison <- inner_join(experiment_data$paper, experiment_data$original_reproduction, by="repo")
+ggplot() + 
+  geom_segment(comparison, mapping=aes(x=precision.x, xend=precision.y, y=support.x, yend=support.y, alpha=0.2, color=repo), arrow=arrow()) + 
+  geom_text(data=comparison, aes(x=precision.x, y=support.x, label=repo)) + 
+  theme_bw() +  
+  scale_x_continuous(labels=function(x) format(x, digits=2)) + #, limits = c(min_precision, 1)) +
+  scale_y_log10(labels=label_number_si()) + #limits =  c(0 - 10000, max_support)) +
+  ggtitle("Paper vs reproduction using input from artifact") + # (same, just bigger and not scaled like everything else)") +
+  xlab("Precision") +
+  ylab("Samples in training set") +
+  theme(legend.position="none")
+```
+How much more precision/support do we get for the reproduction:
+
+```{r}
+deltas <- comparison %>% 
+  mutate(precision=precision.y,
+         precision_delta=abs(precision.y-precision.x), 
+         precision_delta_perc=format(100*precision_delta/precision.x, digits=1),
+         support=support.y,
+         support_delta=abs(support.y-support.x),
+         support_delta_perc=format(100*support_delta/support.x, digits=1)) %>% 
+  select(repo, precision, precision_delta, precision_delta_perc, support, support_delta,  support_delta_perc)
+
+deltas
+```
+
+```{r}
+deltas %>% summarize(
+  mean_precision_delta=mean(as.numeric(precision_delta)),
+  max_precision_delta=max(as.numeric(precision_delta)),
+  mean_support_delta=mean(as.numeric(support_delta)),
+  max_support_delta=max(as.numeric(support_delta)),
+  mean_precision_delta_perc=mean(as.numeric(precision_delta_perc)),
+  max_precision_delta_perc=max(as.numeric(precision_delta_perc)),
+  mean_support_delta_perc=mean(as.numeric(support_delta_perc)),
+  max_support_delta_perc=max(as.numeric(support_delta_perc)))
+```
+  
+```{r}
+comparison <- inner_join(experiment_data$original_reproduction, experiment_data$original, by="repo")
+ggplot() + 
+  geom_segment(comparison, mapping=aes(x=precision.x, xend=precision.y, y=support.x, yend=support.y, alpha=0.2, color=repo), arrow=arrow()) + 
+  geom_text(data=comparison, aes(x=precision.x, y=support.x, label=repo)) + 
+  theme_bw() +  
+  scale_x_continuous(labels=function(x) format(x, digits=2)) + #, limits = c(min_precision, 1)) +
+  scale_y_log10(labels=label_number_si()) + #limits =  c(0 - 10000, max_support)) +
+  ggtitle("Paper vs reproduction using input from artifact") + # (same, just bigger and not scaled like everything else)") +
+  xlab("Precision") +
+  ylab("Samples in training set") +
+  theme(legend.position="none")
+```  
+
+```{r}
+deltas <- comparison %>% 
+  mutate(precision=precision.y,
+         precision_delta=precision.y-precision.x, 
+         precision_delta_perc=format(100*abs(precision_delta)/precision.x, digits=1),
+         support=support.y,
+         support_delta=support.y-support.x,
+         support_delta_perc=format(100*abs(support_delta)/support.x, digits=1)) %>% 
+  select(repo, precision, precision_delta, precision_delta_perc, support, support_delta,  support_delta_perc)
+
+deltas
+```  
+  
+```{r}
+deltas %>% summarize(
+  mean_precision_delta=mean(as.numeric(precision_delta)),
+  max_precision_delta=max(as.numeric(precision_delta)),
+  mean_support_delta=mean(as.numeric(support_delta)),
+  max_support_delta=max(as.numeric(support_delta)),
+  mean_precision_delta_perc=mean(as.numeric(precision_delta_perc)),
+  max_precision_delta_perc=max(as.numeric(precision_delta_perc)),
+  mean_support_delta_perc=mean(as.numeric(support_delta_perc)),
+  max_support_delta_perc=max(as.numeric(support_delta_perc)))
+```
+  
+## Metrics measured on the validation part of the dataset. 
+
+The last row is weighed by the number of samples.
+
+```{r}
+make_paper_table <- function(experiment, latex = FALSE, digits=3) {
+  
+  data <- experiment_data[[experiment]] %>% mutate(`training time, min` = round(training_time/60))
+  
+  stringified <-
+    data %>% 
+    mutate(repo = repo, 
+           precision = format(precision, digits=digits),
+           pred_r = format(pred_r, digits=digits),
+           recall = format(recall, digits=digits),
+           f1 = format(f1, digits=digits),
+           support = format(support, digits=digits),
+           locs = format(locs, digits=digits),
+           rules = format(rules, digits=digits),
+           avg_rule_len = format(avg_rule_len, digits=digits),
+           labels = format(labels, digits=digits),
+           training_time = format(training_time, digits=digits)) %>%
+    arrange(desc(support))
+
+  average <- 
+    data %>% 
+    summarize(repo = "average", 
+              precision = format(mean(precision), digits=digits),
+              pred_r = format(mean(pred_r), digits=digits),
+              recall = format(mean(recall), digits=digits),
+              f1 = format(mean(f1), digits=digits),
+              support = format(mean(support), digits=digits),
+              locs = NA,
+              rules = format(mean(rules), digits=digits),
+              avg_rule_len = format(mean(avg_rule_len), digits=digits),
+              labels = format(mean(labels), digits=digits),
+              training_time = NA)
+  
+  weighted_average <- 
+    data %>% 
+    summarize(repo = "weighted average", 
+              precision = format(weighted.mean(precision, support), digits=digits),
+              pred_r = format(weighted.mean(pred_r, support),  digits=digits),
+              recall = format(weighted.mean(recall, support), digits=digits),
+              f1 = format(weighted.mean(f1, support), digits=digits),
+              locs = NA,
+              rules = NA,
+              avg_rule_len = NA,
+              labels = NA,
+              training_time = NA,
+              support = NA)
+  
+  
+  
+  table <- bind_rows(stringified, average, weighted_average) %>%
+    rename(repository=repo,
+           `PredR`=pred_r,
+           `train samples` = support,
+           `LoC` = locs,
+           `unique labels` = labels,
+           `avg. rule length` = avg_rule_len) %>%
+    select(`repository`, `precision`, `PredR`, 
+           `recall`, `f1`, `train samples`, `LoC`, 
+           `unique labels`, `rules`, `avg. rule length`, 
+           `training time, min`)
+  
+  k <- kable(table, booktabs = TRUE, format = ifelse(latex, "latex", "html"), caption = paste0("Selection: ", experiment)) %>%
+    kable_styling(latex_options = "striped") %>%
+    row_spec((table %>% count)$n - 3, hline_after = TRUE) # Add hline before average and weighted average
+  
+  return(k)
+}
+```
+
+```{r}
+make_paper_table("original_reproduction")
+```
+
+```{r}
+make_paper_table("original")
+```
+
+```{r}
+make_paper_table("original")
+```
+
+
+```{r}
+for (experiment in EXPERIMENTS) {
+  print(make_paper_table(experiment))
+}
+```
+
+## Effect of the number of samples in the training set on precision
+
+```{r}
+make_precision_support_graph <- function (experiment, uniform_scales=TRUE, labels=FALSE, color_by_selection=FALSE, log_scale=FALSE, only_top_n=NULL,  only_bottom_n=NULL, use_selection_name=FALSE) {
+  data <- experiment_data[[experiment]]
+  if (!is.null(only_top_n)) {
+    data <- data %>% mutate(i=1:n()) %>% top_n(only_top_n, i)
+    print(data)
+  }
+  if (!is.null(only_bottom_n)) {
+    data <- data %>% mutate(i=1:n()) %>% top_n(-only_bottom_n, i)
+    print(data)
+  }
+  plot <- 
+  if (color_by_selection) {
+    ggplot(data, aes(x=precision, y=support, alpha=0.2, color=selection)) + geom_point(size=2)
+  } else {
+    ggplot(data, aes(x=precision, y=support, alpha=0.2)) + geom_point(size=2)
+  }
+  if (labels) {
+    plot <- plot + geom_text(aes(label=repo), position=position_nudge(y=-10000),  size=3)
+  }
+  
+  x_range <- if(uniform_scales) c(min_precision, 1) else NULL
+  y_range <- if(uniform_scales) c(0 - 10000, max_support) else NULL
+  
+  if (log_scale) {
+    plot <- plot + scale_y_log10(labels=label_number_si(), limits = y_range)
+  } else {
+    plot <- plot + scale_y_continuous(labels=label_number_si(), limits = y_range)
+  }
+  
+  plot +
+    scale_x_continuous(labels=function(x) format(x, digits=2), limits = x_range) +
+    xlab("Precision") + 
+    ylab("Samples in the training set") +
+    ggtitle(ifelse(use_selection_name, selection_names[[experiment]], paste0("Selection: ", experiment))) +
+    theme_bw() + 
+    theme(legend.position = "none")
+}
+```
+
+## Reproduction vs original
+
+```{r}
+make_precision_support_graph("paper")
+```
+
+```{r}
+make_precision_support_graph("original_reproduction")
+```
+
+```{r}
+make_precision_support_graph("original")
+```
+
+```{r fig.width=20, fig.height=10}
+graphs <- lapply(quality_projects, make_precision_support_graph)
+do.call("grid.arrange", c(graphs, ncol=4))
+```
+
+### Quality projects vs original
+
+
+``` 
+r, fig.width=10, fig.height=10
+grid.arrange(widths=c(1,1), make_precision_support_graph("original_10") + xlab(NULL), 
+                            make_precision_support_graph("top_starred_projects") + xlab(NULL) + ylab(NULL), 
+                            make_precision_support_graph("quality_projects_10", only_top_n=20), 
+                            make_precision_support_graph("quality_projects_10", only_bottom_n=20) + ylab(NULL))
+```
+
+
+```{r, fig.width=5, fig.height=10}
+mann_whitney_significance <- function(experiment) {
+  precision_result <- wilcox.test(experiment_data$original$precision, experiment_data[[experiment]]$precision, exact=FALSE)
+  support_result <- wilcox.test(experiment_data$original$support, experiment_data[[experiment]]$support, exact=FALSE)
+  experiment_data[[experiment]] %>% 
+    mutate(precision_similarity = ifelse (experiment == "original", "original", ifelse(precision_result$p.value > 0.05, "equivalent to original", "different"))) %>%
+    mutate(support_similarity = ifelse (experiment == "original", "original", ifelse(support_result$p.value > 0.05, "equivalent to original", "different")))
+}
+significance <- sapply(EXPERIMENTS, mann_whitney_significance, simplify=FALSE)
+significance <- sapply(significance, function(x) {
+  x %>% 
+    mutate(precision_similarity=factor(precision_similarity, levels=c("original","equivalent to original", "different"))) %>%
+    mutate(support_similarity=factor(support_similarity, levels=c("original","equivalent to original", "different"))) 
+}, simplify=FALSE)
+
+strip_and_label <- function(data, label) {
+  data %>% 
+    mutate(group=ifelse(label == "original", "Original", str_replace(label, "_[0-9]+$", ""))) %>%
+    mutate(selection=label) %>% 
+    select(group, selection, repo, precision, support, precision_similarity, support_similarity)
+}
+stripped_and_labelled <- lapply(EXPERIMENTS, function(experiment) significance[[experiment]] %>% strip_and_label(experiment))
+comparison_data <- do.call(bind_rows, stripped_and_labelled)
+
+support_comparison <- ggplot(comparison_data, aes(x=selection, y=support, color=support_similarity, fill=support_similarity, alpha=support_similarity)) + 
+  geom_boxplot(width = 0.5, position = position_dodge(width=0.2), outlier.shape = 4, outlier.alpha = 1) + 
+  xlab("Selection") + ylab("Samples in training set") + 
+  scale_y_log10(labels=label_number_si()) + 
+  theme_bw() + 
+  theme(legend.title = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank()) +
+  scale_alpha_manual(values=rep(0.5, 3)) + 
+  scale_x_discrete(labels=c("Original", "","","","","","Interesting Projects", "", "", "", ""))
+
+precision_comparison <- ggplot(comparison_data, aes(x=selection, y=precision, color=precision_similarity, fill=precision_similarity, alpha=precision_similarity)) +
+  geom_boxplot(width = 0.5, position = position_dodge(width=0.2), outlier.shape = 4, outlier.alpha = 1) + 
+  xlab("Selection") + ylab("Precision") + 
+  theme_bw() + 
+  scale_y_continuous(limits=c(0.75,1)) +
+  theme(legend.title = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank()) +
+  scale_alpha_manual(values=rep(0.5, 3)) + 
+  scale_x_discrete(labels=c("Original", "","","","","","Interesting Projects", "", "", "", ""))
+
+grid.arrange(widths=c(1), support_comparison, precision_comparison)
+```
+# Paper
+
+```{r}
+# renaming selections to soemthing pretties,more concise
+stars_sequence <- 0
+quality_sequence <- 0
+next_stars <- function () {
+  stars_sequence <<- stars_sequence + 1 
+  stars_sequence
+}
+next_quality <- function () {
+  quality_sequence <<- quality_sequence + 1 
+  quality_sequence
+}
+make_selection_label <- function(experiment) {
+  selection_name <- if (str_starts(experiment, "top_starred_projects")) { paste0("Top Stars ", next_stars()) } 
+               else if (str_starts(experiment, "quality_projects")) { paste0("Interesting ", next_quality()) } 
+               else if (str_starts(experiment, "original")) { "Original" } 
+               else experiment
+  selection_name
+}
+selection_names <- sapply(PAPER_EXPERIMENTS, make_selection_label, simplify=FALSE)
+selection_name_order <- c("Original", paste0(" Top Stars ", 1:stars_sequence), paste0(" Interesting Projects ", 1:quality_sequence, " "))
+strip_and_label <- function(data, label) {
+  selection_name <- selection_names[[label]]
+  data %>% mutate(selection=label, selection_name=selection_name) %>% select(selection, selection_name, repo, precision, support, precision_similarity, support_similarity)
+}
+```
+
+
+
+```{r fig.width=5, fig.height=5}
+make_precision_support_graph <- function (experiment, uniform_scales=TRUE, labels=FALSE, color_by_selection=FALSE, log_scale=FALSE, only_top_n=NULL,  only_bottom_n=NULL, use_selection_name=FALSE, left=T, bottom=T) {
+  data <- experiment_data[[experiment]]
+  if (!is.null(only_top_n)) {
+    data <- data %>% mutate(i=1:n()) %>% top_n(only_top_n, i)
+    print(data)
+  }
+  if (!is.null(only_bottom_n)) {
+    data <- data %>% mutate(i=1:n()) %>% top_n(-only_bottom_n, i)
+    print(data)
+  }
+  plot <- 
+  if (color_by_selection) {
+    ggplot(data, aes(x=precision, y=support, alpha=0.2, color=selection)) + geom_point(size=2, shape=4)
+  } else {
+    ggplot(data, aes(x=precision, y=support, alpha=0.2)) + geom_point(size=2, shape=4)
+  }
+  if (labels) {
+    plot <- plot + geom_text(aes(label=repo), position=position_nudge(y=-10000),  size=3)
+  }
+  
+  x_range <- if(uniform_scales) c(min_precision, 1) else NULL
+  y_range <- if(uniform_scales) c(0 - 10000, max_support) else NULL
+  
+  if (log_scale) {
+    plot <- plot + scale_y_log10(labels=label_number_si(), limits = y_range)
+  } else {
+    plot <- plot + scale_y_continuous(labels=label_number_si(), limits = y_range)
+  }
+  
+  plot <- plot +
+    scale_x_continuous(labels=function(x) format(x, digits=2), limits = x_range) +
+    xlab("Precision") + 
+    ylab("Project size") +
+    #ggtitle(ifelse(use_selection_name, selection_names[[experiment]], paste0("Selection: ", experiment))) +
+    theme_bw() + 
+    theme(legend.position="none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    theme(panel.border=element_blank(), axis.line.x = element_line(size = 0.2), axis.line.y = element_line(size = 0.2)) + 
+    theme(plot.title=element_text(margin=margin(t=10,b=-20), hjust = 0.05)) +
+    theme(axis.title.y = element_blank())  +
+    theme(axis.title.x = element_blank()) 
+  
+  plot
+}
+
+no_bottom <- function(plot)  plot + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+no_left <- function(plot)  plot + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+y_text <- text_grob("Project size", rot=90, size=11)
+x_text <- text_grob("Precision", size=11)
+
+grid.arrange(
+  make_precision_support_graph("original", use_selection_name = T) %>% no_bottom,
+  make_precision_support_graph("quality_projects_0", use_selection_name = T) %>% no_bottom %>% no_left,
+  make_precision_support_graph("quality_projects_1", use_selection_name = T),
+  make_precision_support_graph("quality_projects_2", use_selection_name = T) %>% no_left,
+  ncol=2, nrow=2, left=y_text, bottom=x_text, heights=c(5,5.25), widths=c(5.65,5)
+)
+
+dev.copy(pdf, file=paste0(FIGS, "/precision-vs-samples.pdf"), height=5, width=5)
+dev.off()
+```
+
+```{r, fig.width=5, fig.height=3}
+significance <- sapply(PAPER_EXPERIMENTS, mann_whitney_significance, simplify=FALSE)
+significance <- sapply(significance, function(x) {
+  x %>% 
+    mutate(precision_similarity=factor(precision_similarity, levels=c("original","equivalent to original", "different"))) %>%
+    mutate(support_similarity=factor(support_similarity, levels=c("original","equivalent to original", "different"))) 
+}, simplify=FALSE)
+stripped_and_labelled <- lapply(PAPER_EXPERIMENTS, function(experiment) significance[[experiment]] %>% strip_and_label(experiment))
+comparison_data <- do.call(bind_rows, stripped_and_labelled) %>% mutate(selection_name = factor(selection_name, levels=selection_name_order))
+
+# support_comparison <- ggplot(comparison_data, aes(x=selection_name, y=support, fill=selection, color=selection, alpha=!support_significance)) + 
+#   geom_boxplot() + 
+#   xlab("Selection") + ylab("Samples in training set") + 
+#   scale_y_continuous(labels=label_number_si()) + 
+#   #scale_fill_manual("Legend", values = ifelse(!support_significance, selection, NA)) +
+#   scale_alpha_discrete(range=c(0.5, 0)) +
+#   theme_bw() + 
+#   theme(legend.position="none", panel.grid.major = element_blank(), panel.grid.minor = element_blank()) #, axis.text.x = element_blank(), axis.title.x = element_blank()) 
+
+original_precision_median <- comparison_data %>% filter(selection=="original") %>% pull(precision) %>% median
+
+color_original = "#9A32CD" #"#D7263D" #"#DB2763" #"#0BB19F"
+color_different = "#DB2763" 
+color_equivalent = "#574AE2"  #"#0BB19F"
+
+precision_comparison <- ggplot(comparison_data, aes(x=selection, y=precision, color=precision_similarity, fill=precision_similarity, alpha=precision_similarity)) +
+  geom_boxplot(width = 0.65, position = position_dodge(width=0.05), outlier.shape = 4, outlier.alpha = 1) + 
+  geom_vline(xintercept=1.5, color="black", linetype="dotted", size=0.35) +
+  geom_hline(yintercept=original_precision_median, linetype="dotted", color = color_original, size=0.35) + # small projects median    //red
+  xlab("Selection") + ylab("Precision") + 
+  theme_bw() + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border=element_blank()) +
+  theme(legend.title = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank()) +
+  theme(legend.text=element_text(size=8), legend.key.size = unit(9, "pt"),, legend.position = c(0.5, 0.2), legend.background = element_blank()) +
+  scale_y_continuous(limits=c(0.6,1)) + #, ) +
+  scale_alpha_manual(values=rep(0.5, 3)) + 
+  scale_fill_manual(values=c(color_original, color_equivalent, color_different)) +
+  scale_color_manual(values=c(color_original, color_equivalent, color_different)) +
+  scale_x_discrete(labels=c("Original", "","","","","Interesting Projects", "", "", "", "","")) 
+  
+  
+  # precision_comparison <- ggplot(comparison_data, aes(x=selection, y=precision, color=precision_similarity, fill=precision_similarity, alpha=precision_similarity)) +
+  # geom_boxplot(width = 0.5, position = position_dodge(width=0.2), outlier.shape = 4, outlier.alpha = 1) + 
+  # xlab("Selection") + ylab("Precision") + 
+  # theme_bw() + 
+  # scale_y_continuous(limits=c(0.75,1)) +
+  # theme(legend.title = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank()) +
+  # scale_alpha_manual(values=rep(0.5, 3)) + 
+  # scale_x_discrete(labels=c("Original", "","","","Interesting Projects", "", "", "", "", "", ""))
+
+#graph <- grid.arrange(widths=c(1), support_comparison, precision_comparison)
+
+precision_comparison
+
+dev.copy(pdf, file=paste0(FIGS, "/precision-and-samples-comparison.pdf"), height=3, width=5)
+dev.off()
+```
+
+# Notes

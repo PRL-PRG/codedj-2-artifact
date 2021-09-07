@@ -1,0 +1,24 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+gatsby-starter-blog, https://github.com/atomic-orange/gatsby-starter-blog.git, 2002, 2002, 0, 2002, 0, 55, 
+ss-panel-server, https://github.com/qiujun8023/ss-panel-server.git, 20543, 20422, 17373, 3049, 0.8507, 122, 111
+app-ionic-ios, https://github.com/corderogerardo/app-ionic-ios.git, 43588, 43422, 31415, 12007, 0.723481, 159, 241
+loopback3-core, https://github.com/binhle87/loopback3-core.git, 32371, 65499, 57600, 7899, 0.879403, 198, 423
+be-nc-news, https://github.com/jordantai/be-nc-news.git, 17390, 17391, 16313, 1078, 0.938014, 86, 68
+lang-chat, https://github.com/nahuelarjonadev/lang-chat.git, 1249, 1247, 0, 1247, 0, 71, 
+distribuidoragenesis, https://github.com/luisb0992/distribuidoragenesis.git, 197323, 185388, 160713, 24675, 0.866901, 561, 1425
+mediawiki-api-demos, https://github.com/wikimedia/mediawiki-api-demos.git, 33189, 26732, 20481, 6251, 0.76616, 102, 55
+playground, https://github.com/feisty-flintstones/playground.git, 10837, 10837, 1317, 9520, 0.121528, 265, 69
+jpfp-redo, https://github.com/ethang19/jpfp-redo.git, 5919, 789, 313, 476, 0.396705, 67, 4
+personal-site-2015, https://github.com/mngyuan/personal-site-2015.git, 6352, 6352, 2435, 3917, 0.383344, 82, 20
+v1.0, https://github.com/joaokurtz/v1.0.git, 29807, 27383, 12498, 14885, 0.456415, 89, 36
+jitsi-meet-in, https://github.com/herry-k/jitsi-meet-in.git, 324794, 293772, 252927, 40845, 0.860964, 1208, 1421
+portfolio-jerga, https://github.com/jeremiahtenbrink/portfolio-jerga.git, 18381, 18381, 11870, 6511, 0.645776, 92, 79
+mainsite, https://github.com/db-tax-wealth/mainsite.git, 30701, 30459, 17821, 12638, 0.585082, 98, 78
+ra16-homeworks, https://github.com/vertjs/ra16-homeworks.git, 40921, 35222, 23203, 12019, 0.658764, 118, 111
+react-starter-kit, https://github.com/frodofarhani/react-starter-kit.git, 9828, 9099, 491, 8608, 0.053962, 161, 45
+mechanical-squirrel, https://github.com/connormulqueen/mechanical-squirrel.git, 802, 802, 146, 656, 0.182045, 74, 40
+contact-list-app, https://github.com/joshtom/contact-list-app.git, 2216, 2216, 650, 1566, 0.293321, 65, 4
+backend, https://github.com/fb-chatreader/backend.git, 19983, 17737, 13579, 4158, 0.765575, 99, 68
+nylas-nodejs, https://github.com/nylas/nylas-nodejs.git, 36715, 30647, 27881, 2766, 0.909746, 110, 122
+fetool, https://github.com/shaman05/fetool.git, 119470, 116192, 72962, 43230, 0.627943, 291, 310
+nodejs_course_project, https://github.com/thomllobece/nodejs_course_project.git, 8825, 8533, 2257, 6276, 0.264503, 138, 79

@@ -1,0 +1,26 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+mvmapper, https://github.com/popphylotools/mvmapper.git, 15660, 15660, 10684, 4976, 0.682248, 135, 
+plotdb, https://github.com/zbryikt/plotdb.git, 975143, 805134, 718647, 86487, 0.892581, 10086, 6201
+burd-archive, https://github.com/burdirc/burd-archive.git, 32795, 32795, 24145, 8650, 0.73624, 117, 493
+chirags-blog, https://github.com/cdking007/chirags-blog.git, 4004, 4004, 0, 4004, 0, 218, 
+builderbookclone, https://github.com/dmeedev/builderbookclone.git, 154674, 165127, 143158, 21969, 0.866957, 371, 640
+langua, https://github.com/susurrus-llc/langua.git, 36368, 36426, 28745, 7681, 0.789134, 234, 294
+connet, https://github.com/hellocstar/connet.git, 25103, 24226, 18160, 6066, 0.749608, 130, 202
+gatsby-contentful-starter, https://github.com/desmondtoyus/gatsby-contentful-starter.git, 2902, 2820, 0, 2820, 0, 89, 
+blogspot, https://github.com/chinhphan099/blogspot.git, 22140, 22161, 11653, 10508, 0.525834, 103, 114
+stockmarketnews, https://github.com/smpledvid/stockmarketnews.git, 3429, 1061, 223, 838, 0.210179, 84, 43
+advancedreact, https://github.com/mimitch2/advancedreact.git, 63246, 62096, 50308, 11788, 0.810165, 213, 239
+omnireader, https://github.com/valedan/omnireader.git, 13110, 12446, 1189, 11257, 0.0955327, 78, 21
+stoop, https://github.com/julia-catalano/stoop.git, 9310, 8051, 3894, 4157, 0.483667, 132, 63
+hps-1.0.0, https://github.com/hemsinghlearninginfo/hps-1.0.0.git, 45469, 40073, 32123, 7950, 0.801612, 186, 328
+cs_cityscopejs, https://github.com/cityscope/cs_cityscopejs.git, 26951, 22412, 14124, 8288, 0.630198, 100, 160
+compneurointro, https://github.com/benlansdell/compneurointro.git, 929363, 47600, 36842, 10758, 0.773992, 7464, 4629
+pedwayapp, https://github.com/shawnwang66/pedwayapp.git, 32945, 32569, 26058, 6511, 0.800086, 227, 173
+gatsby-ghost-blog, https://github.com/dermyhughes/gatsby-ghost-blog.git, 12612, 12584, 7970, 4614, 0.633344, 70, 106
+daily-algorithms, https://github.com/koresamuel/daily-algorithms.git, 36652, 33215, 26674, 6541, 0.803071, 175, 127
+devcontra-client, https://github.com/colemars/devcontra-client.git, 18015, 15902, 11477, 4425, 0.721733, 83, 168
+crypto_basket_fe, https://github.com/dazzed/crypto_basket_fe.git, 93738, 91062, 80537, 10525, 0.884419, 286, 680
+openebench_scientific_visualizer, https://github.com/inab/openebench_scientific_visualizer.git, 11930, 12953, 6630, 6323, 0.511851, 88, 31
+gatsby-starter-blog, https://github.com/izuharaaa/gatsby-starter-blog.git, 3480, 4004, 0, 4004, 0, 206, 
+donde_front_end, https://github.com/danfyfe/donde_front_end.git, 25991, 25345, 16077, 9268, 0.634326, 222, 152
+esox-webstore, https://github.com/pauloskarsoe/esox-webstore.git, 5958, 5009, 1443, 3566, 0.288081, 176, 67

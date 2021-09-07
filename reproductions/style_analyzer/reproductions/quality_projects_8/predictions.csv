@@ -1,0 +1,24 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+skynet, https://github.com/cruisebrantley/skynet.git, 7298, 6775, 4413, 2362, 0.651365, 65, 24
+noodles-admin, https://github.com/lampardm/noodles-admin.git, 8274, 8149, 3461, 4688, 0.424715, 85, 43
+butterfly, https://github.com/allendcooper/butterfly.git, 10344, 10001, 448, 9553, 0.0447955, 64, 75
+soundnode-redux, https://github.com/chriszhangusc/soundnode-redux.git, 20674, 24817, 18237, 6580, 0.734859, 101, 77
+release-based-workflow, https://github.com/renesansz/release-based-workflow.git, 4752, 4752, 0, 4752, 0, 138, 
+fetch, https://github.com/fsa-team-8/fetch.git, 26567, 24658, 19339, 5319, 0.784289, 93, 135
+money-mapper, https://github.com/hdoshi2/money-mapper.git, 10316, 9585, 5246, 4339, 0.547314, 182, 75
+divergent-prototype, https://github.com/heather-fin/divergent-prototype.git, 4647, 5863, 209, 5654, 0.0356473, 156, 87
+hipeerlab-platform-fe, https://github.com/amaralc/hipeerlab-platform-fe.git, 10421, 9614, 5420, 4194, 0.563761, 179, 60
+reach, https://github.com/jo-tbhac/reach.git, 6011, 5671, 2815, 2856, 0.496385, 56, 10
+altas, https://github.com/babychh/altas.git, 44756, 44755, 32573, 12182, 0.727807, 227, 114
+gatsby, https://github.com/ajerni/gatsby.git, 5630, 5517, 1668, 3849, 0.302338, 80, 38
+gatsby-starter-netlify-cms, https://github.com/papucho/gatsby-starter-netlify-cms.git, 9211, 8715, 1035, 7680, 0.118761, 177, 41
+control-de-produccion-api, https://github.com/rafaelangelramirez/control-de-produccion-api.git, 75341, 80996, 62125, 18871, 0.767013, 295, 396
+github-actions-continuous-delivery, https://github.com/shashikantfayke/github-actions-continuous-delivery.git, 1685, 1685, 512, 1173, 0.303858, 144, 81
+snickr, https://github.com/mark-myzhao/snickr.git, 37948, 34846, 27059, 7787, 0.776531, 166, 162
+mattermost-sourcecode-edited, https://github.com/atmonopoly51299/mattermost-sourcecode-edited.git, 246198, 184789, 166774, 18015, 0.90251, 617, 589
+post--grand-tour, https://github.com/distillpub/post--grand-tour.git, 159770, 159408, 124547, 34861, 0.78131, 698, 866
+nodeciudemy, https://github.com/harrychang30/nodeciudemy.git, 4720, 3554, 496, 3058, 0.139561, 142, 80
+hr-service-desk-alpha, https://github.com/buckinghamshire-digital-service/hr-service-desk-alpha.git, 6870, 6783, 3434, 3349, 0.506266, 161, 45
+react-auth-server-admin, https://github.com/official-codaisseur-graduate/react-auth-server-admin.git, 5237, 4132, 1136, 2996, 0.274927, 79, 70
+guardioes-web, https://github.com/proepidesenvolvimento/guardioes-web.git, 71061, 64819, 49691, 15128, 0.766612, 311, 249
+threejs-tutorial, https://github.com/kmfe/threejs-tutorial.git, 62945, 62944, 44145, 18799, 0.701338, 193, 296

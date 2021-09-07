@@ -1,0 +1,27 @@
+repo, url, training_samples, samples, predictions, uncovered, prediction_rate, training_time, review_time
+metrics-module, https://github.com/overleaf/metrics-module.git, 7404, 6718, 3949, 2769, 0.587824, 57, 56
+ox15.github.io, https://github.com/ox15/ox15.github.io.git, 12401, 12149, 8803, 3346, 0.724586, 99, 79
+fexmessenger, https://github.com/skhizerabass/fexmessenger.git, 263965, 253175, 239313, 13862, 0.945247, 1356, 2034
+hr_application, https://github.com/lizzyhanna/hr_application.git, 14939, 14807, 10054, 4753, 0.679003, 82, 179
+booking-server, https://github.com/txvoz/booking-server.git, 7800, 7800, 4520, 3280, 0.579487, 187, 83
+buddy-app-be, https://github.com/lambda-school-labs/buddy-app-be.git, 7548, 7560, 4657, 2903, 0.616005, 117, 79
+2019-2-atom-frontend-n-tarasov, https://github.com/mrniktarasov/2019-2-atom-frontend-n-tarasov.git, 10617, 16524, 7103, 9421, 0.42986, 81, 31
+whatsfordinner3, https://github.com/6gawd/whatsfordinner3.git, 9840, 9699, 5162, 4537, 0.53222, 184, 120
+first-react-app, https://github.com/nizarkhsib/first-react-app.git, 175406, 168107, 153550, 14557, 0.913406, 588, 442
+matt-peet-illustration, https://github.com/mattpeet/matt-peet-illustration.git, 4593, 4933, 776, 4157, 0.157308, 110, 62
+bewell-in-school, https://github.com/lancehamilton24/bewell-in-school.git, 11112, 10932, 5037, 5895, 0.460757, 193, 83
+yumi-s-house, https://github.com/yumiko2695/yumi-s-house.git, 5635, 4662, 1132, 3530, 0.242814, 169, 50
+kumo-discord-bot, https://github.com/octo-kumo/kumo-discord-bot.git, 30510, 27004, 19093, 7911, 0.707043, 195, 81
+mindsprint, https://github.com/cs17b011/mindsprint.git, 4420, 4420, 184, 4236, 0.041629, 92, 69
+riftsketchedit, https://github.com/vfasteng/riftsketchedit.git, 7023, 7892, 2806, 5086, 0.35555, 85, 48
+release-based-workflow, https://github.com/jimmymac387/release-based-workflow.git, 4752, 4752, 0, 4752, 0, 78, 
+akshay23sept.github.io, https://github.com/akshay23sept/akshay23sept.github.io.git, 4010, 4010, 578, 3432, 0.14414, 357, 183
+slate, https://github.com/sungjaeeom/slate.git, 10780, 9792, 3658, 6134, 0.37357, 173, 77
+niagara_falls_answers, https://github.com/straubcreative/niagara_falls_answers.git, 11342, 10752, 4479, 6273, 0.416574, 117, 110
+cs-table, https://github.com/j4dream/cs-table.git, 5146, 11249, 3006, 8243, 0.267224, 180, 87
+todo-web, https://github.com/mosmaall/todo-web.git, 6542, 5598, 2621, 2977, 0.468203, 69, 43
+deprecated_datacenter, https://github.com/copperfield013/deprecated_datacenter.git, 384641, 332776, 263744, 69032, 0.792557, 1738, 2549
+otus_web, https://github.com/mxmaslin/otus_web.git, 30201, 24649, 17837, 6812, 0.72364, 202, 184
+scrapbook_frontend, https://github.com/jyon124/scrapbook_frontend.git, 17796, 17796, 2146, 15650, 0.120589, 95, 41
+demo-res, https://github.com/nhutnh95/demo-res.git, 45043, 44761, 30381, 14380, 0.678738, 235, 652
+til, https://github.com/vinnyhoward/til.git, 37212, 35566, 23733, 11833, 0.667295, 119, 111
