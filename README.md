@@ -41,15 +41,17 @@ The artifact is organized into various R notebooks. These are best executed from
 1. `artifact/dataset.Rmd` - this loads up our datasets and produces figures and numbers describing them as well as the basic selections analyzed
 2. `artifact/stars-analysis.Rmd` - the manual analysis of the top starred projects. No need to run this, as all the analysis done was manual. 
 3. `msr-meta/msr.Rmd` - the manual metaanalysis of MSR papers. No need to run, it only creates graphs and figures we used to describe the papers' use of sampling
-4.
-5.
-6.
-7.
+4. `reproductions/what-constitutes-software/what-constitutes-software.Rmd` to reproduce *What is Software*
+5. `reproductions/empirical_method_chaning/reproduction.Rmd` to reproduce *Method Chaining*
+6. `reproductions/style_analyzer/style_analyzer.Rmd` to reproduce *Style Analyzer*
+7. `reproductions/scent-dl/scent_dl.Rmd` to reproduce *Code Smells*
 8. build the paper, enter the `paper` folder and run `make`. `main.pdf` will be created producing the paper. 
 
 ## Notes
 
 Due to limited access to CodeDJ a the sizes of the datasets and nature of our work allowing local processing to certain degree we have ran CodeDJ queries that summarized all the projects in the datasets into csv files and then used Rstudio to report & replay selections locally for faster turnaround. These CSVs are part of the `dataset` folder in the artifact. We do have CodeDJ queries for all queries executed, but can't share their receipts as these would immediately give away our identities. These will be part of the deanonymized artifact if accepted. 
+
+Additional datasets are loaded by the reproductions. List of all datasets that are small enough to be part of the repo can be found in the Github releases of the artifact. 
 
 The repository contains all the files produced as well, i.e. you can skip the steps above and proceed directly to producing the paper, or cherry pick those you are interested in. Note, however, that the `artifact/dataset.Rmd` file populates the R environment required by the other Rmds and therefore must be loaded if other R files are. 
 
