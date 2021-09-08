@@ -1,4 +1,4 @@
-for repo in `</home/kondziu/Workspace/style-analyzer/lookout/style/format/benchmarks/data/quality_report_repos.csv tail -n +2 | cut -f 1 -d,`
+for repo in `</home/anonymous_user/Workspace/style-analyzer/lookout/style/format/benchmarks/data/quality_report_repos.csv tail -n +2 | cut -f 1 -d,`
 do 
     git clone ${repo}.git
 done
@@ -12,7 +12,7 @@ function get {
 }
 
 echo "repo, base@main, head@main, #main, base@all, head@all, #all"
-for repo in `</home/kondziu/Workspace/style-analyzer/lookout/style/format/benchmarks/data/quality_report_repos.csv tail -n +2`
+for repo in `</home/anonymous_user/Workspace/style-analyzer/lookout/style/format/benchmarks/data/quality_report_repos.csv tail -n +2`
 do 
     base_commit=`echo $repo | cut -f 3 -d,`
     head_commit=`echo $repo | cut -f 2 -d ,`

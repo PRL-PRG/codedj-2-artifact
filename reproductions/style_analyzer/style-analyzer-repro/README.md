@@ -153,10 +153,10 @@ Running the docker container:
 
 ```bash
 docker run --rm -it --network host \
-    -v /home/kondziu/Workspace/style-analyzer/.git:/style-analyzer/.git \
-    -v /home/kondziu/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
+    -v /home/anonymous_user/Workspace/style-analyzer/.git:/style-analyzer/.git \
+    -v /home/anonymous_user/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
     --entrypoint /bin/sh \
-    -v/home/kondziu/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
+    -v/home/anonymous_user/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
     -w /style-analyzer \
     srcd/style-analyzer:latest
 ```
@@ -471,26 +471,26 @@ done
 
 ```bash
 docker run --rm -it --network host \
-    -v /home/kondziu/Workspace/style-analyzer/.git:/style-analyzer/.git \
-    -v /home/kondziu/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
+    -v /home/anonymous_user/Workspace/style-analyzer/.git:/style-analyzer/.git \
+    -v /home/anonymous_user/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
     --entrypoint /bin/bash \
-    -v/home/kondziu/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
-    -v/home/kondziu/Workspace/style-analyzer/reproductions:/style-analyzer/reproductions \
-    -v/home/kondziu/Workspace/style-analyzer/style-analyzer-query/output:/style-analyzer/queries \
-    -v/home/kondziu/Workspace/style-analyzer/database/:/style-analyzer/database \
+    -v/home/anonymous_user/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
+    -v/home/anonymous_user/Workspace/style-analyzer/reproductions:/style-analyzer/reproductions \
+    -v/home/anonymous_user/Workspace/style-analyzer/style-analyzer-query/output:/style-analyzer/queries \
+    -v/home/anonymous_user/Workspace/style-analyzer/database/:/style-analyzer/database \
     -w /style-analyzer \
     srcd/style-analyzer:latest
 ```
 
 ```bash
 docker run --rm -it --network host \
-    -v/home/kondziu/Workspace/style-analyzer/.git:/style-analyzer/.git \
-    -v/home/kondziu/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
-    -v/home/kondziu/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
-    -v/home/kondziu/Workspace/style-analyzer/reproductions:/style-analyzer/reproductions \
-    -v/home/kondziu/Workspace/style-analyzer/style-analyzer-query/output:/style-analyzer/selections/ \
-    -v/home/kondziu/Workspace/style-analyzer/database/:/style-analyzer/database \
-    -v/home/kondziu/Workspace/style-analyzer/scripts/:/style-analyzer/scripts \
+    -v/home/anonymous_user/Workspace/style-analyzer/.git:/style-analyzer/.git \
+    -v/home/anonymous_user/Workspace/style-analyzer/lookout/core/server:/style-analyzer/lookout/core/server \
+    -v/home/anonymous_user/Workspace/style-analyzer/sdk:/style-analyzer/sdk \
+    -v/home/anonymous_user/Workspace/style-analyzer/reproductions:/style-analyzer/reproductions \
+    -v/home/anonymous_user/Workspace/style-analyzer/style-analyzer-query/output:/style-analyzer/selections/ \
+    -v/home/anonymous_user/Workspace/style-analyzer/database/:/style-analyzer/database \
+    -v/home/anonymous_user/Workspace/style-analyzer/scripts/:/style-analyzer/scripts \
     --entrypoint "" \
     -w /style-analyzer \
     srcd/style-analyzer:latest \

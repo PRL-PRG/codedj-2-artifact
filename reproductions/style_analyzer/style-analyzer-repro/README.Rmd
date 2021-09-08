@@ -18,7 +18,7 @@ cd style-analyzer-query
 We generate project selections:
 
 ```bash
-cargo run --bin select --release -- --output-path output --dataset-path /mnt/data/codedj-icse/javascript/ --cache-path /mnt/data/kondziu/codedj-icse/javascript-cache/
+cargo run --bin select --release -- --output-path output --dataset-path /mnt/data/codedj-icse/javascript/ --cache-path /mnt/data/anonymous_user/codedj-icse/javascript-cache/
 ```
 
 We create a dataset with just the projects we selected. Needs parasiter and a GitHub token (https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
@@ -47,7 +47,7 @@ parasite --datastore /mnt/data/codedj-icse/js-selection-merged/ --merge-all /mnt
 Generate head and base commits for each project.
 
 ```bash
-cargo run --bin generate_experiment_inputs --release -- --output-path output --dataset-path /mnt/data/codedj-icse/js-selection-merged/ --cache-path /mnt/data/kondziu/codedj-icse/js-selection-merged-cache/
+cargo run --bin generate_experiment_inputs --release -- --output-path output --dataset-path /mnt/data/codedj-icse/js-selection-merged/ --cache-path /mnt/data/anonymous_user/codedj-icse/js-selection-merged-cache/
 ```
 
 # Setup
