@@ -22,7 +22,7 @@ use djanco_ext::*;
 use regex::Regex;
 
 const SELECTIONS: usize = 10;
-const SELECTED_PROJECTS: usize = 30;
+const SELECTED_PROJECTS: usize = 120;
 const SEEDS: [u128; 10] = [1,2,3,5,7,11,13,17,19,23]; // one seed per selection
 
 // Base commit is going to be a commit this many percent commits in the past.
