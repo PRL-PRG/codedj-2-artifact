@@ -140,8 +140,9 @@ and `https://codedj-prg.github.io/`.
 
 ```bash
 # Create a list of all unique projects in the selections.
+echo "url" > output/selections/all.csv
 cat output/selections/*.csv | sort | uniq | head -n -1 | tail -n +2 \
-  > output/selections/all.csv
+  >> output/selections/all.csv
 
 # Prepare for running parasite
 mkdir -p /mnt/data/codedj-icse/js-selection/
