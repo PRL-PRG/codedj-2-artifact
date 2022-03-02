@@ -147,6 +147,7 @@ pub fn generate_project_spec_form_selections(database: &Database, _log: &Log, ou
         let selection_file = selection.file_name().to_str().unwrap().to_owned();            
         let selection_name = extension.replace(&selection_file, "").to_string();
 
+        println!("Ingesting {:?}", selection_path);
         let mut csv = csv_reader::Reader::from_path(selection_path)?;
         
         for row in csv.deserialize() {
@@ -293,5 +294,5 @@ pub fn generate_project_spec_for_original_projects(_database: &Database, _log: &
         .map(|(url, head, base)| (url.to_owned(), head.to_owned(), base.to_owned()))
         .into_csv_with_headers_in_dir(
             vec!["url", "head", "base"], output, 
-            format!("selections/original.csv"))
+            format!("specs/original.csv"))
 }
