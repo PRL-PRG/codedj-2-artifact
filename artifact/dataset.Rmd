@@ -214,6 +214,66 @@ We also plot the error rate for JavaScript projects, as these are affected the w
 js_project_errors = read_csv("dataset/js-project-errors.csv")
 LOGPct("jsProjectErrors", js_project_errors$errors[[1]], js_project_errors$total[[1]])
 ```
+## Rebuttal: Does the GHTorrent Gap in 2019 Affect Us
+
+To answer this we look at the # of projects we get in the gap months as opposed to the previous months. 
+
+```{r}
+gapStart = 1561932000
+gapEnd = 1577833199
+mo = 3600 * 24 * 30 * 1;
+preGap = gapStart - (gapEnd - gapStart)
+postGap = gapEnd + (gapEnd - gapStart)
+
+
+gapStart = 1546297200 # Jan 1, 2019, 00:00:00
+
+
+created_over_time = function(dataset, start, diff, steps) {
+  x = c()
+  end = start + diff * steps
+  dataset = dataset %>% select(created)
+  while (start < end) {
+    x = c(x, nrow(dataset %>% filter(created >= start) %>% filter(created <= (start + diff))))
+    start = start + diff
+  }
+  x
+}
+
+
+x = data.frame(
+  mo = 1:18,
+  java = created_over_time(java, gapStart, mo, 18),
+  js = created_over_time(js, gapStart, mo, 18),
+  python = created_over_time(python, gapStart, mo, 18)
+)
+
+ggplot(x) +
+  geom_line(aes(x = mo, y = java), color = "red") +
+  geom_line(aes(x = mo, y = js), color = "blue") +
+  geom_line(aes(x = mo, y = python), color = "green")
+  #ylim(0, 50000)
+
+
+
+
+
+#gapEnd = gapStart + mo
+#preGap = gapStart - mo;
+#gapStart = gapEnd - mo
+#postGap = gapEnd + mo
+
+#LOG("javaPreGap", nrow(java %>% filter(created >= preGap) %>% filter(created <= gapStart)))
+#LOG("javaGap", nrow(java %>% filter(created >= gapStart) %>% filter(created <= gapEnd)))
+#LOG("javaPostGap", nrow(java %>% filter(created >= gapEnd) %>% filter(created <= postGap)))
+#LOG("jsPreGap", nrow(js %>% filter(created >= preGap) %>% filter(created <= gapStart)))
+#LOG("jsGap", nrow(js %>% filter(created >= gapStart) %>% filter(created <= gapEnd)))
+#LOG("jsPostGap", nrow(js %>% filter(created >= gapEnd) %>% filter(created <= postGap)))
+#LOG("pythonPreGap", nrow(python %>% filter(created >= preGap) %>% filter(created <= gapStart)))
+#LOG("pythonGap", nrow(python %>% filter(created >= gapStart) %>% filter(created <= gapEnd)))
+#LOG("pythonPostGap", nrow(python %>% filter(created >= gapEnd) %>% filter(created <= postGap)))
+```
+
 
 
 
