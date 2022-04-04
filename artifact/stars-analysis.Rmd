@@ -71,9 +71,9 @@ FP   FP    TUT   TUT   FP    UI    UI    TUT   BABY  BABY
 
 
 Kind  Java Python JS
-FP    10   13     9
 EXT   9    5      7
 UI    43   0      14
+FP    10   13     9
 DOC   4    15     7
 TUT   17   9      22
 BABY  16   32     38
