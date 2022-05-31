@@ -21,6 +21,10 @@ Top starred projects for 25 languages: ABAP, Ada, Assembler, C, COBOL, C++, C#, 
 The categorization was done manually, by greedily checking the artifact types until all but tiny percentage were classified ([details](https://github.com/HelgeCPH/msr2020_what_constitutes_software/blob/ffffc004547ecadc1524f95c726accadae03b706/src/interpretation.py#L655)). 
 
 
+    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/java -d /mnt/data/codedj-icse/java-1m1-merged -c /mnt/data/codedj-icse/cache
+    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/python2 -d /mnt/data/codedj-icse/python-all -c /mnt/data/codedj-icse/cache-python-all    
+    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/js2 -d /mnt/data/codedj-icse/javascript -c /mnt/data/codedj-icse/cache-javascript
+
 ```{bash}
 cd reproductions/what-constitutes-software
 if ! [ -f local/java-sample ]; then
@@ -149,18 +153,32 @@ import_local_results = function(path, name) {
     result
 }
 
+import_codedj_results_updated = function(path) {
+    result = list()
+    result$s0 = read_csv(paste0(path, "/sample_all.csv"))
+    result$s1 = read_csv(paste0(path, "/sample_stars.csv"))
+    result$s2 = read_csv(paste0(path, "/sample_developed.csv"))
+    result
+}
+
+
 #sw_java = import_codedj_results("reproductions/what-constitutes-software/codedj/java")
 #sw_python = import_codedj_results("reproductions/what-constitutes-software/codedj/python")
 #sw_js = import_codedj_results("reproductions/what-constitutes-software/codedj/js")
-sw_java = import_local_results("reproductions/what-constitutes-software/local", "java")
-sw_python = import_local_results("reproductions/what-constitutes-software/local", "py")
-sw_js = import_local_results("reproductions/what-constitutes-software/local", "js")
+#sw_java = import_local_results("reproductions/what-constitutes-software/local", "java")
+#sw_python = import_local_results("reproductions/what-constitutes-software/local", "py")
+#sw_js = import_local_results("reproductions/what-constitutes-software/local", "js")
+
+
+sw_java = import_codedj_results_updated("reproductions/what-constitutes-software/results/java")
+sw_python = import_codedj_results_updated("reproductions/what-constitutes-software/results/python")
+sw_js = import_codedj_results_updated("reproductions/what-constitutes-software/results/js")
 ```
 
 ```{r}
 summarize_and_join = function(java, python, js, sample) {
   result = summarize_projects(java[[sample]] %>% mutate(pid = paste0("j",pid)))
-  result = rbind(result, summarize_projects(python[[sample]] %>% mutate(pid = paste0("p", pid))))
+result = rbind(result, summarize_projects(python[[sample]] %>% mutate(pid = paste0("p", pid))))
   result = rbind(result, summarize_projects(js[[sample]] %>% mutate(pid = paste0("js",pid))))
   result
 }
@@ -168,7 +186,7 @@ summarize_and_join = function(java, python, js, sample) {
 summary_s0 = summarize_and_join(sw_java, sw_python, sw_js, "s0")
 summary_s1 = summarize_and_join(sw_java, sw_python, sw_js, "s1")
 summary_s2 = summarize_and_join(sw_java, sw_python, sw_js, "s2")
-summary_s3 = summarize_and_join(sw_java, sw_python, sw_js, "s3")
+#summary_s3 = summarize_and_join(sw_java, sw_python, sw_js, "s3")
 ```
 
 ```{r}
@@ -190,7 +208,7 @@ convert_summary = function(summary) {
 s0 = convert_summary(summary_s0)
 s1 = convert_summary(summary_s1)
 s2 = convert_summary(summary_s2)
-s3 = convert_summary(summary_s3)
+#s3 = convert_summary(summary_s3)
 ```
 
 ### RQ1: To which degree is software more than code?
@@ -212,7 +230,7 @@ rq1 = function(summary, name) {
 rq1(s0, "SNought")
 rq1(s1,"SOne")
 rq1(s2,"STwo")
-rq1(s3, "SThree")
+#rq1(s3, "SThree")
 ```
 
 ### RQ2: Is documentation an integral constituent of software?
@@ -227,7 +245,7 @@ rq2 = function(summary, name) {
 rq2(s0, "SNought")
 rq2(s1,"SOne")
 rq2(s2,"STwo")
-rq2(s3, "SThree")
+#rq2(s3, "SThree")
 ```
 
 ### RQ3: Does software without data artifacts exist?
@@ -245,7 +263,7 @@ rq3 = function(summary, name) {
 rq3(s0, "SNought")
 rq3(s1,"SOne")
 rq3(s2,"STwo")
-rq3(s3, "SThree")
+#rq3(s3, "SThree")
 ```
 
 ### RQ4: Does software without code exist?
@@ -260,7 +278,7 @@ rq4 = function(summary, name) {
 rq4(s0, "SNought")
 rq4(s1,"SOne")
 rq4(s2,"STwo")
-rq4(s3, "SThree")
+#rq4(s3, "SThree")
 ```
 
 ### RQ5: Does a characteristic distribution of frequencies of artifact categories exist?
@@ -293,19 +311,19 @@ d = NULL
 d = add_summary(d, s0, "S0")
 d = add_summary(d, s1, "S1")
 d = add_summary(d, s2, "S2")
-d = add_summary(d, s3, "S3")
+#d = add_summary(d, s3, "S3")
 #d = add_summary(d, reference, "S0")
 #d = add_summary(d, datasetSample, "S1")
 #d = add_summary(d, interestingSample, "S2")
 #d = add_summary(d, developedSample, "S3")
-d$dataset = factor(d$dataset, levels = rev(c("S0", "S1", "S2", "S3")))
+d$dataset = factor(d$dataset, levels = rev(c("S0", "S1", "S2")))
 d$kind = factor(d$kind, levels = c("C2", "C1"))
 
 g = ggplot(d, aes(fill = dataset, x = kind, y = pct, label = paste0(round(pct,2) * 100, "%"))) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.6), width = 0.6) +
   geom_text(size = 4, position = position_dodge(width = 0.6), hjust = - 0.2) +
-  scale_y_continuous(limits = c(0, 0.36)) +
-  scale_fill_manual(name = NULL, values = rev(c("gray", "#ff0000", "#c00000", "#800000"))) +
+  scale_y_continuous(limits = c(0, 0.5)) +
+  scale_fill_manual(name = NULL, values = rev(c("gray", "#ff0000", "#0000ff"))) +
   coord_flip() +
   theme_minimal() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())  +
@@ -319,6 +337,8 @@ g = ggplot(d, aes(fill = dataset, x = kind, y = pct, label = paste0(round(pct,2)
 ggsave("figs/what-constitutes-software/software.pdf", plot = g, width = 6, height = 3)
 g
 ```
+
+(C1 = projects )
 
 ```{r}
 flush_log()

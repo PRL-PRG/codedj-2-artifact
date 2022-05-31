@@ -64,8 +64,11 @@ prettify_value = function(x) {
     paste(x)
 }
 
+cutoff_all_f = function(x) { quantile(x, 0.05) }
+cutoff_stars_f = min
+
 # given a column name, create the cummulative graph for it
-cummulative_graph = function(dall, dstars, col_name, cutoff = 0.05, title = col_name) {
+cummulative_graph = function(dall, dstars, col_name, title = col_name) {
   # get the cummulative tables    
   call = create_cummulative_table(dall, col_name, quantile(dall[[col_name]], 0:100 / 100))
   cstars = create_cummulative_table(dstars, col_name, quantile(dstars[[col_name]], 0:100 / 100))
@@ -74,11 +77,11 @@ cummulative_graph = function(dall, dstars, col_name, cutoff = 0.05, title = col_
   cstars$source = rep("Top Stars", nrow(cstars))
   cboth = rbind(call, cstars)
 
-cutoff_all = quantile(dall[[col_name]], cutoff)
+  cutoff_all = cutoff_all_f(dall[[col_name]])
   if (cutoff_all == min(dall[[col_name]])) {
     cutoff_all = cutoff_all + 1
   }
-  cutoff_stars = quantile(dstars[[col_name]], cutoff)
+  cutoff_stars = cutoff_stars_f(dstars[[col_name]])
   column = as.symbol(col_name)
   
   dcutoff = dall %>% filter(!!column >= cutoff_stars)
@@ -202,7 +205,7 @@ create_datasets = function(dataset, top_stars, cutoffs) {
   cat(paste("top_stars:", nrow(stars), " (", nrow(stars) * 100 / nrow(top_stars), "%)\n"))
   cat(paste("good:", nrow(good), " (", nrow(good) * 100 / nrow(dataset), "%)\n"))
   cat(paste("not_bad:", nrow(good), " (", nrow(not_bad) * 100 / nrow(dataset), "%)\n"))
-  list(stars = stars, good = good, not_bad = not_bad)
+  list(stars = stars, good = good, not_bad = not_bad, cutoffs = cutoffs)
 }
 ```
 
@@ -218,9 +221,20 @@ js_datasets = create_datasets(js_dataset, js_topstars, cjava)
 
 ```{r}
 get_selection_histogram = function(datasets, columns, title) {
-  stars = melt(datasets$stars %>% select(c("id", columns)), "id")
-  good = melt(datasets$good %>% select(c("id", columns)), "id")
-  not_bad = melt(datasets$not_bad %>% select(c("id", columns)), "id")
+  stars = datasets$stars %>% select(c("id", columns))
+  good = datasets$good %>% select(c("id", columns))
+  not_bad = datasets$not_bad %>% select(c("id", columns))
+  # calculate the medians to be displayed too
+  medians = data.frame(
+    valueNotBad = sapply(names(columns), function(x) {median(not_bad[[x]])}),
+    valueStars = sapply(names(columns), function(x) {median(stars[[x]])}),
+    valueGood = sapply(names(columns), function(x) {median(good[[x]])}),
+    variable = factor(names(columns), levels = rev(names(columns)))
+  )
+  # melt for the histograms
+  stars = melt(stars, "id")
+  good = melt(good, "id")
+  not_bad = melt(not_bad, "id")
   stars$kind="stars"
   good$kind = "good"
   not_bad$kind = "not_bad"
@@ -229,6 +243,9 @@ get_selection_histogram = function(datasets, columns, title) {
   all$variable = factor(all$variable, levels = rev(names(columns)))
   ggplot() +
     geom_density_ridges(data = all, aes(x = value, y = variable, color = kind, height = ..ndensity.., scale = 0.7), stat = "binline", bins = 50, draw_baseline = FALSE, alpha = 0.5, fill = NA) +
+    geom_segment(data = medians, aes(x = valueNotBad, xend = valueNotBad, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = "black") +
+    geom_segment(data = medians, aes(x = valueGood, xend = valueGood, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = "blue") +
+    geom_segment(data = medians, aes(x = valueStars, xend = valueStars, y = as.numeric(variable)-0.1, yend = as.numeric(variable) + 0.8), color = "red") +
     theme_ridges() + 
     theme(legend.position = "bottom") +
     ylab("") + xlab("") +
@@ -245,3 +262,29 @@ get_selection_histogram(java_datasets, columns, "Java")
 get_selection_histogram(python_datasets, columns, "Python")
 get_selection_histogram(js_datasets, columns, "JavaScript")
 ```
+An interpretation of these things is that the *not_bad* projects indeed contain a *lot* of stuff that is missing from the other two datasets (contrast this with the fact that these datasets already remove from 45 to 67% of the whole GitHub). The *good* and *stars* projects are a lot more similar (for one they start at the same position), however the starred projects are almost always quite biased towards more developed characteristics than is the norm in the datasets. 
+
+# The missing pieces
+
+The simplest one is to see the projects that in their attributes are better than the top stars as selecting by stars simply hides their existence:
+
+```{r}
+get_hidden_projects = function(datasets, columns) {
+  hidden = datasets$good %>% select(c("id", "url", "stars", columns))
+  stars = datasets$stars %>% select(columns)
+  hidden$selected = rep(0, nrow(hidden))
+  for (x in names(columns)) {
+    cutoff = max(stars[[x]])
+    hidden$selected = hidden$selected + (hidden[[x]] > cutoff)
+  }
+  hidden = hidden %>% filter(selected > 0)
+  nrow(hidden)
+}
+get_hidden_projects(java_datasets, columns)
+get_hidden_projects(python_datasets, columns)
+get_hidden_projects(js_datasets, columns)
+```
+
+The numbers are small, and we can arguably leave it here. Glancing at the java projects reveals that while there are some genuine projects that are pretty developed and "excel" in some of the attributes, they just haven't amassed enough stars to be included in the top stars dataset. The others seem to be just copies of something else - interesting we do not have that something else in our dataset/stars (maybe?) - could be we do not have full dataset and there is very very few of these projects in reality. 
+
+So arguably there is not much on the upper side that is missing from stars. Let's now turn our attention to the bottom part. 
