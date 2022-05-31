@@ -166,6 +166,16 @@ What these graphs show: The horizontal axis is the value of the attribute and is
 
 We see that this varies a lot, i.e. the C-Index alone would suggest that 48% of the projects are developed, while the age of the project is the most restrictive, suggesting than only 12% of all the projects can be considered developed. 
 
+```{r}
+LOG("javaCIndexCutoff", cjava[["C-Index"]]$cutoff_stars)
+LOG("javaAgeCutoff", cjava[["Age"]]$cutoff_stars)
+LOG("javaDevsCutoff", cjava[["Devs"]]$cutoff_stars)
+LOG("javaLocsCutoff", cjava[["Locs"]]$cutoff_stars)
+LOG("javaVersionsCutoff", cjava[["Versions"]]$cutoff_stars)
+LOG("javaCommitsCutoff", cjava[["Commits"]]$cutoff_stars)
+```
+
+
 ### Python
 
 ```{r}
@@ -176,7 +186,14 @@ cpython[["Locs"]]$plot
 cpython[["Versions"]]$plot
 cpython[["Commits"]]$plot
 ```
-
+```{r}
+LOG("pythonCIndexCutoff", cpython[["C-Index"]]$cutoff_stars)
+LOG("pythonAgeCutoff", cpython[["Age"]]$cutoff_stars)
+LOG("pythonDevsCutoff", cpython[["Devs"]]$cutoff_stars)
+LOG("pythonLocsCutoff", cpython[["Locs"]]$cutoff_stars)
+LOG("pythonVersionsCutoff", cpython[["Versions"]]$cutoff_stars)
+LOG("pythonCommitsCutoff", cpython[["Commits"]]$cutoff_stars)
+```
 ### JavaScript
 
 ```{r}
@@ -187,6 +204,15 @@ cjs[["Locs"]]$plot
 cjs[["Versions"]]$plot
 cjs[["Commits"]]$plot
 ```
+```{r}
+LOG("jsCIndexCutoff", cjs[["C-Index"]]$cutoff_stars)
+LOG("jsAgeCutoff", cjs[["Age"]]$cutoff_stars)
+LOG("jsDevsCutoff", cjs[["Devs"]]$cutoff_stars)
+LOG("jsLocsCutoff", cjs[["Locs"]]$cutoff_stars)
+LOG("jsVersionsCutoff", cjs[["Versions"]]$cutoff_stars)
+LOG("jsCommitsCutoff", cjs[["Commits"]]$cutoff_stars)
+```
+
 ## Aggregating the cutoffs
 
 Now that we have the cutoffs for each of the attributes, we can aggregate them. Let's now look at the aggregation by majority of votes, i.e. how the selection changes if we say that a project must be developed by at least N attribute values for N from 1 to number of attributes:
@@ -238,7 +264,8 @@ create_developed_dataset = function(dataset, cutoffs, lang, i = length(cutoffs))
     }
     dataset$x=x
     result = dataset %>% filter(x >= i) %>% select(-x)
-    cat(paste0(lang, ": ", nrow(result), " (", nrow(result) * 100 / nrow(dataset), "%)\n"))
+    LOGPct(paste0("developed", lang), nrow(result), nrow(dataset))
+    #cat(paste0(lang, ": ", nrow(result), " (", nrow(result) * 100 / nrow(dataset), "%)\n"))
     result
 }
 ```
