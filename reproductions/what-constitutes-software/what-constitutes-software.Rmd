@@ -23,7 +23,7 @@ The categorization was done manually, by greedily checking the artifact types un
 
     ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/java -d /mnt/data/codedj-icse/java-1m1-merged -c /mnt/data/codedj-icse/cache
     ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/python2 -d /mnt/data/codedj-icse/python-all -c /mnt/data/codedj-icse/cache-python-all    
-    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/js2 -d /mnt/data/codedj-icse/javascript -c /mnt/data/codedj-icse/cache-javascript
+  ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/js2 -d /mnt/data/codedj-icse/javascript -c /mnt/data/codedj-icse/cache-javascript
 
 ```{bash}
 cd reproductions/what-constitutes-software
