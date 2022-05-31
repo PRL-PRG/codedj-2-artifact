@@ -24,15 +24,6 @@ The categorization was done manually, by greedily checking the artifact types un
     ./python -o /mnt/data/codedj-2-artifact/reproductions/what-constitutes-software/results2/python -d /mnt/data/codedj-2-artifact/dataset/python -c /mnt/data/codedj-2-artifact/djanco-cache/python  
     ./js -o /mnt/data/codedj-2-artifact/reproductions/what-constitutes-software/results2/js -d /mnt/data/codedj-2-artifact/dataset/js -c /mnt/data/codedj-2-artifact/djanco-cache/js  
 
-```{bash}
-cd reproductions/what-constitutes-software
-if ! [ -f local/java-sample ]; then
-  curl -o local.tgz "https://github.com/PRL-PRG/codedj-2-artifact/releases/download/v0.0/what-constitutes-software-local.tgz" -L
-  tar -zxvf local.tgz
-  rm local.tgz     
-fi
-```
-
 ```{r}
 get_file_extension = function(filename) {
   tolower(sapply(strsplit(filename, "[.]"), function (x) { tail(x, 1) }))
@@ -131,28 +122,11 @@ summarize_projects = function(exported_projects) {
 
 ```
 
-We use djanco to obtain the samples for stars, random sample, interesting projects (>=100 locs, >= 7 days, >= 10 commits)
+We use djanco to obtain the samples for stars, random sample and developed projects as devised by the paper:
 
 ```{r}
+
 import_codedj_results = function(path) {
-    result = list()
-    result$s0 = read_csv(paste0(path, "/sample_stars.csv"))
-    result$s1 = read_csv(paste0(path, "/sample_all.csv"))
-    result$s2 = read_csv(paste0(path, "/sample_100loc_7d_10c.csv"))
-    result$s3 = read_csv(paste0(path, "/sample_1000loc_180d_100c.csv"))
-    result
-}
-
-import_local_results = function(path, name) {
-    result = list()
-    result$s0 = read_csv(paste0(path, "/", name, "-stars.csv"))
-    result$s1 = read_csv(paste0(path, "/", name, "-sample.csv"))
-    result$s2 = read_csv(paste0(path, "/", name, "-sample-interesting.csv"))
-    result$s3 = read_csv(paste0(path, "/", name, "-sample-developed.csv"))
-    result
-}
-
-import_codedj_results_updated = function(path) {
     result = list()
     result$s0 = read_csv(paste0(path, "/sample_all.csv"))
     result$s1 = read_csv(paste0(path, "/sample_stars.csv"))
@@ -160,18 +134,9 @@ import_codedj_results_updated = function(path) {
     result
 }
 
-
-#sw_java = import_codedj_results("reproductions/what-constitutes-software/codedj/java")
-#sw_python = import_codedj_results("reproductions/what-constitutes-software/codedj/python")
-#sw_js = import_codedj_results("reproductions/what-constitutes-software/codedj/js")
-#sw_java = import_local_results("reproductions/what-constitutes-software/local", "java")
-#sw_python = import_local_results("reproductions/what-constitutes-software/local", "py")
-#sw_js = import_local_results("reproductions/what-constitutes-software/local", "js")
-
-
-sw_java = import_codedj_results_updated("reproductions/what-constitutes-software/results/java")
-sw_python = import_codedj_results_updated("reproductions/what-constitutes-software/results/python")
-sw_js = import_codedj_results_updated("reproductions/what-constitutes-software/results/js")
+sw_java = import_codedj_results("dataset/reproductions/what-constitutes-software/results/java")
+sw_python = import_codedj_results("dataset/reproductions/what-constitutes-software/results/python")
+sw_js = import_codedj_results("dataset/reproductions/what-constitutes-software/results/js")
 ```
 
 ```{r}
@@ -185,7 +150,6 @@ result = rbind(result, summarize_projects(python[[sample]] %>% mutate(pid = past
 summary_s0 = summarize_and_join(sw_java, sw_python, sw_js, "s0")
 summary_s1 = summarize_and_join(sw_java, sw_python, sw_js, "s1")
 summary_s2 = summarize_and_join(sw_java, sw_python, sw_js, "s2")
-#summary_s3 = summarize_and_join(sw_java, sw_python, sw_js, "s3")
 ```
 
 ```{r}
@@ -207,7 +171,6 @@ convert_summary = function(summary) {
 s0 = convert_summary(summary_s0)
 s1 = convert_summary(summary_s1)
 s2 = convert_summary(summary_s2)
-#s3 = convert_summary(summary_s3)
 ```
 
 ### RQ1: To which degree is software more than code?
@@ -229,7 +192,6 @@ rq1 = function(summary, name) {
 rq1(s0, "SNought")
 rq1(s1,"SOne")
 rq1(s2,"STwo")
-#rq1(s3, "SThree")
 ```
 
 ### RQ2: Is documentation an integral constituent of software?
@@ -244,7 +206,6 @@ rq2 = function(summary, name) {
 rq2(s0, "SNought")
 rq2(s1,"SOne")
 rq2(s2,"STwo")
-#rq2(s3, "SThree")
 ```
 
 ### RQ3: Does software without data artifacts exist?
@@ -262,7 +223,6 @@ rq3 = function(summary, name) {
 rq3(s0, "SNought")
 rq3(s1,"SOne")
 rq3(s2,"STwo")
-#rq3(s3, "SThree")
 ```
 
 ### RQ4: Does software without code exist?
@@ -277,7 +237,6 @@ rq4 = function(summary, name) {
 rq4(s0, "SNought")
 rq4(s1,"SOne")
 rq4(s2,"STwo")
-#rq4(s3, "SThree")
 ```
 
 ### RQ5: Does a characteristic distribution of frequencies of artifact categories exist?
@@ -287,7 +246,6 @@ rq4(s2,"STwo")
 ### RQ6: Does the ratio between frequencies of artifact categories depend on the size of software?
 
 > Weak correlation found, authors don't generalize.
-
 
 # Graphs
 
@@ -310,11 +268,6 @@ d = NULL
 d = add_summary(d, s0, "S0")
 d = add_summary(d, s1, "S1")
 d = add_summary(d, s2, "S2")
-#d = add_summary(d, s3, "S3")
-#d = add_summary(d, reference, "S0")
-#d = add_summary(d, datasetSample, "S1")
-#d = add_summary(d, interestingSample, "S2")
-#d = add_summary(d, developedSample, "S3")
 d$dataset = factor(d$dataset, levels = rev(c("S0", "S1", "S2")))
 d$kind = factor(d$kind, levels = c("C2", "C1"))
 
@@ -336,8 +289,14 @@ g = ggplot(d, aes(fill = dataset, x = kind, y = pct, label = paste0(round(pct,2)
 ggsave("figs/what-constitutes-software/software.pdf", plot = g, width = 6, height = 3)
 g
 ```
+`C1`: Software is diverse, only 4% of repositories do not contain code, data and documentation. 
+`C2`: Documentation is an integral contituent of software, only 2% of repositories do not contain documentation. 
 
-(C1 = projects )
+Therefore `C1` is the percentage of repositories that do not contain at least one file in all three categories, `C2` is percentage of projects that do not contain documentation files at all. 
+
+`S0` (gray): is random sample from the entire dataset
+`S1` (red): is top 1k projects by # of stars
+`S2` (blue): is 1k random sample from the developed projects
 
 ```{r}
 flush_log()

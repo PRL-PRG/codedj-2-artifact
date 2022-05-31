@@ -2,6 +2,8 @@
 
 # Artifact Description
 
+The following are main directories of the artifact. The directories are usually accompanied by an extra readme with details about the items therein: 
+
 - `artifact` contains the R notebooks and support functions required for the paper itself, not the reproductions
 - `reproductions` contains R notebooks that reproduce the papers
 - `paper` contains the paper itself.
@@ -21,10 +23,7 @@ The linked folders (dataset) are:
 
 ### What Constitutes the Software
 
-Consists of a single R notebook that analyzes the composition  
-
-
-
+Consists of a single R notebook that analyzes the composition of projects.   
 
 # Datasets
 
@@ -38,7 +37,7 @@ All data to the artifact should be located on `prl-parasite` in `/mnt/data/coded
 - `djanco-cache/js` contains djanco cache for JavaScript
 - `reproductions` contains results for the papers we reproduce. See their details below. 
 
-## Reproductions
+## Reproduction Datasets
 
 Contains information about the reproductions. At least following is necessary for each, here given as example for the _What constitutes a software_ paper:
 
