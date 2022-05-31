@@ -20,10 +20,9 @@ Top starred projects for 25 languages: ABAP, Ada, Assembler, C, COBOL, C++, C#, 
 
 The categorization was done manually, by greedily checking the artifact types until all but tiny percentage were classified ([details](https://github.com/HelgeCPH/msr2020_what_constitutes_software/blob/ffffc004547ecadc1524f95c726accadae03b706/src/interpretation.py#L655)). 
 
-
-    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/java -d /mnt/data/codedj-icse/java-1m1-merged -c /mnt/data/codedj-icse/cache
-    ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/python2 -d /mnt/data/codedj-icse/python-all -c /mnt/data/codedj-icse/cache-python-all    
-  ./djanco -o /mnt/data/codedj-icse/what-constitutes-software/js2 -d /mnt/data/codedj-icse/javascript -c /mnt/data/codedj-icse/cache-javascript
+    ./java -o /mnt/data/codedj-2-artifact/reproductions/what-constitutes-software/results2/java -d /mnt/data/codedj-2-artifact/dataset/java -c /mnt/data/codedj-2-artifact/djanco-cache/java  
+    ./python -o /mnt/data/codedj-2-artifact/reproductions/what-constitutes-software/results2/python -d /mnt/data/codedj-2-artifact/dataset/python -c /mnt/data/codedj-2-artifact/djanco-cache/python  
+    ./js -o /mnt/data/codedj-2-artifact/reproductions/what-constitutes-software/results2/js -d /mnt/data/codedj-2-artifact/dataset/js -c /mnt/data/codedj-2-artifact/djanco-cache/js  
 
 ```{bash}
 cd reproductions/what-constitutes-software
