@@ -21,6 +21,15 @@ use djanco::time::Duration;
 use djanco_ext::*;
 use regex::Regex;
 
+// Cutoffs
+const JS_C_INDEX_CUTOFF:  u64   = 1;
+const JS_AGE_CUTOFF:      u64   = 46;
+const JS_DEVS_CUTOFF:     usize = 2;
+const JS_LOCS_CUTOFF:     usize = 307;
+const JS_VERSIONS_CUTOFF: usize = 16;
+const JS_COMMITS_CUTOFF:  usize = 14;
+
+// Selection parameters
 const SELECTIONS: usize = 10;
 const SELECTED_PROJECTS: usize = 30;
 const SEEDS: [u128; 10] = [1,2,3,5,7,11,13,17,19,23]; // one seed per selection
@@ -83,22 +92,31 @@ pub fn quality_projects(database: &Database, _log: &Log, output: &Path, seed_ind
                     })
             })
         })
-        // Contains at least 5KLOC in the head tree.
-        .filter_by(AtLeast(project::Locs, 5_000))
-        // The spanm between first and last commit is at least 1 year
-        .filter_by(AtLeast(project::Age, Duration::from_months(12)))
-        // Contains at least 100 commits total
-        .filter_by(AtLeast(Count(project::Commits), 100))        
-        // Has at least 2 users
-        .filter_by(AtLeast(Count(project::Users), 2))
+        // .filter_by(AtLeast(project::))
         // Sample N projects at random (we're just going to do one selection, so take first seed)        
         .sample(Random(SELECTED_PROJECTS, Seed(SEEDS[seed_index]))) 
+        .filter_by(AtLeast(project::Age, Duration::from_days(JS_AGE_CUTOFF)))
+        .filter_by(AtLeast(project::MaxHIndex1, JS_C_INDEX_CUTOFF))
+        .filter_by(AtLeast(Count(project::Users), JS_DEVS_CUTOFF))
+        .filter_by(AtLeast(project::Locs, JS_LOCS_CUTOFF))
+        .filter_by(AtLeast(Count(project::Snapshots), JS_VERSIONS_CUTOFF))
+        .filter_by(AtLeast(Count(project::Commits), JS_COMMITS_CUTOFF))
         // Extract: url, head commit aka to, base commit aka from
         .map_into(project::URL)
         .into_csv_with_headers_in_dir(vec!["url"], 
             output, 
             format!("selections/quality_projects_{}.csv", seed_index))
 }
+
+// OLD SPECS
+// // Contains at least 5KLOC in the head tree.
+// .filter_by(AtLeast(project::Locs, 5_000))
+// // The spanm between first and last commit is at least 1 year
+// .filter_by(AtLeast(project::Age, Duration::from_months(12)))
+// // Contains at least 100 commits total
+// .filter_by(AtLeast(Count(project::Commits), 100))        
+// // Has at least 2 users
+// .filter_by(AtLeast(Count(project::Users), 2))
 
 #[djanco(May, 2021, subsets(Generic))]
 pub fn select_original_projects(_database: &Database, _log: &Log, output: &Path) -> Result<(), std::io::Error>  {
