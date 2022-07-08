@@ -134,65 +134,28 @@ get_difference_dataframe = function(df, name_) {
 
 The djanco query to sample and compute the frequencies of chain lengths, i.e the files of the samples we load,
 is at `./artifacts/empirical_method_chaining/sampler-by-commit`.
-```{r}
-# load sample 1
-df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_1.csv')
-df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_1.csv')
-all = rbind(df_2010, df_2018)
-all_un1 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
 
-p1 <- ggplot(all_un1, aes(x=n, y=Un, color=factor(year) )) +
+
+```{r}
+for (sample_num in 1:10){
+  df_2010 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2010_',sample_num,'.csv', sep = ""))
+  df_2018 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2018_',sample_num,'.csv', sep = ""))
+  
+  all = rbind(df_2010, df_2018)
+  all_un = get_dataframe_un(c(2010, 2018), all, top_n=150, dataset_size_ = 1700, is_top_ = FALSE)
+  all_uns = append(all_uns, all_un)
+  p1 <- ggplot(all_un, aes(x=n, y=Un, color=factor(year) )) +
     geom_point() +
     scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
     labs(y= "% of Projects", x = "chain_length") +
     guides(colour=guide_legend(title=""))+ 
     theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
                                   legend.text=element_text(size=16), panel.grid.major = element_blank())
-diff_df1 = get_difference_dataframe(all_un1, "sample 1")
+  print(p1)
+  # diff_df1 = get_difference_dataframe(all_un1, "sample 1")
+}
 ```
 
-
-```{r}
-# load sample 2
-df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_2.csv')
-df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_2.csv')
-all = rbind(df_2010, df_2018)
-all_un2 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
-
-p2 <- ggplot(all_un2, aes(x=n, y=Un, color=factor(year) )) +
-    geom_point() +
-    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
-    labs(y= "% of Projects", x = "chain_length") +
-    guides(colour=guide_legend(title=""))+ 
-    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
-                                  legend.text=element_text(size=16), panel.grid.major = element_blank())
-diff_df2 = get_difference_dataframe(all_un2, "sample 2")
-```
-
-
-```{r}
-# load sample 3
-df_2010 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2010_3.csv')
-df_2018 = read_csv('./reproductions/empirical_method_chaining/chain_lengths_2018_3.csv')
-all = rbind(df_2010, df_2018)
-all_un3 = get_dataframe_un(c(2010,2018),all, top_n=150, dataset_size_ =1700, is_top_=FALSE)
-
-p3 <- ggplot(all_un3, aes(x=n, y=Un, color=factor(year) )) +
-    geom_point() +
-    scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
-    labs(y= "% of Projects", x = "chain_length") +
-    guides(colour=guide_legend(title=""))+ 
-    theme(axis.text=element_text(size=20), axis.title=element_text(size=20),
-                                  legend.text=element_text(size=16), panel.grid.major = element_blank())
-diff_df3 = get_difference_dataframe(all_un3, "sample 3")
-```
-
-
-
-```{r fig.height=3, fig.width=10}
-# plots the 3 samples 
-grid.arrange(p1,p2,p3, ncol=3, nrow=1)
-```
 
 `stars_1_chain_lengths.csv` is the output of running the Djanco query
 in `./artifacts/empirical_method_chaining/query_method_chainings`. We used the list of projects ids
@@ -201,7 +164,6 @@ at `./artifacts/empirical_method_chaining/top_starred_indices.csv`.
 # laod the result of our reproduction of the methodology of the authors
 stars_method_chainings = read_csv("./reproductions/empirical_method_chaining/stars_1_chain_lengths.csv")
 ```
-
 
 ```{r}
 stars_dataframe = get_dataframe_un(c(2010,2018),stars_method_chainings, top_n=150,seed=777)
@@ -216,15 +178,33 @@ pstars <- ggplot(stars_dataframe, aes(x=n, y=Un, color=factor(year) )) +
 stars_difference_df  = get_difference_dataframe(stars_dataframe, "Stars")
 ```
 
+For each sample, and for each chain length we calculate the difference of Un to see if indeed chains lengths have increased. If they have increased the difference should be a positive number.
+
 ```{r}
-difference_dataframe = rbind(diff_df1, diff_df2, diff_df3, stars_difference_df)
+difference_dataframe = stars_difference_df
+for (sample_num in 1:10){
+  df_2010 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2010_',sample_num,'.csv', sep = ""))
+  df_2018 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2018_',sample_num,'.csv', sep = ""))
+  
+  all = rbind(df_2010, df_2018)
+  all_un = get_dataframe_un(c(2010, 2018), all, top_n=150, dataset_size_ = 1700, is_top_ = FALSE)
+  diff_df = get_difference_dataframe(all_un, paste("Sample", sample_num))
+  difference_dataframe = rbind(difference_dataframe, diff_df)
+}
+```
+
+
+
+
+```{r}
+difference_dataframe
 ```
 
 
 # Plot difference dataframe
 we plot for each sample the difference among U(n). We substract U(n) of 2010 to U(n) of 2018.
 ```{r}
-difference_dataframe$name = factor(difference_dataframe$name, levels=c("Stars", "sample 1", "sample 2", "sample 3"))
+# difference_dataframe$name = factor(difference_dataframe$name, levels=c("Stars", "sample 1", "sample 2", "sample 3"))
 final_plot <- ggplot() + 
   geom_line(data=difference_dataframe%>%filter(name=="Stars" & n<101),size=0.5,aes(x=n, y=diff),color="black") + 
   geom_point(data=difference_dataframe%>%filter(name!="Stars" & n<101),size=0.75,aes(x=n, y=diff, color=name))+

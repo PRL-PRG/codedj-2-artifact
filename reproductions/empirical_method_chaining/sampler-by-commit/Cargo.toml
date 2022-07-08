@@ -1,7 +1,7 @@
 [package]
 name = "sampler-by-commit"
 version = "0.1.0"
-authors = [""]
+authors = ["smml1996 <=>"]
 edition = "2018"
 license = "MIT"
 

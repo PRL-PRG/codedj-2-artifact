@@ -2,7 +2,7 @@
 
 A crate containing ![Djanco](https://github.com/PRL-PRG/djanco) queries.
 
-This crate is used to compute the frequencies of chain lengths of projects.
+This crate... *TODO*
 
 ## Djanco
 
