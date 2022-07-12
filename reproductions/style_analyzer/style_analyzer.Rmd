@@ -123,13 +123,13 @@ setwd(QUERY_ROOT)
 
 Use a CODEDJ dataset of JavaScript projects to generate a selection. We use 
 PARASITE v3.0. The dataset contains all projects in subset GENERIC. The dataset 
-should be installed at path: `/mnt/data/codedj-icse/javascript/`.
+should be installed at path: `/mnt/data/codedj-2-artifact/dataset/js/`.
 
 ```bash
 cargo run --bin select --release -- \
   --output-path output \
-  --dataset-path /mnt/data/codedj-icse/javascript/ \
-  --cache-path /mnt/data/codedj-icse/javascript-cache/
+  --dataset-path /mnt/data/codedj-2-artifact/dataset/js/ \
+  --cache-path   /mnt/data/codedj-2-artifact/cache/js/
 ```
 
 We create another dataset with just the projects we selected. The user needs to 
@@ -158,7 +158,7 @@ parasite --datastore /mnt/data/codedj-icse/js-selection/ \
 
 # Merge the dataset
 parasite --datastore /mnt/data/codedj-icse/js-selection-merged/ \
-  --merge-all /mnt/data/codedj-icse/js-selection Generic
+  merge-all /mnt/data/codedj-icse/js-selection Generic
 ```
 
 Generate head and base commits for each project.
