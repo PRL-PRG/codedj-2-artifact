@@ -104,17 +104,17 @@ merge_dataframes = function(djanco_df, smells_df) {
 
 1. About the deep_learning.csv: 
 This is the file we get when running the djanco query that is located in 
-`artifacts/scent_dl/dl_projects_cloner` over the datastore of deep learning 
+`reproductions/scent_dl/dl_projects_cloner` over the datastore of deep learning 
 projects.
 
-2. About the folder `smells_dl`:
+2. About the folder `smells/smells_dl`:
 - It contains files. The name of the file denotes the type of smell, while its contents
 tell you which files, line the smell is located.
-- The tool tool to get the smells is located at `artifacts/scent_dl/tools/pysmell`. 
-The instructions to run this tool are located at `artifacts/scent_dl/tools/README.md`.
+- The tool tool to get the smells is located at `reproductions/scent_dl/tools/pysmell`. 
+The instructions to run this tool are located at `reproductions`/scent_dl/tools/README.md`.
 
 3. To run the tool to detect smells you should first clone repositories. 
-The instructions to clone repositories are in `artifacts/scent_dl/tools/README.md` 
+The instructions to clone repositories are in `reproductions/scent_dl/tools/README.md` 
 as well.
 
 
@@ -174,12 +174,12 @@ The djanco receipt of this query is at
 ```{r}
 set.seed(43)
 sample_stars = python %>% arrange(-stars) %>% head(106) %>% sample_n(size_dl_dataframe) %>% select(id, locs)
-write.csv(sample_stars,'./reproductions/scent_dl/project_indices/stars.csv', row.names = FALSE)
+# write.csv(sample_stars,'./reproductions/scent_dl/project_indices/stars.csv', row.names = FALSE)
 ```
 
 
 ```{r}
-#loads a dataframe that contains data of smells for 57 deep learning projects
+#loads a dataframe that contains data of smells for top 106 starred projects
 stars_smells = get_project_smells("stars/") 
 ```
 
@@ -192,16 +192,9 @@ all_stars
 
 # Comparing various samples 
 ```{r}
-get_indices_strat = function (num_samples=10, seed=111,filename="10l_10c_s.csv", target_population=NULL) {
+get_indices_strat = function (num_samples=10, seed=111,filename="", target_population=NULL) {
     set.seed(seed)
     indices = data.frame(id=c())
-    if(is.null(target_population)) {
-      print("target population is null")
-      target_population = python %>% filter(locs>10  & commits > 10)  
-    }else{
-      print("target population is not null")
-    }
-    
     for(i in 1:num_samples) {
         # stratified sample by size
         df_small = target_population %>% filter(locs<=4000) %>% sample_n(6) %>% select(id)
@@ -209,7 +202,6 @@ get_indices_strat = function (num_samples=10, seed=111,filename="10l_10c_s.csv",
         df_large = target_population %>% filter(locs>15000) %>% sample_n(38) %>% select(id)
 
        df_indices  = rbind(df_small, df_medium, df_large)
-      
         indices = rbind(indices, df_indices)
     }
     write.csv(indices %>% distinct(id),paste('./reproductions/scent_dl/project_indices/', filename, sep=""), row.names = FALSE)
@@ -231,10 +223,18 @@ LOG("dlCommitsLowerboundAnd", or_commits_lowerbound)
 ```
 
 
-The djanco receipt for this filter is 
+The djanco recipe for this filter is 
 `artifacts/scent_dl/traditional-queries/src/lib.rs::custom_query`
 ```{r}
-  get_indices_strat(num_samples=5, seed=43, filename="long_filter.csv", target_population = python %>% filter(max_hindex1 >= or_hindex_lowerbound| lifetime >= or_lifetime_lowerbound | locs >= or_locs_lowerbound | commits >= or_commits_lowerbound))
+dev_projects_population = python %>%
+                          filter(max_hindex1 >= 3) %>%
+                          filter(age >= 364) %>%
+                          filter(users >= 3) %>%
+                          filter(locs >= 716) %>%
+                          filter(snapshots >= 20) %>%
+                          filter(commits >= 26)
+                          
+indices = get_indices_strat(num_samples=5, seed=43, filename="dev_project_indices.csv", target_population=dev_projects_population)
 ```
 
 
@@ -244,6 +244,8 @@ get_stratified_sample = function(n=1, num_samples=10, seed=111, target_populatio
     set.seed(seed)
     if(is.null(target_population)){
       target_population = python %>% filter(locs>10  & commits > 10)
+    } else{
+      print("target population is not null")
     }
     for(i in 1:num_samples){
         df_small = target_population %>% filter(locs<=sloc_small) %>% sample_n(get_project_type_count('small')) %>% select(id)
@@ -356,7 +358,7 @@ plot_all_samples_single_graph = function(num_samples_=10,seed_=111, filenames=c(
       
       # we only use these 3 samples, cause the others don't provide additional discussion.
       for (i in c(1,2,5)) {
-          indices = get_stratified_sample(n=i,num_samples=num_samples_,seed=seed_,target_population = target_population_)
+          indices = get_stratified_sample(n=i,num_samples=num_samples_,seed=seed_,target_population = dev_projects_population)
           indices = inner_join(indices %>% rename(project_id=id), python %>% select(id, locs) %>% rename(project_id=id), by="project_id")
           indices = indices  %>% rename(sloc=locs)
         
@@ -424,13 +426,18 @@ plot_all_samples_single_graph = function(num_samples_=10,seed_=111, filenames=c(
 
 
 ```{r}
-smell_frequencies = plot_all_samples_single_graph(num_samples_=5, filenames=c('long_filter'), seed_=43, target_populations=c())
+smell_frequencies = plot_all_samples_single_graph(num_samples_=5, filenames=c('dev_projects_smells'), seed_=43, target_populations=c())
 smell_frequencies
 ggsave("figs/scent-dl/smell_frequencies.pdf", plot = smell_frequencies, height=3, width=6 )
 ```
 
 
-
+```{r}
+pvalues = get_pvalues(all_dl, all_stars)
+LOG("dlPvalueStarsSmall", pvalues[1])
+LOG("dlPvalueStarsMedium", pvalues[2])
+LOG("dlPvalueStarsLarge", pvalues[3])
+```
 # END
 ```{r}
 flush_log()

@@ -34,8 +34,8 @@ pub fn main() {
     }
 
     let database = prepare_database!(1619827200 /* = May 2021*/, stores!(Generic));
-    execute_query!(database, sampler_by_commit::query_2010);
-    execute_query!(database, sampler_by_commit::query_2018);
+    execute_query!(database, sampler_by_commit::query_developed_projects_2010);
+    execute_query!(database, sampler_by_commit::query_developed_projects_2018);
 
 
     if options.repository.is_some() && !options.do_not_archive_results {
