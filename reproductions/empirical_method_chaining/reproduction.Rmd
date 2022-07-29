@@ -29,7 +29,9 @@ big_dataset = big_dataset %>% mutate( created_year=format( as.Date( as.POSIXct(c
 big_dataset = big_dataset %>% mutate( last_commit_year=format( as.Date( as.POSIXct(newestCommitTime, origin="1970-01-01") ), "%Y" ))
 ```
 
-
+```{r}
+big_dataset
+```
 # Gathering top starred projects
 
 This is our reproduction of what the authors did. 
@@ -52,7 +54,7 @@ all_ids = df$project_id
 df = data.frame(snapshot_id=all_ids)
 
 # NOTE: write.csv will generate the column name within quotes. You must remove these quotes.
-write.csv(df,'./reproductions/empirical_method_chaining/top_starred_indices.csv',row.names = FALSE)
+# write.csv(df,'./reproductions/empirical_method_chaining/top_starred_indices.csv',row.names = FALSE)
 ```
 
 The djanco query to replicate this query is at 
@@ -143,7 +145,7 @@ for (sample_num in 1:10){
   
   all = rbind(df_2010, df_2018)
   all_un = get_dataframe_un(c(2010, 2018), all, top_n=150, dataset_size_ = 1700, is_top_ = FALSE)
-  all_uns = append(all_uns, all_un)
+
   p1 <- ggplot(all_un, aes(x=n, y=Un, color=factor(year) )) +
     geom_point() +
     scale_y_continuous(labels = scales::percent,limits=c(0, 1), breaks=c(0, 0.2, 0.4, 0.6,0.8,1)) +
@@ -207,7 +209,7 @@ we plot for each sample the difference among U(n). We substract U(n) of 2010 to 
 # difference_dataframe$name = factor(difference_dataframe$name, levels=c("Stars", "sample 1", "sample 2", "sample 3"))
 final_plot <- ggplot() + 
   geom_line(data=difference_dataframe%>%filter(name=="Stars" & n<101),size=0.5,aes(x=n, y=diff),color="black") + 
-  geom_point(data=difference_dataframe%>%filter(name!="Stars" & n<101),size=0.75,aes(x=n, y=diff, color=name))+
+  geom_point(data=difference_dataframe%>%filter(name=="Sample 1" & n<101),size=0.75,aes(x=n, y=diff, color=name))+
   scale_color_brewer(palette = "Dark2") +
   geom_vline(xintercept=8, color="grey", size=0.2) + 
   scale_x_continuous(breaks=c(0,8,25,50,75,100))+
@@ -231,3 +233,172 @@ difference_dataframe %>% filter(n==8)
 ggsave("figs/method_chainings/final_graph.pdf", plot=final_plot, height=7, width=10 )
 ```
 
+
+# Observation 1
+
+```{r}
+get_sum_frequencies = function(df) {
+  temp = df %>% mutate(sum=sum(frequency))
+  result = temp$sum[1]
+  return(result)
+}
+
+```
+
+
+```{r}
+
+df_2010 = stars_method_chainings %>% filter(year==2010)
+df_2018 = stars_method_chainings %>% filter(year==2018)
+all_frequencies_2010 = get_sum_frequencies(df_2010)
+all_frequencies_2018 = get_sum_frequencies(df_2018)
+  
+frequencies_g2_2010 = get_sum_frequencies(df_2010 %>% filter(chain_length > 1))
+frequencies_g2_2018 = get_sum_frequencies(df_2018 %>% filter(chain_length > 1))
+print(paste(round(frequencies_g2_2010/all_frequencies_2010,2), round(frequencies_g2_2018/all_frequencies_2018,2)))
+```
+
+
+```{r message=FALSE}
+for (sample_num in 1:10){
+  df_2010 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2010_',sample_num,'.csv', sep = ""), )
+  df_2018 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2018_',sample_num,'.csv', sep = ""))
+  
+  all_frequencies_2010 = get_sum_frequencies(df_2010)
+  all_frequencies_2018 = get_sum_frequencies(df_2018)
+  
+  frequencies_g2_2010 = get_sum_frequencies(df_2010 %>% filter(chain_length > 1))
+  frequencies_g2_2018 = get_sum_frequencies(df_2018 %>% filter(chain_length > 1))
+  
+  print(paste(round(frequencies_g2_2010/all_frequencies_2010,2), round(frequencies_g2_2018/all_frequencies_2018,2)))
+ }
+
+```
+
+
+# Observation 2
+
+```{r}
+
+df_2010 = stars_method_chainings %>% filter(year==2010)
+df_2018 = stars_method_chainings %>% filter(year==2018)
+
+frequencies_g2_2010 = df_2010 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2010$year=2010
+  
+  frequencies_g2_2018 = df_2018 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2018$year=2018
+  
+  all = rbind(frequencies_g2_2010, frequencies_g2_2018)
+  all$year = as.factor(all$year)
+  counts <- table(all$year, all$chains_per_project)
+
+  p <- all %>% filter(chains_per_project < 50) %>%
+  ggplot( aes(x=chains_per_project, fill=year)) +
+    geom_histogram( bin=25,color="#e9ecef", alpha=0.6, position = 'identity', aes(y=..count../sum(..count..))) +
+    labs(fill="")
+  
+  print(p)
+
+```
+
+
+
+```{r}
+df_2010 = stars_method_chainings %>% filter(year==2010)
+frequencies_g2_2010 = df_2010 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2010$year=2010
+  
+temp_java = java %>% select(id, size)
+
+final_2010 = merge(x=temp_java,y=frequencies_g2_2010,by.x="id", by.y="project_id" )
+
+
+df_2018 = stars_method_chainings %>% filter(year==2018)
+frequencies_g2_2018 = df_2018 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2018$year=2018
+  final_2018 = merge(x=temp_java,y=frequencies_g2_2018,by.x="id", by.y="project_id" )
+  
+  all = rbind(final_2010, final_2018)
+  
+  ggplot(all, aes(x=size+1, y=chains_per_project, color=year)) + geom_point() + scale_x_continuous(trans='log2')+ scale_y_continuous(trans='log2')
+```
+
+
+```{r message=FALSE}
+for (sample_num in 1:10){
+  df_2010 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2010_',sample_num,'.csv', sep = ""), )
+  df_2018 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2018_',sample_num,'.csv', sep = ""))
+  
+  frequencies_g2_2010 = df_2010 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2010$year=2010
+  
+  frequencies_g2_2018 = df_2018 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2018$year=2018
+  
+  all = rbind(frequencies_g2_2010, frequencies_g2_2018)
+  all$year = as.factor(all$year)
+  counts <- table(all$year, all$chains_per_project)
+
+  p <- all %>% filter(chains_per_project < 50) %>%
+  ggplot( aes(x=chains_per_project, fill=year)) +
+    geom_histogram( bins = 25,color="#e9ecef", alpha=0.6, position = 'identity', aes(y=..count../sum(..count..))) +
+    labs(fill="")
+  
+  print(p)
+ }
+```
+
+
+```{r message=FALSE}
+for (sample_num in 1:10){
+  df_2010 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2010_',sample_num,'.csv', sep = ""), )
+  df_2018 = read_csv(paste('./reproductions/empirical_method_chaining/dev_samples/dev_chain_lengths_2018_',sample_num,'.csv', sep = ""))
+  
+frequencies_g2_2010 = df_2010 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2010$year=2010
+  
+temp_java = java %>% select(id, size)
+
+final_2010 = merge(x=temp_java,y=frequencies_g2_2010,by.x="id", by.y="project_id" )
+
+frequencies_g2_2018 = df_2018 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(chains_per_project=sum(frequency))
+  frequencies_g2_2018$year=2018
+  final_2018 = merge(x=temp_java,y=frequencies_g2_2018,by.x="id", by.y="project_id" )
+  
+  all = rbind(final_2010, final_2018)
+  
+  print(ggplot(all, aes(x=size+1, y=chains_per_project, color=year)) + geom_point() + scale_x_continuous(trans='log2')+ scale_y_continuous(trans='log2'))
+ }
+```
+
+
+# Observation 4
+
+```{r}
+
+df_2010 = stars_method_chainings %>% filter(year==2010)
+df_2018 = stars_method_chainings %>% filter(year==2018)
+
+frequencies_g2_2010 = df_2010 %>% filter(chain_length > 1) %>% 
+  group_by(project_id) %>% 
+  summarize(frequency=sum(frequency)) %>%
+  group_by(project_id, frequency) %>% summarise(count = n())
+  
+frequencies_g2_2010$year=2010
+
+frequencies_g2_2018 = df_2018 %>% filter(chain_length > 1) %>% group_by(project_id) %>% summarize(frequency=sum(frequency))
+frequencies_g2_2018$year=2018
+
+all = rbind(frequencies_g2_2010, frequencies_g2_2018)
+all$year = as.factor(all$year)
+counts2010 <- table(all$year, all$frequency)
+
+p <- all %>% filter(frequency < 8000) %>%
+ggplot( aes(x=frequency, fill=year)) +
+  geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity', aes(y=..count../sum(..count..))) +
+  labs(fill="")
+
+print(p)
+
+```
